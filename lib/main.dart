@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rocketbot/Bloc/BalancesBloc.dart';
+import 'package:rocketbot/Bloc/CoinPriceBloc.dart';
 import 'package:rocketbot/Models/BalanceList.dart';
 import 'package:rocketbot/Widgets/CoinListView.dart';
 
 import 'Bloc/CoinsBloc.dart';
 import 'ComponentWidgets/nContainer.dart';
+import 'Models/CoinGraph.dart';
+import 'Widgets/CoinPriceGraph.dart';
 import 'Widgets/PriceBadge.dart';
 import 'Support/MaterialColorGenerator.dart';
 import 'ComponentWidgets/nButton.dart';
@@ -75,17 +78,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var _graphKey =  GlobalKey<CoinPriceGraphState>();
   BalancesBloc? _bloc;
+  CoinPriceBloc? _priceBlock;
 
   @override
   void initState() {
     super.initState();
     _bloc = BalancesBloc();
+    _priceBlock = CoinPriceBloc("merge");
   }
 
   @override
   void dispose() {
     _bloc!.dispose();
+    _priceBlock!.dispose();
     super.dispose();
   }
 
@@ -97,14 +104,18 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 5.0),
+              padding:
+                  const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 5.0),
               child: Row(
                 children: [
-                  Text("Portfolio", style: Theme.of(context).textTheme.headline4),
-                  SizedBox(width: 50,),
+                  Text("Portfolio",
+                      style: Theme.of(context).textTheme.headline4),
                   SizedBox(
-                    height: 30,
-                      child: TimeRangeSwitcher()),
+                    width: 50,
+                  ),
+                  SizedBox(height: 30, child: TimeRangeSwitcher(
+                    changeTime: _changeTime,
+                  )),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
@@ -115,7 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 25,
                           child: NeuButton(
                             onTap: () {},
-                            icon: Icon(Icons.more_vert, color: Colors.white70,),
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Colors.white70,
+                            ),
                           ),
                         ),
                       ),
@@ -124,6 +138,31 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+            SizedBox(
+                width: double.infinity,
+                height: 250,
+                child: StreamBuilder<ApiResponse<PriceData>>(
+                  stream: _priceBlock!.coinsListStream,
+                  builder: (BuildContext context, snapshot) {
+                    if (snapshot.hasData) {
+                      switch (snapshot.data!.status) {
+                        case Status.COMPLETED:
+                          return CoinPriceGraph(
+                            key: _graphKey,
+                            prices: snapshot.data!.data!.historyPrices,
+                            time: 48,
+                          );
+                          break;
+                        case Status.LOADING:
+                          return Center(child: Text("loading data"));
+                        case Status.ERROR:
+                          return Center(child: Text("data error"));
+                      }
+                    } else {
+                      return Container();
+                    }
+                  },
+                )),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => _bloc!.fetchBalancesList(),
@@ -133,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasData) {
                       switch (snapshot.data!.status) {
                         case Status.LOADING:
-                          print(snapshot.data!.message);
+
                           break;
                         case Status.COMPLETED:
                           return ListView.builder(
@@ -166,7 +205,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu1.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu1.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
             label: '',
@@ -175,7 +218,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu1.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu1.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
           ),
@@ -185,7 +232,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu2.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu2.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
             label: '',
@@ -194,7 +245,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu2.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu2.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
           ),
@@ -204,7 +259,11 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu3.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu3.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
             label: '',
@@ -213,12 +272,20 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 40,
               child: NeuButton(
                 onTap: () {},
-                imageIcon: Image.asset("images/bottommenu3.png", width: 20, fit: BoxFit.fitWidth,),
+                imageIcon: Image.asset(
+                  "images/bottommenu3.png",
+                  width: 20,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  _changeTime(int time) {
+    _graphKey.currentState!.changeTime(time);
   }
 }
