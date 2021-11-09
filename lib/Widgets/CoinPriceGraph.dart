@@ -15,9 +15,10 @@ class CoinPriceGraph extends StatefulWidget {
 }
 
 class CoinPriceGraphState extends State<CoinPriceGraph> {
-  final double _divider = 0.1;
+  double _divider = 0.1;
   final int _leftLabelsCount = 6;
   var _time = 24;
+  HistoryPrices? _price;
 
   List<FlSpot> _values = [];
 
@@ -30,6 +31,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   @override
   void initState() {
     super.initState();
+    _price = widget.prices;
     _preparePriceData(24);
   }
 
@@ -41,6 +43,14 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
     _preparePriceData(time);
   }
 
+  void changeCoin(HistoryPrices h) {
+    setState(() {
+      _values.clear();
+    });
+    _price = h;
+    _preparePriceData(_time);
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -50,9 +60,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
     double minY = double.maxFinite;
     double maxY = double.minPositive;
 
-    var timeNow = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    var timeNow = DateTime.now().millisecondsSinceEpoch;
     var hourAgo = 0;
 
     if (timeInHours != 0) {
@@ -61,7 +69,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       hourAgo = 0;
     }
 
-    for (List<double> data in widget.prices!.usd!) {
+    for (List<double> data in _price!.usd!) {
       if (data[0] >= hourAgo) {
         if (minY > data[1]) minY = data[1];
         if (maxY < data[1]) maxY = data[1];
@@ -72,8 +80,13 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
 
     _minX = _values.first.x;
     _maxX = _values.last.x;
+
+    _divider = maxY /100;
+
     _minY = (minY / _divider).floorToDouble() * _divider;
     _maxY = (maxY / _divider).ceilToDouble() * _divider;
+
+
     _leftTitlesInterval =
         ((_maxY - _minY) / (_leftLabelsCount - 1)).floorToDouble();
 
@@ -107,10 +120,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
                   final flSpot = barSpot;
                   return LineTooltipItem(
                     '',
-                    Theme
-                        .of(context)
-                        .textTheme
-                        .subtitle1!,
+                    Theme.of(context).textTheme.subtitle1!,
                     children: [
                       TextSpan(
                         text: flSpot.y.toStringAsFixed(3) + " USD",
@@ -170,18 +180,17 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) {
-        return Theme
-            .of(context)
+        return Theme.of(context)
             .textTheme
             .subtitle2!
             .copyWith(color: Colors.white.withOpacity(0.2));
       },
       getTitles: (value) {
         final DateTime date =
-        DateTime.fromMillisecondsSinceEpoch(value.toInt());
-        if(_time == 24*7 || _time == 0) {
+            DateTime.fromMillisecondsSinceEpoch(value.toInt());
+        if (_time == 24 * 7 || _time == 0) {
           return DateFormat.yMd().format(date);
-        }else{
+        } else {
           return DateFormat.Hm().format(date);
         }
       },
@@ -192,7 +201,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
 
   FlGridData _gridData() {
     return FlGridData(
-      show: true,
+      show: false,
       drawVerticalLine: false,
       getDrawingHorizontalLine: (value) {
         return FlLine(
@@ -210,12 +219,14 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   Widget build(BuildContext context) {
     return Padding(
       padding:
-      const EdgeInsets.only(right: 0.0, left: 0.0, top: 10, bottom: 10),
-      child: _values.isEmpty ? Placeholder() : LineChart(
-        _mainData(),
-        swapAnimationDuration: Duration(milliseconds: 500),
-        swapAnimationCurve: Curves.linearToEaseOut,
-      ),
+          const EdgeInsets.only(right: 0.0, left: 0.0, top: 10, bottom: 10),
+      child: _values.isEmpty
+          ? Placeholder()
+          : LineChart(
+              _mainData(),
+              swapAnimationDuration: Duration(milliseconds: 500),
+              swapAnimationCurve: Curves.linearToEaseOut,
+            ),
     );
   }
 }

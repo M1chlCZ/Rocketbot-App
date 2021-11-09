@@ -8,9 +8,9 @@ class PriceBadge extends StatelessWidget {
 
   String _getNum(double num) {
     if(num > 0) {
-      return num.toString();
+      return num.toStringAsFixed(2);
     }else{
-      return (num * - 1).toString();
+      return (num * - 1).toStringAsFixed(2);
     }
   }
 

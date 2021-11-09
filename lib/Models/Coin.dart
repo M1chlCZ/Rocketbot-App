@@ -1,3 +1,5 @@
+import 'package:rocketbot/Models/CoinGraph.dart';
+
 class Coin {
   Coin({
     int? id,
@@ -15,6 +17,7 @@ class Coin {
     String? explorerUrl,
     int? requiredConfirmations,
     String? fullName,
+    PriceData? priceData,
     String? tokenStandart,}){
     _id = id;
     _rank = rank;
@@ -68,6 +71,7 @@ class Coin {
   int? _requiredConfirmations;
   String? _fullName;
   String? _tokenStandart;
+  PriceData? _priceData;
 
   int? get id => _id;
   int? get rank => _rank;
@@ -85,6 +89,8 @@ class Coin {
   int? get requiredConfirmations => _requiredConfirmations;
   String? get fullName => _fullName;
   String? get tokenStandart => _tokenStandart;
+  PriceData? get priceData => _priceData;
+
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -105,6 +111,10 @@ class Coin {
     map['fullName'] = _fullName;
     map['tokenStandart'] = _tokenStandart;
     return map;
+  }
+
+  void setPriceData(PriceData p) {
+    this._priceData = p;
   }
 
 }

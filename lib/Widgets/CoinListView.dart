@@ -5,22 +5,31 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/ComponentWidgets/nButton.dart';
+import 'package:rocketbot/Models/BalanceList.dart';
 import 'package:rocketbot/Models/Coin.dart';
+import 'package:rocketbot/Models/CoinGraph.dart';
 
 import 'PriceBadge.dart';
 
 class CoinListView extends StatefulWidget {
-  final Coin coin;
+  final CoinBalance coin;
   final String? customLocale;
+  final Function(HistoryPrices? h) coinSwitch;
+  final Function (String s) activeCoin;
   final double? free;
 
-  CoinListView({required this.coin, this.customLocale, this.free});
+  CoinListView({required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin});
 
   @override
   State<CoinListView> createState() => _CoinListViewState();
 }
 
 class _CoinListViewState extends State<CoinListView> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
 
   @override
@@ -41,7 +50,8 @@ class _CoinListViewState extends State<CoinListView> {
               splashColor: Colors.black54,
               highlightColor: Colors.black54,
               onTap: () {
-
+                widget.coinSwitch(widget.coin.priceData!.historyPrices!);
+                widget.activeCoin(widget.coin.coin!.name!);
               },
               child: Container(
                 alignment: Alignment.centerLeft,
@@ -55,7 +65,7 @@ class _CoinListViewState extends State<CoinListView> {
                         flex: 2,
                         child: Container(
                           margin: EdgeInsets.all(15.0),
-                          child: Center(child: SizedBox( height: 30,child: Image.network('https://app.rocketbot.pro/coins/' + widget.coin.imageSmall!, fit: BoxFit.fitWidth,))),
+                          child: Center(child: SizedBox( height: 30,child: Image.network('https://app.rocketbot.pro/coins/' + widget.coin.coin!.imageSmall!, fit: BoxFit.fitWidth,))),
                         )),
                     Expanded(
                       flex: 4,
@@ -71,7 +81,7 @@ class _CoinListViewState extends State<CoinListView> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: Text(
-                                    widget.coin.ticker!,
+                                    widget.coin.coin!.ticker!,
                                   style: Theme.of(context).textTheme.headline3,
                                   maxLines: 1,
                                   textAlign: TextAlign.start,
@@ -86,7 +96,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 child: SizedBox(
                                   width: 70,
                                   child: AutoSizeText(
-                                    widget.coin.name!,
+                                    widget.coin.coin!.name!,
                                     style: Theme.of(context).textTheme.subtitle2,
                                     minFontSize: 8,
                                     maxLines: 1,
@@ -102,7 +112,7 @@ class _CoinListViewState extends State<CoinListView> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5.0),
                               child: Text(
-                                "\$1",
+                                  "\$"+  widget.coin.priceData!.prices!.usd!.toStringAsFixed(2),
                                 style: Theme.of(context).textTheme.headline3,
                                 maxLines: 1,
                                 textAlign: TextAlign.start,
@@ -149,7 +159,8 @@ class _CoinListViewState extends State<CoinListView> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 2.0),
                                   child: Text(
-                                    "1000\$",
+                                    // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
+                                    widget.coin.free!.toStringAsFixed(3),
                                     style: Theme.of(context).textTheme.headline3,
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
@@ -161,7 +172,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 2.0),
-                                  child: PriceBadge(percetage:10.0,),
+                                  child: PriceBadge(percetage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
                                 ),
                               ],
                             ),

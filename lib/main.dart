@@ -78,7 +78,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _graphKey =  GlobalKey<CoinPriceGraphState>();
+  var _graphKey = GlobalKey<CoinPriceGraphState>();
+  String _coinActive = "Merge";
   BalancesBloc? _bloc;
   CoinPriceBloc? _priceBlock;
 
@@ -113,9 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   SizedBox(
                     width: 50,
                   ),
-                  SizedBox(height: 30, child: TimeRangeSwitcher(
-                    changeTime: _changeTime,
-                  )),
+                  SizedBox(
+                      height: 30,
+                      child: TimeRangeSwitcher(
+                        changeTime: _changeTime,
+                      )),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
@@ -147,10 +150,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasData) {
                       switch (snapshot.data!.status) {
                         case Status.COMPLETED:
-                          return CoinPriceGraph(
-                            key: _graphKey,
-                            prices: snapshot.data!.data!.historyPrices,
-                            time: 48,
+                          return Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Text(_coinActive, style: Theme.of(context).textTheme.headline2,),
+                                  )),
+                              CoinPriceGraph(
+                                key: _graphKey,
+                                prices: snapshot.data!.data!.historyPrices,
+                                time: 48,
+                              ),
+                            ],
                           );
                           break;
                         case Status.LOADING:
@@ -172,15 +185,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasData) {
                       switch (snapshot.data!.status) {
                         case Status.LOADING:
-
+                          return Center(
+                            child: SizedBox(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
                           break;
                         case Status.COMPLETED:
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
                                 return CoinListView(
-                                  coin: snapshot.data!.data![index].coin!,
+                                  coin: snapshot.data!.data![index],
                                   free: snapshot.data!.data![index].free!,
+                                  coinSwitch: _changeCoin,
+                                  activeCoin: _changeCoinName,
+
                                 );
                               });
                           break;
@@ -288,4 +308,15 @@ class _MyHomePageState extends State<MyHomePage> {
   _changeTime(int time) {
     _graphKey.currentState!.changeTime(time);
   }
+
+  _changeCoin(HistoryPrices? h) {
+    _graphKey.currentState!.changeCoin(h!);
+  }
+
+  _changeCoinName(String s) {
+    setState(() {
+      _coinActive = s;
+    });
+  }
+
 }

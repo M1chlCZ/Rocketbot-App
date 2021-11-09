@@ -127,8 +127,8 @@ class HistoryPrices {
   List<List<double>>? _btc;
 
   factory HistoryPrices.fromJson(Map<String, dynamic> json) => HistoryPrices(
-    usd: List<List<double>>.from(json["usd"].map((x) => List<double>.from(x.map((x) => x.toDouble())))),
-    btc: List<List<double>>.from(json["btc"].map((x) => List<double>.from(x.map((x) => x.toDouble()))))
+    usd: List<List<double>>.from(json["usd"].map((x) => List<double>.from(x.map((x) => double.parse(x.toString()).toDouble())))),
+    btc: List<List<double>>.from(json["btc"].map((x) => List<double>.from(x.map((x) => double.parse(x.toString()).toDouble()))))
   );
 
   List<List<double>>? get usd => _usd;
@@ -148,15 +148,15 @@ class HistoryPrices {
 
 class PriceChange30DPercent {
   PriceChange30DPercent({
-      double? usd, 
+      double? usd,
       double? btc,}){
     _usd = usd;
     _btc = btc;
 }
 
   PriceChange30DPercent.fromJson(dynamic json) {
-    _usd = json['usd'];
-    _btc = json['btc'];
+    _usd = double.parse(json['usd'].toString());
+    _btc = double.parse(json['btc'].toString());
   }
   double? _usd;
   double? _btc;
@@ -185,8 +185,8 @@ class PriceChange7DPercent {
 }
 
   PriceChange7DPercent.fromJson(dynamic json) {
-    _usd = json['usd'];
-    _btc = json['btc'];
+    _usd = double.parse(json['usd'].toString());
+    _btc = double.parse(json['btc'].toString());
   }
   double? _usd;
   double? _btc;
@@ -215,8 +215,8 @@ class PriceChange24HPercent {
 }
 
   PriceChange24HPercent.fromJson(dynamic json) {
-    _usd = json['usd'];
-    _btc = json['btc'];
+    _usd = double.parse(json['usd'].toString());
+    _btc = double.parse(json['btc'].toString());
   }
   double? _usd;
   double? _btc;
@@ -245,8 +245,8 @@ class Prices {
 }
 
   Prices.fromJson(dynamic json) {
-    _usd = json['usd'];
-    _btc = json['btc'];
+    _usd = double.parse(json['usd'].toString());
+    _btc = double.parse(json['btc'].toString());
   }
   double? _usd;
   double? _btc;

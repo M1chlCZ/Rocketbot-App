@@ -1,4 +1,5 @@
 import 'Coin.dart';
+import 'CoinGraph.dart';
 
 class BalanceList {
   BalanceList({
@@ -50,6 +51,7 @@ class CoinBalance {
   CoinBalance({
       int? userId, 
       Coin? coin,
+    PriceData? priceData,
       double? free,}){
     _userId = userId;
     _coin = coin;
@@ -64,10 +66,12 @@ class CoinBalance {
   int? _userId;
   Coin? _coin;
   double? _free;
+  PriceData? _priceData;
 
   int? get userId => _userId;
   Coin? get coin => _coin;
   double? get free => _free;
+  PriceData? get priceData => _priceData;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -77,6 +81,10 @@ class CoinBalance {
     }
     map['free'] = _free;
     return map;
+  }
+
+  void setPriceData(PriceData p) {
+    this._priceData = p;
   }
 
 }
