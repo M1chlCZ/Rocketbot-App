@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +64,14 @@ class _CoinListViewState extends State<CoinListView> {
                         flex: 2,
                         child: Container(
                           margin: EdgeInsets.all(15.0),
-                          child: Center(child: SizedBox( height: 30,child: Image.network('https://app.rocketbot.pro/coins/' + widget.coin.coin!.imageSmall!, fit: BoxFit.fitWidth,))),
+                          child: Center(child:
+                          SizedBox( height: 30,
+                              child: CachedNetworkImage(
+                                imageUrl:'https://app.rocketbot.pro/coins/' + widget.coin.coin!.imageSmall!,
+                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                //     CircularProgressIndicator(value: downloadProgress.progress),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                fit: BoxFit.fitWidth,))),
                         )),
                     Expanded(
                       flex: 4,
@@ -132,7 +140,7 @@ class _CoinListViewState extends State<CoinListView> {
                             Container(
                               color: Colors.transparent,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0, right: 2.0),
+                                padding: const EdgeInsets.only(top: 8.0, right: 6.0),
                                 child: SizedBox(
                                   width: 150,
                                   height: 20.0,
