@@ -41,7 +41,7 @@ class PriceBadge extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 2.0, left: 3.0, bottom: 2.0, right: 3.0),
+            padding: const EdgeInsets.only(top: 2.0, left: 3.0, bottom: 2.0, right: 1.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
