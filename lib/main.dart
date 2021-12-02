@@ -5,14 +5,10 @@ import 'package:rocketbot/Bloc/CoinPriceBloc.dart';
 import 'package:rocketbot/Models/BalanceList.dart';
 import 'package:rocketbot/Widgets/CoinListView.dart';
 
-import 'Bloc/CoinsBloc.dart';
-import 'ComponentWidgets/nContainer.dart';
 import 'Models/CoinGraph.dart';
 import 'Widgets/CoinPriceGraph.dart';
-import 'Widgets/PriceBadge.dart';
 import 'Support/MaterialColorGenerator.dart';
 import 'ComponentWidgets/nButton.dart';
-import 'Models/Coin.dart';
 import 'NetInterface/ApiResponse.dart';
 import 'Widgets/TimeRangeSwitch.dart';
 
@@ -187,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         case Status.LOADING:
                           return Center(
                             child: SizedBox(
-                              child: CircularProgressIndicator(),
+                              child: Container(),
                             ),
                           );
                           break;

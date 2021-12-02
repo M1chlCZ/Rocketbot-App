@@ -1,5 +1,4 @@
 import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/Coin.dart';
 import 'package:rocketbot/Models/CoinGraph.dart';
 import 'package:rocketbot/NetInterface/Interface.dart';
 
@@ -8,8 +7,8 @@ class CoinBalances {
 
   Future<List<CoinBalance>?> fetchAllBalances() async {
     final response = await _helper.get("User/GetBalances");
+    final priceData = await _helper.get("Coin/GetPriceData?IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=true&IncludeChange=true");
     List<CoinBalance>? r = BalanceList.fromJson(response).data;
-
     List<CoinBalance> finalList = [];
 
     await Future.forEach(r!, (item) async {
@@ -17,12 +16,13 @@ class CoinBalances {
         var coinBal = (item as CoinBalance);
         var coin = coinBal.coin;
         String? coinID = coin!.coinGeckoId;
-        var res = await _helper.get("Coin/GetPriceData?coin=$coinID");
-        PriceData? p = CoinGraph.fromJson(res).data;
-        coinBal.setPriceData(p!);
+        final price = priceData['data'][coinID!];
+        PriceData? p = PriceData.fromJson(price);
+        coinBal.setPriceData(p);
         finalList.add(coinBal);
+
       } catch (e) {
-        print(e);
+        // print(e);
       }
     });
 

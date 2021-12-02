@@ -16,7 +16,7 @@ class CoinsList {
       var coin = (item as Coin);
       String? coinID = coin.coinGeckoId;
       var res = await _helper.get("Coin/GetPriceData?coin=$coinID");
-      PriceData? p = CoinGraph.fromJson(res).data;
+      PriceData? p = CoinGraph.fromJson(res, coinID!).data;
       coin.setPriceData(p!);
       finalList.add(coin);
       });

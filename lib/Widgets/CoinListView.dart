@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/ComponentWidgets/nButton.dart';
 import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/Coin.dart';
 import 'package:rocketbot/Models/CoinGraph.dart';
 
 import 'PriceBadge.dart';
