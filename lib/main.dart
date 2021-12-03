@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:rocketbot/MainScreen.dart';
+import 'package:rocketbot/Screens/MainScreen.dart';
 import 'Support/MaterialColorGenerator.dart';
 
 void main() async {

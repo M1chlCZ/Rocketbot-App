@@ -1,9 +1,11 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:rocketbot/Models/BalanceList.dart';
+import 'package:rocketbot/Models/Coin.dart';
+import 'package:rocketbot/ScreenPages/coin_screen.dart';
 
-import 'ComponentWidgets/nButton.dart';
-import 'ScreenPages/portfolio_screen.dart';
-
+import '../ComponentWidgets/nButton.dart';
+import '../ScreenPages/portfolio_screen.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key? key}) : super(key: key);
@@ -13,11 +15,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  var _portfolioKey = GlobalKey<PortfolioScreenState>();
+  late List<CoinBalance> lc;
   int index = 0;
-
-  final pages = [
-    PortfolioScreen(),
-  ];
+  late Coin _coinActive;
 
   @override
   void initState() {
@@ -33,19 +34,39 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  void goBack() {
+    setState(() {
+      index = 0;
+    });
+  }
+
+  void changeCoinName(Coin? s) {
+    lc = _portfolioKey.currentState!.getList();
+    setState(() {
+      index = 1;
+      _coinActive = s!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: PageTransitionSwitcher(
-          duration: Duration(seconds: 1),
+          duration: Duration(milliseconds: 800),
           transitionBuilder: (child, animation, secondaryAnimation) =>
               FadeThroughTransition(
             animation: animation,
             secondaryAnimation: secondaryAnimation,
             child: child,
           ),
-          child: pages[index],
+          child: index == 0
+              ? PortfolioScreen(key: _portfolioKey, coinSwitch: changeCoinName)
+              : CoinScreen(
+                  activeCoin: _coinActive,
+                  allCoins: lc,
+                  goBack: goBack,
+                ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

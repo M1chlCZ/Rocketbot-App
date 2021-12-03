@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/ComponentWidgets/nButton.dart';
 import 'package:rocketbot/Models/BalanceList.dart';
+import 'package:rocketbot/Models/Coin.dart';
 import 'package:rocketbot/Models/CoinGraph.dart';
 
 import 'PriceBadge.dart';
@@ -14,7 +15,7 @@ class CoinListView extends StatefulWidget {
   final CoinBalance coin;
   final String? customLocale;
   final Function(HistoryPrices? h) coinSwitch;
-  final Function (String s) activeCoin;
+  final Function (Coin? coin) activeCoin;
   final double? free;
 
   CoinListView({required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin});
@@ -50,7 +51,7 @@ class _CoinListViewState extends State<CoinListView> {
               highlightColor: Colors.black54,
               onTap: () {
                 widget.coinSwitch(widget.coin.priceData!.historyPrices!);
-                widget.activeCoin(widget.coin.coin!.name!);
+                widget.activeCoin(widget.coin.coin!);
               },
               child: Container(
                 alignment: Alignment.centerLeft,
@@ -178,7 +179,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 2.0),
-                                  child: PriceBadge(percetage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
+                                  child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
                                 ),
                               ],
                             ),

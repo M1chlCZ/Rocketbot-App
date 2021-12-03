@@ -18,6 +18,7 @@ dependencies:
   fl_chart: ^0.40.2
   cached_network_image: ^3.2.0
   animations: ^2.0.2
+  progress_indicators: ^1.0.0
 
 
   cupertino_icons: ^1.0.4

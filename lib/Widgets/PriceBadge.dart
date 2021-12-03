@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PriceBadge extends StatelessWidget {
-  final double percetage;
-  const PriceBadge({Key? key, required this.percetage}) : super(key: key);
+  final double percentage;
+  const PriceBadge({Key? key, required this.percentage}) : super(key: key);
 
   String _getNum(double num) {
     if(num > 0) {
@@ -20,38 +20,38 @@ class PriceBadge extends StatelessWidget {
     }
 
     if(num < 10) {
-      return 50.0;
+      return 55.0;
     }else if(num < 100) {
       return 60.0;
     }else if(num < 1000){
-      return 70.0;
+      return 75.0;
     }else{
-      return 80.0;
+      return 85.0;
     }
   }
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _getWidth(percetage),
+      width: _getWidth(percentage),
       child: Container(
           decoration: BoxDecoration(
-            color: percetage > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
+            color: percentage > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
             borderRadius: BorderRadius.all(
               Radius.circular(20.0),
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 2.0, left: 3.0, bottom: 2.0, right: 1.0),
+            padding: const EdgeInsets.only(top: 2.0, left: 3.0, bottom: 2.0, right: 3.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
                   height: 15,
-                    child: SvgPicture.string( percetage > 0 ? arrowUP : arrowDown)),
+                    child: SvgPicture.string( percentage > 0 ? arrowUP : arrowDown)),
                 SizedBox(width: 2.0,),
-                Text(_getNum(percetage) + "%", style: TextStyle (
-                  color: percetage > 0 ? Color(0xFF1AD37A) : Color(0xFFEB3912),
+                Text(_getNum(percentage) + "%", style: TextStyle (
+                  color: percentage > 0 ? Color(0xFF1AD37A) : Color(0xFFEB3912),
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0,))
               ],

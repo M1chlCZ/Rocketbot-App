@@ -4,21 +4,23 @@ import 'package:rocketbot/Bloc/BalancesBloc.dart';
 import 'package:rocketbot/Bloc/CoinPriceBloc.dart';
 import 'package:rocketbot/ComponentWidgets/nButton.dart';
 import 'package:rocketbot/Models/BalanceList.dart';
+import 'package:rocketbot/Models/Coin.dart';
 import 'package:rocketbot/Models/CoinGraph.dart';
 import 'package:rocketbot/NetInterface/ApiResponse.dart';
 import 'package:rocketbot/Widgets/CoinListView.dart';
 import 'package:rocketbot/Widgets/TimeRangeSwitch.dart';
 
 class PortfolioScreen extends StatefulWidget {
-  const PortfolioScreen({Key? key}) : super(key: key);
+  final Function(Coin? coin) coinSwitch;
+  const PortfolioScreen({Key? key, required this.coinSwitch}) : super(key: key);
 
   @override
-  _PortfolioScreenState createState() => _PortfolioScreenState();
+  PortfolioScreenState createState() => PortfolioScreenState();
 }
 
-class _PortfolioScreenState extends State<PortfolioScreen> {
+class PortfolioScreenState extends State<PortfolioScreen> {
   BalancesBloc? _bloc;
-  CoinPriceBloc? _priceBlock;
+  late List<CoinBalance> listCoins;
 
   double totalUSD = 0.0;
   double totalBTC = 0.0;
@@ -29,14 +31,23 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   void initState() {
     super.initState();
     _bloc = BalancesBloc();
-    _priceBlock = CoinPriceBloc("merge");
   }
 
   @override
   void dispose() {
     _bloc!.dispose();
-    _priceBlock!.dispose();
     super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  List<CoinBalance> getList() {
+    return listCoins;
   }
 
   @override
@@ -53,11 +64,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 SizedBox(
                   width: 50,
                 ),
-                SizedBox(
-                    height: 30,
-                    child: TimeRangeSwitcher(
-                      changeTime: _changeTime,
-                    )),
+                // SizedBox(
+                //     height: 30,
+                //     child: TimeRangeSwitcher(
+                //       changeTime: _changeTime,
+                //     )),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
@@ -106,44 +117,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               color: portCalc ? Colors.white12 : Colors.transparent,
             ),
           ),
-          // SizedBox(
-          //     width: double.infinity,
-          //     height: 250,
-          //     child: StreamBuilder<ApiResponse<PriceData>>(
-          //       stream: _priceBlock!.coinsListStream,
-          //       builder: (BuildContext context, snapshot) {
-          //         if (snapshot.hasData) {
-          //           switch (snapshot.data!.status) {
-          //             case Status.COMPLETED:
-          //               return Stack(
-          //                 children: [
-          //                   Align(
-          //                       alignment: Alignment.topCenter,
-          //                       child: Padding(
-          //                         padding: const EdgeInsets.only(top: 20.0),
-          //                         child: Text(
-          //                           _coinActive,
-          //                           style:
-          //                               Theme.of(context).textTheme.headline2,
-          //                         ),
-          //                       )),
-          //                   CoinPriceGraph(
-          //                     key: _graphKey,
-          //                     prices: snapshot.data!.data!.historyPrices,
-          //                     time: 48,
-          //                   ),
-          //                 ],
-          //               );
-          //             case Status.LOADING:
-          //               return Center(child: Text("loading data"));
-          //             case Status.ERROR:
-          //               return Center(child: Text("data error"));
-          //           }
-          //         } else {
-          //           return Container();
-          //         }
-          //       },
-          //     )),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => _bloc!.fetchBalancesList(),
@@ -170,7 +143,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                 coin: snapshot.data!.data![index],
                                 free: snapshot.data!.data![index].free!,
                                 coinSwitch: _changeCoin,
-                                activeCoin: _changeCoinName,
+                                activeCoin: widget.coinSwitch,
                               );
                             });
                       case Status.ERROR:
@@ -188,21 +161,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  _changeTime(int time) {
-    // _graphKey.currentState!.changeTime(time);
-  }
-
   _changeCoin(HistoryPrices? h) {
     // _graphKey.currentState!.changeCoin(h!);
   }
 
-  _changeCoinName(String s) {
-    setState(() {
-      // _coinActive = s;
-    });
-  }
-
   _calculatePortfolio(List<CoinBalance> lc) {
+    listCoins = lc;
     lc.forEach((element) {
       double? _freeCoins = element.free;
       double? _priceUSD = element.priceData!.prices!.usd;
