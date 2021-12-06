@@ -35,7 +35,9 @@ class _CoinScreenState extends State<CoinScreen> {
 
   double totalCoins = 0.0;
   double totalUSD = 0.0;
-  double btcCost = 0.0;
+  double usdCost = 0.0;
+
+  double _coinNameOpacity = 0.0;
 
   bool portCalc = false;
 
@@ -103,6 +105,7 @@ class _CoinScreenState extends State<CoinScreen> {
                               setState(() {
                                 _coinActive = coin!;
                                 _priceBlock!.changeCoin(coin.coinGeckoId!);
+                                _coinNameOpacity = 0.0;
                               });
                               _calculatePortfolio();
                             },
@@ -152,11 +155,50 @@ class _CoinScreenState extends State<CoinScreen> {
           ),
           Stack(
             children: [
-              SizedBox(
-                width: double.infinity,
-                height: 250,
-                child: portCalc
-                    ? Column(
+              AnimatedOpacity(
+                opacity: _coinNameOpacity,
+                duration: Duration(milliseconds: 1000),
+                child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            _coinActive.name!,
+                            style: Theme.of(context).textTheme.headline2,
+                          ),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "\$$usdCost",
+                                style: Theme.of(context).textTheme.headline2,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(width: 5.0),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 0.8),
+                                child: PriceBadge(
+                                  percentage: _percentage,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )),
+              ),
+              AnimatedOpacity(
+                  opacity: _coinNameOpacity,
+                  duration: Duration(milliseconds: 500),
+                  child: SizedBox(
+                      width: double.infinity,
+                      height: 250,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -172,15 +214,10 @@ class _CoinScreenState extends State<CoinScreen> {
                                 style: Theme.of(context).textTheme.headline2,
                               ),
                               SizedBox(width: 5.0),
-                              PriceBadge(
-                                percentage: _percentage,
-                              ),
                             ],
                           )
                         ],
-                      )
-                    : Container(),
-              ),
+                      ))),
               SizedBox(
                   width: double.infinity,
                   height: 250,
@@ -190,57 +227,25 @@ class _CoinScreenState extends State<CoinScreen> {
                       if (snapshot.hasData) {
                         switch (snapshot.data!.status) {
                           case Status.COMPLETED:
-                            Future.delayed(const Duration(milliseconds: 1000),
+                            Future.delayed(const Duration(milliseconds: 50),
                                 () {
                               setState(() {
+                                _coinNameOpacity = 1.0;
                                 portCalc = true;
                               });
                             });
-                            return Stack(
-                              children: [
-                                Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            _coinActive.name!,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline2,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "\$$totalUSD",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline2,
-                                              ),
-                                              SizedBox(width: 5.0),
-                                              PriceBadge(
-                                                percentage: _percentage,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )),
-                                CoinPriceGraph(
-                                  key: _graphKey,
-                                  prices: snapshot.data!.data!.historyPrices,
-                                  time: 48,
-                                ),
-                              ],
+                            return CoinPriceGraph(
+                              key: _graphKey,
+                              prices: snapshot.data!.data!.historyPrices,
+                              time: 48,
                             );
                           case Status.LOADING:
                             // return Center(child: Text("loading data"));
                             return HeartbeatProgressIndicator(
-                              child: Icon(
-                                Icons.access_time_sharp,
+                              startScale: 0.01,
+                              endScale: 0.4,
+                              child: Image(
+                                image: AssetImage('images/rocketbot_logo.png'),
                                 color: Colors.white30,
                               ),
                             );
@@ -299,7 +304,11 @@ class _CoinScreenState extends State<CoinScreen> {
   }
 
   _changeTime(int time) {
-    // _graphKey.currentState!.changeTime(time);
+    setState(() {
+      _graphKey.currentState!.changeTime(time);
+    });
+    // _time = time;
+    // _preparePriceData(time);
   }
 
   _changeCoin(HistoryPrices? h) {
@@ -322,7 +331,7 @@ class _CoinScreenState extends State<CoinScreen> {
         double? _priceUSD = element.priceData!.prices!.usd;
         double? _priceBTC = element.priceData!.prices!.btc;
         _percentage = element.priceData!.priceChange24HPercent!.usd!;
-        btcCost = element.priceData!.priceChange24HPercent!.usd!;
+        usdCost = element.priceData!.prices!.usd!;
 
         totalCoins = _freeCoins!;
         double _btc = _freeCoins * _priceUSD!;

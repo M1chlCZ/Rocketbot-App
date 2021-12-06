@@ -62,7 +62,8 @@ class PriceBadge extends StatelessWidget {
 }
 
 
-String arrowUP = '''<svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+String arrowUP = '''
+<svg width="9" height="9" viewBox="0 0 5 4" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2.66914 5.75487C2.48165 6.08817 2.72251 6.5 3.10492 6.5L5.89508 6.5C6.27749 6.5 6.51835 6.08817 6.33086 5.75487L4.93579 3.27473C4.74464 2.93491 4.25536 2.93491 4.06421 3.27473L2.66914 5.75487Z" fill="#1AD37A"/>
 </svg>''';
 

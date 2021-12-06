@@ -28,12 +28,12 @@ class MyApp extends StatelessWidget {
           headline1: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w500,
-            fontSize: 24.0,
+            fontSize: 28.0,
           ),
           headline2: TextStyle(
             color: Colors.white.withOpacity(0.65),
             fontWeight: FontWeight.w500,
-            fontSize: 16.0,
+            fontSize: 14.0,
           ),
           headline3: TextStyle(
             color: Colors.white,
