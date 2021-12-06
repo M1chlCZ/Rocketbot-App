@@ -1,4 +1,4 @@
-import 'Coin.dart';
+import 'coin.dart';
 
 class CoinList {
   CoinList({

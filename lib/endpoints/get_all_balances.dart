@@ -1,6 +1,6 @@
-import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/CoinGraph.dart';
-import 'package:rocketbot/NetInterface/Interface.dart';
+import 'package:rocketbot/Models/balance_list.dart';
+import 'package:rocketbot/Models/coin_graph.dart';
+import 'package:rocketbot/NetInterface/interface.dart';
 
 class CoinBalances {
   NetInterface _helper = NetInterface();

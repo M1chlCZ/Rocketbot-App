@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:rocketbot/Screens/MainScreen.dart';
-import 'Support/MaterialColorGenerator.dart';
+import 'package:rocketbot/Screens/main_screen.dart';
+import 'package:rocketbot/screens/login_screen.dart';
+import 'Support/material_color_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,10 +13,12 @@ void main() async {
       DeviceOrientation.portraitDown,
     ],
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -23,9 +26,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         fontFamily: "Montserrat",
-        canvasColor: Color(0xFF1B1B1B),
+        canvasColor: const Color(0xFF1B1B1B),
         textTheme: TextTheme(
-          headline1: TextStyle(
+          headline1: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w500,
             fontSize: 28.0,
@@ -35,17 +38,17 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w500,
             fontSize: 14.0,
           ),
-          headline3: TextStyle(
+          headline3: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w500,
             fontSize: 14.0,
           ),
-          headline4: TextStyle(
+          headline4: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w400,
             fontSize: 14.0,
           ),
-          subtitle1: TextStyle(
+          subtitle1: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w400,
             fontSize: 10.0,
@@ -58,7 +61,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: generateMaterialColor(Colors.white),
       ),
-      home: MainScreen(),
+      home: const LoginScreen(),
     );
   }
 }

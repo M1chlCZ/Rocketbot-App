@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:rocketbot/ComponentWidgets/nButton.dart';
-import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/Coin.dart';
-import 'package:rocketbot/Models/CoinGraph.dart';
+import 'package:rocketbot/component_widgets/button_neu.dart';
+import 'package:rocketbot/Models/balance_list.dart';
+import 'package:rocketbot/Models/coin.dart';
+import 'package:rocketbot/Models/coin_graph.dart';
 
-import 'PriceBadge.dart';
+import 'price_badge.dart';
 
 class CoinListView extends StatefulWidget {
   final CoinBalance coin;

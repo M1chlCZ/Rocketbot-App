@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:rocketbot/Endpoints/GetAllBalances.dart';
-import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/NetInterface/ApiResponse.dart';
+import 'package:rocketbot/Endpoints/get_all_balances.dart';
+import 'package:rocketbot/Models/balance_list.dart';
+import 'package:rocketbot/NetInterface/api_response.dart';
 
 class BalancesBloc {
   CoinBalances _balanceList = CoinBalances();

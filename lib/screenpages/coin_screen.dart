@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import '../Bloc/CoinPriceBloc.dart';
-import '../ComponentWidgets/nButton.dart';
-import '../ComponentWidgets/nContainer.dart';
-import '../Models/BalanceList.dart';
-import '../Models/Coin.dart';
-import '../Models/CoinGraph.dart';
-import '../NetInterface/ApiResponse.dart';
-import '../Widgets/CoinPriceGraph.dart';
-import '../Widgets/PriceBadge.dart';
-import '../Widgets/TimeRangeSwitch.dart';
+import '../Bloc/coins_price_bloc.dart';
+import '../component_widgets/button_neu.dart';
+import '../component_widgets/container_neu.dart';
+import '../Models/balance_list.dart';
+import '../Models/coin.dart';
+import '../Models/coin_graph.dart';
+import '../NetInterface/api_response.dart';
+import '../Widgets/coin_price_graph.dart';
+import '../Widgets/price_badge.dart';
+import '../Widgets/time_range_switch.dart';
 
 class CoinScreen extends StatefulWidget {
   final Coin activeCoin;

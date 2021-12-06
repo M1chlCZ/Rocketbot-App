@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:rocketbot/Bloc/BalancesBloc.dart';
-import 'package:rocketbot/Bloc/CoinPriceBloc.dart';
-import 'package:rocketbot/ComponentWidgets/nButton.dart';
-import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/Coin.dart';
-import 'package:rocketbot/Models/CoinGraph.dart';
-import 'package:rocketbot/NetInterface/ApiResponse.dart';
-import 'package:rocketbot/Widgets/CoinListView.dart';
-import 'package:rocketbot/Widgets/TimeRangeSwitch.dart';
+import 'package:rocketbot/Bloc/balance_bloc.dart';
+import 'package:rocketbot/Bloc/coins_price_bloc.dart';
+import 'package:rocketbot/component_widgets/button_neu.dart';
+import 'package:rocketbot/Models/balance_list.dart';
+import 'package:rocketbot/Models/coin.dart';
+import 'package:rocketbot/Models/coin_graph.dart';
+import 'package:rocketbot/NetInterface/api_response.dart';
+import '../Widgets/coin_list_view.dart';
+import 'package:rocketbot/Widgets/time_range_switch.dart';
 
 class PortfolioScreen extends StatefulWidget {
   final Function(Coin? coin) coinSwitch;
@@ -124,10 +124,10 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 160.0, right: 30.0, top: 80.0),
+                                left: 170.0, right: 0.0, top: 90.0),
                             child:
                             Transform.scale(
-                              scale: 0.3,
+                              scale: 0.35,
                               child: Image(
                                   image: AssetImage("images/rocket_pin.png"),
                               ),

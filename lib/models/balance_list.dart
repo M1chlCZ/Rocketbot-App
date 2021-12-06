@@ -1,5 +1,5 @@
-import 'Coin.dart';
-import 'CoinGraph.dart';
+import 'coin.dart';
+import 'coin_graph.dart';
 
 class BalanceList {
   BalanceList({

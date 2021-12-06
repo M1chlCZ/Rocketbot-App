@@ -1,7 +1,7 @@
-import 'package:rocketbot/Models/Coin.dart';
-import 'package:rocketbot/Models/CoinGraph.dart';
-import 'package:rocketbot/Models/CoinList.dart';
-import 'package:rocketbot/NetInterface/Interface.dart';
+import 'package:rocketbot/Models/coin.dart';
+import 'package:rocketbot/Models/coin_graph.dart';
+import 'package:rocketbot/Models/coin_list.dart';
+import 'package:rocketbot/NetInterface/interface.dart';
 
 class CoinsList {
   NetInterface _helper = NetInterface();

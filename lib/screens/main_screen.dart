@@ -1,21 +1,21 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:rocketbot/Models/BalanceList.dart';
-import 'package:rocketbot/Models/Coin.dart';
+import 'package:rocketbot/Models/balance_list.dart';
+import 'package:rocketbot/Models/coin.dart';
 import 'package:rocketbot/ScreenPages/coin_screen.dart';
 
-import '../ComponentWidgets/nButton.dart';
+import '../component_widgets/button_neu.dart';
 import '../ScreenPages/portfolio_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({Key? key}) : super(key: key);
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  var _portfolioKey = GlobalKey<PortfolioScreenState>();
+  final _portfolioKey = GlobalKey<PortfolioScreenState>();
   late List<CoinBalance> lc;
   int index = 0;
   late Coin _coinActive;
@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: SafeArea(
         child: PageTransitionSwitcher(
-          duration: Duration(milliseconds: 800),
+          duration: const Duration(milliseconds: 800),
           transitionBuilder: (child, animation, secondaryAnimation) =>
               FadeThroughTransition(
             animation: animation,

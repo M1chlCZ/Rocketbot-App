@@ -9,21 +9,22 @@ class NeuButton extends StatelessWidget {
   final AnimatedIcon? animIcon;
   final Color? splashColor;
   final Image? imageIcon;
+  final Widget? child;
 
-  NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0}) : super(key: key);
+  NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0, this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         boxShadow: [
-          new BoxShadow(
+          BoxShadow(
             offset: Offset(-1,-1),
             blurRadius: 4.0,
             color: Color.fromRGBO(134, 134, 134, 0.15),
           ),
-          new BoxShadow(
+          BoxShadow(
             offset: Offset(1,1),
             blurRadius: 4.0,
             color: Color.fromRGBO(2, 2, 2, 0.85),
@@ -35,15 +36,17 @@ class NeuButton extends StatelessWidget {
         child: Material(
           color: Theme.of(context).canvasColor, // button color
           child: InkWell(
-            splashColor: Colors.white70, // splash color
+            highlightColor: splashColor!.withOpacity(0.5),
+            splashColor: splashColor ?? Colors.white70, // splash color
             onTap: onTap, // button pressed
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                animIcon == null ? Container() : animIcon!,
-                icon == null ? Container() : icon! ,
-                imageIcon == null ? Container() : imageIcon!,
-                // icon
+                if (animIcon != null) animIcon!
+                else if (icon != null)icon!
+                else if (imageIcon != null) imageIcon!
+                else if (child != null) child!
+                else Container(),                // icon
               ],
             ),
           ),

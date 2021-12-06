@@ -10,14 +10,14 @@ class NeuContainer extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).canvasColor,
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        boxShadow: [
-          new BoxShadow(
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+        boxShadow: const [
+          BoxShadow(
             offset: Offset(-1,-1),
             blurRadius: 4.0,
             color: Color.fromRGBO(134, 134, 134, 0.15),
           ),
-          new BoxShadow(
+          BoxShadow(
             offset: Offset(1,1),
             blurRadius: 4.0,
             color: Color.fromRGBO(2, 2, 2, 0.85),
@@ -25,7 +25,7 @@ class NeuContainer extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(0.0),
+        padding: const EdgeInsets.all(0.0),
         child: child,
       ),
     );

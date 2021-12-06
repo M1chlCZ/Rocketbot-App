@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rocketbot/ComponentWidgets/nContainer.dart';
+import 'package:rocketbot/component_widgets/container_neu.dart';
 
 class TimeRangeSwitcher extends StatefulWidget {
   final Function(int time) changeTime;

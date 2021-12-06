@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:rocketbot/Endpoints/GetCoinGraph.dart';
-import 'package:rocketbot/Models/CoinGraph.dart';
-import 'package:rocketbot/NetInterface/ApiResponse.dart';
+import 'package:rocketbot/Endpoints/get_coin_graph.dart';
+import 'package:rocketbot/Models/coin_graph.dart';
+import 'package:rocketbot/NetInterface/api_response.dart';
 
 class CoinPriceBloc {
   CoinPrices _balanceList = CoinPrices();
@@ -31,7 +31,7 @@ class CoinPriceBloc {
       coinsListSink.add(ApiResponse.completed(_coins));
     } catch (e) {
       coinsListSink.add(ApiResponse.error(e.toString()));
-      print(e);
+      // print(e);
     }
   }
 
