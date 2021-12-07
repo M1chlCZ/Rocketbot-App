@@ -16,12 +16,32 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    super.initState();
+    precacheImage(const AssetImage('images/bottommenu1.png'), context);
+    precacheImage(const AssetImage('images/bottommenu2.png'), context);
+    precacheImage(const AssetImage('images/bottommenu3.png'), context);
+    precacheImage(const AssetImage('images/price_frame.png'), context);
+    precacheImage(const AssetImage('images/rocket_pin.png'), context);
+    precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
+    precacheImage(const AssetImage('images/wave.png'), context);
+
+  }
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

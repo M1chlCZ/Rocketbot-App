@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/Bloc/balance_bloc.dart';
-import 'package:rocketbot/Bloc/coins_price_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/Models/balance_list.dart';
 import 'package:rocketbot/Models/coin.dart';
 import 'package:rocketbot/Models/coin_graph.dart';
 import 'package:rocketbot/NetInterface/api_response.dart';
 import '../Widgets/coin_list_view.dart';
-import 'package:rocketbot/Widgets/time_range_switch.dart';
 
 class PortfolioScreen extends StatefulWidget {
   final Function(Coin? coin) coinSwitch;
@@ -22,7 +20,7 @@ class PortfolioScreen extends StatefulWidget {
 
 class PortfolioScreenState extends State<PortfolioScreen> {
   BalancesBloc? _bloc;
-  late List<CoinBalance> listCoins;
+  List<CoinBalance>? listCoins;
 
   double totalUSD = 0.0;
   double totalBTC = 0.0;
@@ -42,8 +40,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Matrix4 scaleXYZTransform({
-    double scaleX = 1.10,
-    double scaleY = 0.95,
+    double scaleX = 1.05,
+    double scaleY = 1.00,
     double scaleZ = 0.00,
   }) {
     return Matrix4.diagonal3Values(scaleX, scaleY, scaleZ);
@@ -57,7 +55,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   List<CoinBalance> getList() {
-    return listCoins;
+    return listCoins!;
   }
 
   @override
@@ -69,11 +67,11 @@ class PortfolioScreenState extends State<PortfolioScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 5.0),
+                padding: const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
                 child: Row(
                   children: [
                     Text("Portfolio", style: Theme.of(context).textTheme.headline4),
-                    SizedBox(
+                    const SizedBox(
                       width: 50,
                     ),
                     // SizedBox(
@@ -91,7 +89,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                             width: 25,
                             child: NeuButton(
                               onTap: () {},
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.more_vert,
                                 color: Colors.white70,
                               ),
@@ -116,7 +114,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               width: double.infinity,
                               child: Transform(
                                 transform: scaleXYZTransform(),
-                                child: Image(
+                                child: const Image(
+                                  fit: BoxFit.fitWidth,
                                   image: AssetImage("images/wave.png"),
                                 ),
                               ),
@@ -128,19 +127,27 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                             child:
                             Transform.scale(
                               scale: 0.35,
-                              child: Image(
+                              child: const Image(
                                   image: AssetImage("images/rocket_pin.png"),
                               ),
                             ),
                           ),
+                           const Align(
+                             alignment: Alignment.center,
+                             child: Padding(
+                               padding: EdgeInsets.only(bottom: 98.0),
+                               child: AspectRatio(
+                                 aspectRatio: 1.6,
+                                 child:
+                                 Image(
+                                   fit: BoxFit.fitWidth,
+                                     image: AssetImage("images/price_frame.png")
+                                 ),
+                               ),
+                             ),
+                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                left: 40.0, right: 40.0, top: 5.0, bottom: 60.0),
-                            child:
-                                Image(image: AssetImage("images/price_frame.png")),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 130.0, top: 5.0),
+                            padding: const EdgeInsets.only(bottom: 130.0, top: 25.0),
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -177,16 +184,20 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                       if (snapshot.hasData) {
                         switch (snapshot.data!.status) {
                           case Status.LOADING:
+                            listCoins = null;
                             return Padding(
-                              padding: EdgeInsets.only(top: 30.0),
+                              padding: const EdgeInsets.only(top: 30.0),
                               child: SizedBox(
                                 child: portCalc
                                     ? Container()
-                                    : CircularProgressIndicator(),
+                                    : const CircularProgressIndicator(),
                               ),
                             );
                           case Status.COMPLETED:
-                            _calculatePortfolio(snapshot.data!.data!);
+                            if(listCoins == null) {
+                              listCoins = snapshot.data!.data!;
+                              _calculatePortfolio();
+                            }
                             return ListView.builder(
                                 itemCount: snapshot.data!.data!.length,
                                 itemBuilder: (ctx, index) {
@@ -212,12 +223,12 @@ class PortfolioScreenState extends State<PortfolioScreen> {
           Visibility(
             visible:!portCalc,
             child: Container(
-              color: Color(0xFF1B1B1B),
+              color: const Color(0xFF1B1B1B),
               child: Center(
                 child: HeartbeatProgressIndicator(
                   startScale: 0.01,
                   endScale: 0.2,
-                  child: Image(
+                  child: const Image(
                     image: AssetImage('images/rocketbot_logo.png'),
                     color: Colors.white30,
                   ),
@@ -234,18 +245,19 @@ class PortfolioScreenState extends State<PortfolioScreen> {
     // _graphKey.currentState!.changeCoin(h!);
   }
 
-  _calculatePortfolio(List<CoinBalance> lc) {
-    listCoins = lc;
-    lc.forEach((element) {
-      double? _freeCoins = element.free;
-      double? _priceUSD = element.priceData!.prices!.usd;
-      double? _priceBTC = element.priceData!.prices!.btc;
+  _calculatePortfolio() {
+    totalUSD = 0;
+    totalBTC = 0;
+    for (var element in listCoins!) {
+          double? _freeCoins = element.free;
+          double? _priceUSD = element.priceData!.prices!.usd;
+          double? _priceBTC = element.priceData!.prices!.btc;
 
-      double _usd = _freeCoins! * _priceUSD!;
-      totalUSD += _usd;
-      double _btc = _freeCoins * _priceBTC!;
-      totalBTC += _btc;
-    });
+          double _usd = _freeCoins! * _priceUSD!;
+          totalUSD += _usd;
+          double _btc = _freeCoins * _priceBTC!;
+          totalBTC += _btc;
+        }
 
     Future.delayed(const Duration(milliseconds: 200), () {
       setState(() {

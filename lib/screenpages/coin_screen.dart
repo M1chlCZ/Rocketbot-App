@@ -26,7 +26,7 @@ class CoinScreen extends StatefulWidget {
 }
 
 class _CoinScreenState extends State<CoinScreen> {
-  var _graphKey = GlobalKey<CoinPriceGraphState>();
+  final _graphKey = GlobalKey<CoinPriceGraphState>();
   late List<CoinBalance> _listCoins;
   late Coin _coinActive;
   double _percentage = 0.0;
@@ -80,14 +80,14 @@ class _CoinScreenState extends State<CoinScreen> {
                     onTap: () {
                       widget.goBack();
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios_new,
                       size: 20.0,
                       color: Colors.white70,
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20.0,
                 ),
                 if (_listCoins.isNotEmpty)
@@ -123,7 +123,7 @@ class _CoinScreenState extends State<CoinScreen> {
                   )
                 else
                   Container(),
-                SizedBox(
+                const SizedBox(
                   width: 50,
                 ),
                 SizedBox(
@@ -141,7 +141,7 @@ class _CoinScreenState extends State<CoinScreen> {
                         width: 25,
                         child: NeuButton(
                           onTap: () {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.more_vert,
                             color: Colors.white70,
                           ),
@@ -155,9 +155,48 @@ class _CoinScreenState extends State<CoinScreen> {
           ),
           Stack(
             children: [
+              SizedBox(
+                  width: double.infinity,
+                  height: 250,
+                  child: StreamBuilder<ApiResponse<PriceData>>(
+                    stream: _priceBlock!.coinsListStream,
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.hasData) {
+                        switch (snapshot.data!.status) {
+                          case Status.COMPLETED:
+                            Future.delayed(const Duration(milliseconds: 50),
+                                    () {
+                                  setState(() {
+                                    _coinNameOpacity = 1.0;
+                                    portCalc = true;
+                                  });
+                                });
+                            return CoinPriceGraph(
+                              key: _graphKey,
+                              prices: snapshot.data!.data!.historyPrices,
+                              time: 24,
+                            );
+                          case Status.LOADING:
+                          // return Center(child: Text("loading data"));
+                            return HeartbeatProgressIndicator(
+                              startScale: 0.01,
+                              endScale: 0.4,
+                              child: const Image(
+                                image: AssetImage('images/rocketbot_logo.png'),
+                                color: Colors.white30,
+                              ),
+                            );
+                          case Status.ERROR:
+                            return const Center(child: Text("data error"));
+                        }
+                      } else {
+                        return Container();
+                      }
+                    },
+                  )),
               AnimatedOpacity(
                 opacity: _coinNameOpacity,
-                duration: Duration(milliseconds: 1000),
+                duration: const Duration(milliseconds: 1000),
                 child: Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
@@ -168,7 +207,7 @@ class _CoinScreenState extends State<CoinScreen> {
                             _coinActive.name!,
                             style: Theme.of(context).textTheme.headline2,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 6,
                           ),
                           Row(
@@ -179,7 +218,7 @@ class _CoinScreenState extends State<CoinScreen> {
                                 style: Theme.of(context).textTheme.headline2,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 0.8),
                                 child: PriceBadge(
@@ -194,7 +233,7 @@ class _CoinScreenState extends State<CoinScreen> {
               ),
               AnimatedOpacity(
                   opacity: _coinNameOpacity,
-                  duration: Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 500),
                   child: SizedBox(
                       width: double.infinity,
                       height: 250,
@@ -213,50 +252,11 @@ class _CoinScreenState extends State<CoinScreen> {
                                 "\$$totalUSD",
                                 style: Theme.of(context).textTheme.headline2,
                               ),
-                              SizedBox(width: 5.0),
+                              const SizedBox(width: 5.0),
                             ],
                           )
                         ],
                       ))),
-              SizedBox(
-                  width: double.infinity,
-                  height: 250,
-                  child: StreamBuilder<ApiResponse<PriceData>>(
-                    stream: _priceBlock!.coinsListStream,
-                    builder: (BuildContext context, snapshot) {
-                      if (snapshot.hasData) {
-                        switch (snapshot.data!.status) {
-                          case Status.COMPLETED:
-                            Future.delayed(const Duration(milliseconds: 50),
-                                () {
-                              setState(() {
-                                _coinNameOpacity = 1.0;
-                                portCalc = true;
-                              });
-                            });
-                            return CoinPriceGraph(
-                              key: _graphKey,
-                              prices: snapshot.data!.data!.historyPrices,
-                              time: 48,
-                            );
-                          case Status.LOADING:
-                            // return Center(child: Text("loading data"));
-                            return HeartbeatProgressIndicator(
-                              startScale: 0.01,
-                              endScale: 0.4,
-                              child: Image(
-                                image: AssetImage('images/rocketbot_logo.png'),
-                                color: Colors.white30,
-                              ),
-                            );
-                          case Status.ERROR:
-                            return Center(child: Text("data error"));
-                        }
-                      } else {
-                        return Container();
-                      }
-                    },
-                  )),
             ],
           ),
           // Expanded(
@@ -325,7 +325,7 @@ class _CoinScreenState extends State<CoinScreen> {
     setState(() {
       portCalc = false;
     });
-    _listCoins.forEach((element) {
+    for (var element in _listCoins) {
       if (element.coin == _coinActive) {
         double? _freeCoins = element.free;
         double? _priceUSD = element.priceData!.prices!.usd;
@@ -337,6 +337,6 @@ class _CoinScreenState extends State<CoinScreen> {
         double _btc = _freeCoins * _priceUSD!;
         totalUSD += _btc;
       }
-    });
+    }
   }
 }

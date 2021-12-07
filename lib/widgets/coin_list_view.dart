@@ -18,7 +18,7 @@ class CoinListView extends StatefulWidget {
   final Function (Coin? coin) activeCoin;
   final double? free;
 
-  CoinListView({required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin});
+  const CoinListView({required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin});
 
   @override
   State<CoinListView> createState() => _CoinListViewState();
@@ -95,7 +95,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 4.0,
                               ),
                               Padding(
@@ -174,7 +174,7 @@ class _CoinListViewState extends State<CoinListView> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4.0,
                                 ),
                                 Padding(
@@ -196,7 +196,7 @@ class _CoinListViewState extends State<CoinListView> {
                           width: 20,
                           child: NeuButton(
                             onTap: () {},
-                            icon: Icon(Icons.arrow_right, color: Colors.white70,),
+                            icon: const Icon(Icons.arrow_right, color: Colors.white70,),
                     ),
                         ),
                       ),

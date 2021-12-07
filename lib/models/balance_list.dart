@@ -84,7 +84,7 @@ class CoinBalance {
   }
 
   void setPriceData(PriceData p) {
-    this._priceData = p;
+    _priceData = p;
   }
 
 }

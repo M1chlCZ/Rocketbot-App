@@ -20,7 +20,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   var _time = 24;
   HistoryPrices? _price;
 
-  List<FlSpot> _values = [];
+  final List<FlSpot> _values = [];
 
   double _minX = 0;
   double _maxX = 0;
@@ -141,12 +141,12 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   LineChartBarData _lineBarData() {
     return LineChartBarData(
       spots: _values,
-      colors: [Color(0xFF257DC1)],
+      colors: [const Color(0xFF257DC1)],
       barWidth: 1,
-      shadow: Shadow(
+      shadow: const Shadow(
           color: Color(0xFF257DC1),
           blurRadius: 5.0,
-          offset: const Offset(0.5, 1)),
+          offset: Offset(0.5, 1)),
       isStrokeCapRound: true,
       dotData: FlDotData(show: false),
       belowBarData: BarAreaData(
@@ -221,10 +221,10 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       padding:
           const EdgeInsets.only(right: 0.0, left: 0.0, top: 10, bottom: 10),
       child: _values.isEmpty
-          ? Placeholder()
+          ? const Placeholder()
           : LineChart(
               _mainData(),
-              swapAnimationDuration: Duration(milliseconds: 500),
+              swapAnimationDuration: const Duration(milliseconds: 500),
               swapAnimationCurve: Curves.linearToEaseOut,
             ),
     );

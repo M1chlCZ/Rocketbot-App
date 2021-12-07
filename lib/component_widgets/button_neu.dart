@@ -36,17 +36,16 @@ class NeuButton extends StatelessWidget {
         child: Material(
           color: Theme.of(context).canvasColor, // button color
           child: InkWell(
-            highlightColor: splashColor!.withOpacity(0.5),
+            // highlightColor: splashColor!.withOpacity(0.5),
             splashColor: splashColor ?? Colors.white70, // splash color
             onTap: onTap, // button pressed
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                if (animIcon != null) animIcon!
-                else if (icon != null)icon!
-                else if (imageIcon != null) imageIcon!
-                else if (child != null) child!
-                else Container(),                // icon
+                animIcon ?? Container(),
+                icon ?? Container(),
+                imageIcon ?? Container(),
+                child ?? Container(), // icon
               ],
             ),
           ),

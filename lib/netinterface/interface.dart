@@ -57,4 +57,18 @@ class NetInterface {
       return 1;
     }
   }
+
+  static Future<int> checkToken () async {
+    String? encoded = await const FlutterSecureStorage().read(key: NetInterface.token);
+    final response = await http.get(Uri.parse("https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"), headers: {
+      "accept": "application/json",
+      "Authorization":" Basic $encoded",
+    });
+    if(response.statusCode == 200) {
+      return 0;
+    }else {
+      await const FlutterSecureStorage().delete(key: NetInterface.token);
+      return 1;
+    }
+  }
 }

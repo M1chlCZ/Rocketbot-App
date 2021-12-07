@@ -36,7 +36,7 @@ class PriceBadge extends StatelessWidget {
       child: Container(
           decoration: BoxDecoration(
             color: percentage > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
-            borderRadius: BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(20.0),
             ),
           ),
@@ -49,9 +49,9 @@ class PriceBadge extends StatelessWidget {
                 SizedBox(
                   height: 15,
                     child: SvgPicture.string( percentage > 0 ? arrowUP : arrowDown)),
-                SizedBox(width: 2.0,),
+                const SizedBox(width: 2.0,),
                 Text(_getNum(percentage) + "%", style: TextStyle (
-                  color: percentage > 0 ? Color(0xFF1AD37A) : Color(0xFFEB3912),
+                  color: percentage > 0 ? const Color(0xFF1AD37A) : const Color(0xFFEB3912),
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0,))
               ],
