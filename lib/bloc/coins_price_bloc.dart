@@ -5,7 +5,7 @@ import 'package:rocketbot/Models/coin_graph.dart';
 import 'package:rocketbot/NetInterface/api_response.dart';
 
 class CoinPriceBloc {
-  CoinPrices _balanceList = CoinPrices();
+  final CoinPrices _balanceList = CoinPrices();
 
   StreamController<ApiResponse<PriceData>>? _coinListController;
 

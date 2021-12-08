@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NeuContainer extends StatelessWidget {
-  final child;
+  final Widget? child;
   const NeuContainer({Key? key, this.child}) : super(key: key);
 
   @override

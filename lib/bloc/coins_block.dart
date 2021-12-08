@@ -5,7 +5,7 @@ import 'package:rocketbot/Models/coin.dart';
 import 'package:rocketbot/NetInterface/api_response.dart';
 
 class CoinsBloc {
-  CoinsList _coinsList = CoinsList();
+  final CoinsList _coinsList = CoinsList();
 
   StreamController<ApiResponse<List<Coin>>>? _coinListController;
 

@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+
+  "helloWorld": "Hello World",
+  "appTitle": "Rocketbot",
+  "@appTitle": {
+    "description": "Rockebot app"
+  },
+  "portfolio": "Portfolio"
+}

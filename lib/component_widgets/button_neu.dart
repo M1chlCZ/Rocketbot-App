@@ -11,7 +11,7 @@ class NeuButton extends StatelessWidget {
   final Image? imageIcon;
   final Widget? child;
 
-  NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0, this.child}) : super(key: key);
+  const NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0, this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

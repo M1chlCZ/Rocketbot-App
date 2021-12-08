@@ -114,7 +114,7 @@ class Coin {
   }
 
   void setPriceData(PriceData p) {
-    this._priceData = p;
+    _priceData = p;
   }
 
 }

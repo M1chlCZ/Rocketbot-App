@@ -8,6 +8,7 @@ import 'package:rocketbot/Models/coin.dart';
 import 'package:rocketbot/Models/coin_graph.dart';
 import 'package:rocketbot/NetInterface/api_response.dart';
 import '../Widgets/coin_list_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PortfolioScreen extends StatefulWidget {
   final Function(Coin? coin) coinSwitch;
@@ -70,7 +71,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                 padding: const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
                 child: Row(
                   children: [
-                    Text("Portfolio", style: Theme.of(context).textTheme.headline4),
+                    Text(AppLocalizations.of(context)!.helloWorld, style: Theme.of(context).textTheme.headline4),
                     const SizedBox(
                       width: 50,
                     ),

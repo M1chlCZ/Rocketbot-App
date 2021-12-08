@@ -334,8 +334,7 @@ class _CoinScreenState extends State<CoinScreen> {
         usdCost = element.priceData!.prices!.usd!;
 
         totalCoins = _freeCoins!;
-        double _btc = _freeCoins * _priceUSD!;
-        totalUSD += _btc;
+        totalUSD = _freeCoins * _priceUSD!;
       }
     }
   }

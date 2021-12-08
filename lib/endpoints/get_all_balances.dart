@@ -3,7 +3,7 @@ import 'package:rocketbot/Models/coin_graph.dart';
 import 'package:rocketbot/NetInterface/interface.dart';
 
 class CoinBalances {
-  NetInterface _helper = NetInterface();
+  final NetInterface _helper = NetInterface();
 
   Future<List<CoinBalance>?> fetchAllBalances() async {
     final response = await _helper.get("User/GetBalances");

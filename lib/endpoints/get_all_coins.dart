@@ -4,7 +4,7 @@ import 'package:rocketbot/Models/coin_list.dart';
 import 'package:rocketbot/NetInterface/interface.dart';
 
 class CoinsList {
-  NetInterface _helper = NetInterface();
+  final NetInterface _helper = NetInterface();
 
   Future<List<Coin>?> fetchAllCoins() async {
     final response = await _helper.get("Coin/GetAllCoins");
