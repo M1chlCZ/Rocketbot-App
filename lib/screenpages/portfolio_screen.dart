@@ -178,7 +178,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
               ),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () => _bloc!.fetchBalancesList(),
+                  onRefresh: _refreshData,
                   child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
                     stream: _bloc!.coinsListStream,
                     builder: (context, snapshot) {
@@ -241,6 +241,13 @@ class PortfolioScreenState extends State<PortfolioScreen> {
       ),
     );
   }
+
+  Future _refreshData() async {
+    await _bloc!.fetchBalancesList();
+    listCoins = null;
+    setState(() {});
+  }
+
 
   _changeCoin(HistoryPrices? h) {
     // _graphKey.currentState!.changeCoin(h!);
