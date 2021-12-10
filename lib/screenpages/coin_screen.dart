@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -286,6 +285,9 @@ class _CoinScreenState extends State<CoinScreen> {
                         if(snapshot.data!.data!.isEmpty) {
                           return Container(width: 50, height: 50, color: Colors.red,);
                         }else {
+                          snapshot.data!.data!.forEach((element) {
+                            print(element.amount.toString());
+                          });
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
@@ -334,6 +336,7 @@ class _CoinScreenState extends State<CoinScreen> {
     });
     for (var element in _listCoins) {
       if (element.coin == _coinActive) {
+        print(element.coin!.toJson().toString());
         double? _freeCoins = element.free;
         double? _priceUSD = element.priceData!.prices!.usd;
         double? _priceBTC = element.priceData!.prices!.btc;

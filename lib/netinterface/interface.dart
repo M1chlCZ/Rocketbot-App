@@ -12,7 +12,7 @@ class NetInterface {
 
   Future<dynamic> get(String url) async {
     var _token = await const FlutterSecureStorage().read(key: token);
-
+// print(_baseUrl + url);
     dynamic responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
@@ -89,7 +90,9 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                             height: 30,
                             width: 25,
                             child: NeuButton(
-                              onTap: () {},
+                              onTap: () async {
+                                await const FlutterSecureStorage().delete(key: "token");
+                              },
                               icon: const Icon(
                                 Icons.more_vert,
                                 color: Colors.white70,

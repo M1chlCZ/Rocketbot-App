@@ -72,7 +72,7 @@ class Data {
       String? pgwIdentifier, 
       int? userId, 
       Coin? coin, 
-      int? amount, 
+      double? amount,
       FeeCoin? feeCoin, 
       int? fee, 
       String? toAddress, 
@@ -101,6 +101,39 @@ class Data {
     _feePercent = feePercent;
 }
 
+  Data.fromCustom({
+    String? pgwIdentifier,
+    int? userId,
+    Coin? coin,
+    double? amount,
+    FeeCoin? feeCoin,
+    int? fee,
+    String? toAddress,
+    String? transactionId,
+    bool? sent,
+    String? sentAt,
+    bool? chainConfirmed,
+    String? confirmedAt,
+    bool? failed,
+    String? createdAt,
+    int? feePercent,}){
+    _pgwIdentifier = pgwIdentifier;
+    _userId = userId;
+    _coin = coin;
+    _amount = amount;
+    _feeCoin = feeCoin;
+    _fee = fee;
+    _toAddress = toAddress;
+    _transactionId = transactionId;
+    _sent = sent;
+    _sentAt = sentAt;
+    _chainConfirmed = chainConfirmed;
+    _confirmedAt = confirmedAt;
+    _failed = failed;
+    _createdAt = createdAt;
+    _feePercent = feePercent;
+  }
+
   Data.fromJson(dynamic json) {
     _pgwIdentifier = json['pgwIdentifier'];
     _userId = json['userId'];
@@ -121,7 +154,7 @@ class Data {
   String? _pgwIdentifier;
   int? _userId;
   Coin? _coin;
-  int? _amount;
+  double? _amount;
   FeeCoin? _feeCoin;
   int? _fee;
   String? _toAddress;
@@ -137,7 +170,7 @@ class Data {
   String? get pgwIdentifier => _pgwIdentifier;
   int? get userId => _userId;
   Coin? get coin => _coin;
-  int? get amount => _amount;
+  double? get amount => _amount;
   FeeCoin? get feeCoin => _feeCoin;
   int? get fee => _fee;
   String? get toAddress => _toAddress;

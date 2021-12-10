@@ -28,6 +28,7 @@ class _CoinTransactionViewState extends State<CoinTransactionView> {
   @override
   void initState() {
     super.initState();
+    print(widget.data.amount);
   }
 
 
