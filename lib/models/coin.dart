@@ -1,4 +1,4 @@
-import 'package:rocketbot/Models/coin_graph.dart';
+import 'package:rocketbot/models/coin_graph.dart';
 
 class Coin {
   Coin({

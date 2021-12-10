@@ -8,23 +8,22 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
+import 'package:rocketbot/models/get_withdraws.dart';
 
 import 'price_badge.dart';
 
-class CoinListView extends StatefulWidget {
-  final CoinBalance coin;
+class CoinTransactionView extends StatefulWidget {
+  final Data data;
   final String? customLocale;
-  final Function(HistoryPrices? h) coinSwitch;
-  final Function (Coin? coin) activeCoin;
-  final double? free;
+  
 
-  const CoinListView({Key? key,required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin}) : super (key: key);
+  const CoinTransactionView({Key? key,required this.data, this.customLocale}) : super (key: key);
 
   @override
-  State<CoinListView> createState() => _CoinListViewState();
+  State<CoinTransactionView> createState() => _CoinTransactionViewState();
 }
 
-class _CoinListViewState extends State<CoinListView> {
+class _CoinTransactionViewState extends State<CoinTransactionView> {
 
   @override
   void initState() {
@@ -50,8 +49,8 @@ class _CoinListViewState extends State<CoinListView> {
               splashColor: Colors.black54,
               highlightColor: Colors.black54,
               onTap: () {
-                widget.coinSwitch(widget.coin.priceData!.historyPrices!);
-                widget.activeCoin(widget.coin.coin!);
+                // widget.coinSwitch(widget.coin.priceData!.historyPrices!);
+                // widget.activeCoin(widget.coin.coin!);
               },
               child: Container(
                 alignment: Alignment.centerLeft,
@@ -65,14 +64,14 @@ class _CoinListViewState extends State<CoinListView> {
                         flex: 2,
                         child: Container(
                           margin: EdgeInsets.all(15.0),
-                          child: Center(child:
-                          SizedBox( height: 30,
-                              child: CachedNetworkImage(
-                                imageUrl:'https://app.rocketbot.pro/coins/' + widget.coin.coin!.imageSmall!,
-                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                //     CircularProgressIndicator(value: downloadProgress.progress),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
-                                fit: BoxFit.fitWidth,))),
+                          // child: Center(child:
+                          // SizedBox( height: 30,
+                          //     child: CachedNetworkImage(
+                          //       imageUrl:'https://app.rocketbot.pro/coins/' + widget.coin.coin!.imageSmall!,
+                          //       // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                          //       //     CircularProgressIndicator(value: downloadProgress.progress),
+                          //       errorWidget: (context, url, error) => Icon(Icons.error),
+                          //       fit: BoxFit.fitWidth,))),
                         )),
                     Expanded(
                       flex: 4,
@@ -88,7 +87,7 @@ class _CoinListViewState extends State<CoinListView> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: Text(
-                                    widget.coin.coin!.ticker!,
+                                    widget.data.amount.toString(),
                                   style: Theme.of(context).textTheme.headline3,
                                   maxLines: 1,
                                   textAlign: TextAlign.start,
@@ -103,7 +102,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 child: SizedBox(
                                   width: 70,
                                   child: AutoSizeText(
-                                    widget.coin.coin!.name!,
+                                    widget.data.transactionId!,
                                     style: Theme.of(context).textTheme.subtitle2,
                                     minFontSize: 8,
                                     maxLines: 1,
@@ -119,7 +118,8 @@ class _CoinListViewState extends State<CoinListView> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5.0),
                               child: Text(
-                                  "\$"+  widget.coin.priceData!.prices!.usd!.toStringAsFixed(2),
+                                  // "\$"+  widget.coin.priceData!.prices!.usd!.toStringAsFixed(2),
+                                  '',
                                 style: Theme.of(context).textTheme.headline3,
                                 maxLines: 1,
                                 textAlign: TextAlign.start,
@@ -148,7 +148,8 @@ class _CoinListViewState extends State<CoinListView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
-                                      widget.free!.toString(),
+                                      // widget.free!.toString(),
+                                      '',
                                       style: Theme.of(context).textTheme.headline3,
                                       minFontSize: 8,
                                       maxLines: 1,
@@ -167,7 +168,8 @@ class _CoinListViewState extends State<CoinListView> {
                                   padding: const EdgeInsets.only(top: 2.0),
                                   child: Text(
                                     // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                    widget.coin.free!.toStringAsFixed(3),
+                                    // widget.coin.free!.toStringAsFixed(3),
+                                    '',
                                     style: Theme.of(context).textTheme.headline3,
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
@@ -177,10 +179,10 @@ class _CoinListViewState extends State<CoinListView> {
                                 const SizedBox(
                                   width: 4.0,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 2.0),
-                                  child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
-                                ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(top: 2.0),
+                                //   child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
+                                // ),
                               ],
                             ),
                           ],

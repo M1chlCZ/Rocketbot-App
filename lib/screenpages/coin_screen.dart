@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import '../Bloc/coins_price_bloc.dart';
+import 'package:rocketbot/bloc/get_transaction_bloc.dart';
+import 'package:rocketbot/models/get_withdraws.dart';
+import 'package:rocketbot/widgets/coin_transaction_view.dart';
+import '../bloc/coins_price_bloc.dart';
 import '../component_widgets/button_neu.dart';
 import '../component_widgets/container_neu.dart';
-import '../Models/balance_list.dart';
-import '../Models/coin.dart';
-import '../Models/coin_graph.dart';
-import '../NetInterface/api_response.dart';
-import '../Widgets/coin_price_graph.dart';
-import '../Widgets/price_badge.dart';
-import '../Widgets/time_range_switch.dart';
+import '../models/balance_list.dart';
+import '../models/coin.dart';
+import '../models/coin_graph.dart';
+import '../netInterface/api_response.dart';
+import '../widgets/coin_price_graph.dart';
+import '../widgets/price_badge.dart';
+import '../widgets/time_range_switch.dart';
 
 class CoinScreen extends StatefulWidget {
   final Coin activeCoin;
@@ -32,6 +35,7 @@ class _CoinScreenState extends State<CoinScreen> {
   double _percentage = 0.0;
 
   CoinPriceBloc? _priceBlock;
+  TransactionBloc? _txBloc;
 
   double totalCoins = 0.0;
   double totalUSD = 0.0;
@@ -48,11 +52,13 @@ class _CoinScreenState extends State<CoinScreen> {
     _listCoins = widget.allCoins!;
     _calculatePortfolio();
     _priceBlock = CoinPriceBloc(widget.activeCoin.coinGeckoId!);
+    _txBloc = TransactionBloc(widget.activeCoin);
   }
 
   @override
   void dispose() {
     _priceBlock!.dispose();
+    _txBloc!.dispose();
     super.dispose();
   }
 
@@ -165,19 +171,19 @@ class _CoinScreenState extends State<CoinScreen> {
                         switch (snapshot.data!.status) {
                           case Status.COMPLETED:
                             Future.delayed(const Duration(milliseconds: 50),
-                                    () {
-                                  setState(() {
-                                    _coinNameOpacity = 1.0;
-                                    portCalc = true;
-                                  });
-                                });
+                                () {
+                              setState(() {
+                                _coinNameOpacity = 1.0;
+                                portCalc = true;
+                              });
+                            });
                             return CoinPriceGraph(
                               key: _graphKey,
                               prices: snapshot.data!.data!.historyPrices,
                               time: 24,
                             );
                           case Status.LOADING:
-                          // return Center(child: Text("loading data"));
+                            // return Center(child: Text("loading data"));
                             return HeartbeatProgressIndicator(
                               startScale: 0.01,
                               endScale: 0.4,
@@ -259,45 +265,46 @@ class _CoinScreenState extends State<CoinScreen> {
                       ))),
             ],
           ),
-          // Expanded(
-          //   child: RefreshIndicator(
-          //     onRefresh: () => _bloc!.fetchBalancesList(),
-          //     child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
-          //       stream: _bloc!.coinsListStream,
-          //       builder: (context, snapshot) {
-          //         if (snapshot.hasData) {
-          //           switch (snapshot.data!.status) {
-          //             case Status.LOADING:
-          //               return Padding(
-          //                 padding: EdgeInsets.only(top: 30.0),
-          //                 child: SizedBox(
-          //                   child: portCalc
-          //                       ? Container()
-          //                       : CircularProgressIndicator(),
-          //                 ),
-          //               );
-          //             case Status.COMPLETED:
-          //               _calculatePortfolio(snapshot.data!.data!);
-          //               return ListView.builder(
-          //                   itemCount: snapshot.data!.data!.length,
-          //                   itemBuilder: (ctx, index) {
-          //                     return CoinListView(
-          //                       coin: snapshot.data!.data![index],
-          //                       free: snapshot.data!.data![index].free!,
-          //                       coinSwitch: _changeCoin,
-          //                       activeCoin: _changeCoinName,
-          //                     );
-          //                   });
-          //             case Status.ERROR:
-          //               print("error");
-          //               break;
-          //           }
-          //         }
-          //         return Container();
-          //       },
-          //     ),
-          //   ),
-          // ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _txBloc!.fetchTransactionData(widget.activeCoin),
+              child: StreamBuilder<ApiResponse<List<Data>>>(
+                stream: _txBloc!.coinsListStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data!.status) {
+                      case Status.LOADING:
+                        return Padding(
+                          padding: EdgeInsets.only(top: 30.0),
+                          child: SizedBox(
+                            child: portCalc
+                                ? Container()
+                                : CircularProgressIndicator(),
+                          ),
+                        );
+                      case Status.COMPLETED:
+                        if(snapshot.data!.data!.isEmpty) {
+                          return Container(width: 50, height: 50, color: Colors.red,);
+                        }else {
+                          return ListView.builder(
+                              itemCount: snapshot.data!.data!.length,
+                              itemBuilder: (ctx, index) {
+                                return CoinTransactionView(
+                                  data: snapshot.data!.data![index],
+                                );
+                              });
+                        }
+                        break;
+                      case Status.ERROR:
+                        // print(snapshot.error);
+                        break;
+                    }
+                  }
+                  return Container();
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );

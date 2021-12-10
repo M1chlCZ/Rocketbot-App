@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:rocketbot/Endpoints/get_coin_graph.dart';
-import 'package:rocketbot/Models/coin_graph.dart';
-import 'package:rocketbot/NetInterface/api_response.dart';
+import 'package:rocketbot/endpoints/get_coin_graph.dart';
+import 'package:rocketbot/models/coin_graph.dart';
+import 'package:rocketbot/netInterface/api_response.dart';
 
 class CoinPriceBloc {
   final CoinPrices _balanceList = CoinPrices();

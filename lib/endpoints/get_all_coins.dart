@@ -1,7 +1,7 @@
-import 'package:rocketbot/Models/coin.dart';
-import 'package:rocketbot/Models/coin_graph.dart';
-import 'package:rocketbot/Models/coin_list.dart';
-import 'package:rocketbot/NetInterface/interface.dart';
+import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/models/coin_graph.dart';
+import 'package:rocketbot/models/coin_list.dart';
+import 'package:rocketbot/netInterface/interface.dart';
 
 class CoinsList {
   final NetInterface _helper = NetInterface();
@@ -12,7 +12,6 @@ class CoinsList {
     List<Coin> finalList = [];
 
     await Future.forEach(r!, (item) async {
-      print("shit");
       var coin = (item as Coin);
       String? coinID = coin.coinGeckoId;
       var res = await _helper.get("Coin/GetPriceData?coin=$coinID");

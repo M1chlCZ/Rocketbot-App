@@ -12,6 +12,7 @@ class NetInterface {
 
   Future<dynamic> get(String url) async {
     var _token = await const FlutterSecureStorage().read(key: token);
+
     dynamic responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
@@ -19,6 +20,7 @@ class NetInterface {
         "Authorization":" Basic $_token",
       });
       responseJson = _returnResponse(response);
+      // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }

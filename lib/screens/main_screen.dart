@@ -1,11 +1,11 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:rocketbot/Models/balance_list.dart';
-import 'package:rocketbot/Models/coin.dart';
-import 'package:rocketbot/ScreenPages/coin_screen.dart';
+import 'package:rocketbot/models/balance_list.dart';
+import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/screenPages/coin_screen.dart';
 
 import '../component_widgets/button_neu.dart';
-import '../ScreenPages/portfolio_screen.dart';
+import '../screenPages/portfolio_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);

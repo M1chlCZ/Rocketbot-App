@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:rocketbot/Bloc/balance_bloc.dart';
+import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
-import 'package:rocketbot/Models/balance_list.dart';
-import 'package:rocketbot/Models/coin.dart';
-import 'package:rocketbot/Models/coin_graph.dart';
-import 'package:rocketbot/NetInterface/api_response.dart';
-import '../Widgets/coin_list_view.dart';
+import 'package:rocketbot/models/balance_list.dart';
+import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/models/coin_graph.dart';
+import 'package:rocketbot/netInterface/api_response.dart';
+import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PortfolioScreen extends StatefulWidget {
