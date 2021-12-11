@@ -1,5 +1,5 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
@@ -157,13 +157,28 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    "\$$totalUSD",
-                                    style: Theme.of(context).textTheme.headline1,
+                                  SizedBox(
+                                    width: 200,
+                                    child: AutoSizeText(
+                                        "\$$totalUSD",
+                                        style: Theme.of(context).textTheme.headline1,
+                                      minFontSize: 8.0,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                      ),
                                   ),
-                                  Text(
-                                    "$totalBTC BTC",
-                                    style: Theme.of(context).textTheme.headline2,
+                                  const SizedBox(
+                                    height: 3.0,
+                                  ),
+                                  SizedBox(
+                                    width: 130,
+                                    child: AutoSizeText(
+                                      "$totalBTC BTC",
+                                      style: Theme.of(context).textTheme.headline2,
+                                      minFontSize: 8.0,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ],
                               ),

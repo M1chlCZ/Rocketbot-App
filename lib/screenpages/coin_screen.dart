@@ -112,6 +112,7 @@ class _CoinScreenState extends State<CoinScreen> {
                                 _coinActive = coin!;
                                 _priceBlock!.changeCoin(coin.coinGeckoId!);
                                 _coinNameOpacity = 0.0;
+                                _txBloc!.changeCoin(coin);
                               });
                               _calculatePortfolio();
                             },
@@ -287,7 +288,10 @@ class _CoinScreenState extends State<CoinScreen> {
                         );
                       case Status.COMPLETED:
                         if(snapshot.data!.data!.isEmpty) {
-                          return Container(width: 50, height: 50, color: Colors.red,);
+                          return Center(child:
+                          Text('No transactions',
+                            style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),)
+                          );
                         }else {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
@@ -337,7 +341,6 @@ class _CoinScreenState extends State<CoinScreen> {
     });
     for (var element in _listCoins) {
       if (element.coin == _coinActive) {
-        print(element.coin!.toJson().toString());
         double? _freeCoins = element.free;
         double? _priceUSD = element.priceData!.prices!.usd;
         double? _priceBTC = element.priceData!.prices!.btc;

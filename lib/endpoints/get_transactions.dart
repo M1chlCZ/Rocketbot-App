@@ -26,7 +26,6 @@ class TransactionList {
             receivedAt: it.receivedAt,
             transactionId: it.transactionId,
             usdPrice: cg.data!.prices!.usd);
-        print(d.coin!.name!);
         // var coin = coinBal.coin;
         // String? coinID = coin!.coinGeckoId;
         // final price = priceData['data'][coinID!];
