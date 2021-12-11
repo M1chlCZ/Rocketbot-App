@@ -255,7 +255,7 @@ class _CoinScreenState extends State<CoinScreen> {
                           SizedBox(
                             width: 320,
                             child: AutoSizeText(
-                              "$totalCoins " + _coinActive.name!,
+                              "$totalCoins " + _coinActive.ticker!,
                               style: Theme.of(context).textTheme.headline1,
                               maxLines: 1,
                               minFontSize: 8,
@@ -290,7 +290,7 @@ class _CoinScreenState extends State<CoinScreen> {
                           child: SizedBox(
                             child: portCalc
                                 ? Container()
-                                : const CircularProgressIndicator(),
+                                : const Center(child: CircularProgressIndicator(strokeWidth: 2.0,)),
                           ),
                         );
                       case Status.COMPLETED:
