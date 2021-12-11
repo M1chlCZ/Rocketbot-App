@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
+import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/widgets/coin_transaction_view.dart';
 import '../bloc/coins_price_bloc.dart';
 import '../component_widgets/button_neu.dart';
@@ -205,7 +206,7 @@ class _CoinScreenState extends State<CoinScreen> {
                 child: Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
+                      padding: const EdgeInsets.only(top: 15.0),
                       child: Column(
                         children: [
                           Text(
@@ -218,14 +219,17 @@ class _CoinScreenState extends State<CoinScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                "\$$usdCost",
-                                style: Theme.of(context).textTheme.headline2,
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(width: 5.0),
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 0.8),
+                                padding: const EdgeInsets.only(bottom: 1.5),
+                                child: Text(
+                                  "\$" + usdCost.toStringAsFixed(3),
+                                  style: Theme.of(context).textTheme.headline2,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 0.0),
                                 child: PriceBadge(
                                   percentage: _percentage,
                                 ),
@@ -254,7 +258,7 @@ class _CoinScreenState extends State<CoinScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "\$$totalUSD",
+                                "\$" + totalUSD.toStringAsFixed(3),
                                 style: Theme.of(context).textTheme.headline2,
                               ),
                               const SizedBox(width: 5.0),
@@ -267,27 +271,24 @@ class _CoinScreenState extends State<CoinScreen> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => _txBloc!.fetchTransactionData(widget.activeCoin),
-              child: StreamBuilder<ApiResponse<List<Data>>>(
+              child: StreamBuilder<ApiResponse<List<TransactionData>>>(
                 stream: _txBloc!.coinsListStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     switch (snapshot.data!.status) {
                       case Status.LOADING:
                         return Padding(
-                          padding: EdgeInsets.only(top: 30.0),
+                          padding: const EdgeInsets.only(top: 30.0),
                           child: SizedBox(
                             child: portCalc
                                 ? Container()
-                                : CircularProgressIndicator(),
+                                : const CircularProgressIndicator(),
                           ),
                         );
                       case Status.COMPLETED:
                         if(snapshot.data!.data!.isEmpty) {
                           return Container(width: 50, height: 50, color: Colors.red,);
                         }else {
-                          snapshot.data!.data!.forEach((element) {
-                            print(element.amount.toString());
-                          });
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
