@@ -1,7 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
-import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/widgets/coin_deposit_view.dart';
 import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
@@ -252,9 +252,15 @@ class _CoinScreenState extends State<CoinScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "$totalCoins " + _coinActive.name!,
-                            style: Theme.of(context).textTheme.headline1,
+                          SizedBox(
+                            width: 320,
+                            child: AutoSizeText(
+                              "$totalCoins " + _coinActive.name!,
+                              style: Theme.of(context).textTheme.headline1,
+                              maxLines: 1,
+                              minFontSize: 8,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -310,6 +316,10 @@ class _CoinScreenState extends State<CoinScreen> {
                         }
                         break;
                       case Status.ERROR:
+                        return Center(child:
+                        Text('There has been an error communicating with the server',
+                          style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),)
+                        );
                         // print(snapshot.error);
                         break;
                     }

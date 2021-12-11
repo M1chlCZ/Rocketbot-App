@@ -160,7 +160,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                                   SizedBox(
                                     width: 200,
                                     child: AutoSizeText(
-                                        "\$$totalUSD",
+                                      "\$" + totalUSD.toStringAsFixed(2),
                                         style: Theme.of(context).textTheme.headline1,
                                       minFontSize: 8.0,
                                       maxLines: 1,
