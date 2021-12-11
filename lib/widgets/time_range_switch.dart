@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 
 class TimeRangeSwitcher extends StatefulWidget {
   final Function(int time) changeTime;
-  TimeRangeSwitcher({Key? key, required this.changeTime}) : super(key: key);
+  const TimeRangeSwitcher({Key? key, required this.changeTime}) : super(key: key);
 
   @override
   _TimeRangeSwitcherState createState() => _TimeRangeSwitcherState();
@@ -12,7 +11,7 @@ class TimeRangeSwitcher extends StatefulWidget {
 
 class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
   var _active = 2;
-  var _duration = Duration(milliseconds: 300);
+  final _duration = const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
