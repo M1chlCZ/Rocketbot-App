@@ -10,7 +10,7 @@ class WithdrawalsModels {
       String? message, 
       bool? hasError, 
       String? error, 
-      List<Data>? data,}){
+      List<DataWithdrawals>? data,}){
     _message = message;
     _hasError = hasError;
     _error = error;
@@ -24,19 +24,19 @@ class WithdrawalsModels {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
-        _data?.add(Data.fromJson(v));
+        _data?.add(DataWithdrawals.fromJson(v));
       });
     }
   }
   String? _message;
   bool? _hasError;
   String? _error;
-  List<Data>? _data;
+  List<DataWithdrawals>? _data;
 
   String? get message => _message;
   bool? get hasError => _hasError;
   String? get error => _error;
-  List<Data>? get data => _data;
+  List<DataWithdrawals>? get data => _data;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -67,14 +67,14 @@ class WithdrawalsModels {
 /// createdAt : "2021-12-09T21:57:50.701Z"
 /// feePercent : 0
 
-class Data {
-  Data({
+class DataWithdrawals {
+  DataWithdrawals({
       String? pgwIdentifier, 
       int? userId, 
       Coin? coin, 
       double? amount,
       FeeCoin? feeCoin, 
-      int? fee, 
+      double? fee,
       String? toAddress, 
       String? transactionId, 
       bool? sent, 
@@ -83,7 +83,7 @@ class Data {
       String? confirmedAt, 
       bool? failed, 
       String? createdAt, 
-      int? feePercent,}){
+      double? feePercent,}){
     _pgwIdentifier = pgwIdentifier;
     _userId = userId;
     _coin = coin;
@@ -101,13 +101,13 @@ class Data {
     _feePercent = feePercent;
 }
 
-  Data.fromCustom({
+  DataWithdrawals.fromCustom({
     String? pgwIdentifier,
     int? userId,
     Coin? coin,
     double? amount,
     FeeCoin? feeCoin,
-    int? fee,
+    double? fee,
     String? toAddress,
     String? transactionId,
     bool? sent,
@@ -116,7 +116,7 @@ class Data {
     String? confirmedAt,
     bool? failed,
     String? createdAt,
-    int? feePercent,}){
+    double? feePercent,}){
     _pgwIdentifier = pgwIdentifier;
     _userId = userId;
     _coin = coin;
@@ -134,7 +134,7 @@ class Data {
     _feePercent = feePercent;
   }
 
-  Data.fromJson(dynamic json) {
+  DataWithdrawals.fromJson(dynamic json) {
     _pgwIdentifier = json['pgwIdentifier'];
     _userId = json['userId'];
     _coin = json['coin'] != null ? Coin.fromJson(json['coin']) : null;
@@ -156,7 +156,7 @@ class Data {
   Coin? _coin;
   double? _amount;
   FeeCoin? _feeCoin;
-  int? _fee;
+  double? _fee;
   String? _toAddress;
   String? _transactionId;
   bool? _sent;
@@ -165,14 +165,14 @@ class Data {
   String? _confirmedAt;
   bool? _failed;
   String? _createdAt;
-  int? _feePercent;
+  double? _feePercent;
 
   String? get pgwIdentifier => _pgwIdentifier;
   int? get userId => _userId;
   Coin? get coin => _coin;
   double? get amount => _amount;
   FeeCoin? get feeCoin => _feeCoin;
-  int? get fee => _fee;
+  double? get fee => _fee;
   String? get toAddress => _toAddress;
   String? get transactionId => _transactionId;
   bool? get sent => _sent;
@@ -181,7 +181,7 @@ class Data {
   String? get confirmedAt => _confirmedAt;
   bool? get failed => _failed;
   String? get createdAt => _createdAt;
-  int? get feePercent => _feePercent;
+  double? get feePercent => _feePercent;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -236,14 +236,14 @@ class FeeCoin {
       String? coinGeckoId, 
       String? cryptoId, 
       bool? isToken, 
-      int? blockchain, 
-      int? minWithdraw, 
+      int? blockchain,
+      double? minWithdraw,
       String? imageBig, 
       String? imageSmall, 
       bool? isActive, 
       String? explorerUrl, 
-      int? requiredConfirmations, 
-      int? feePercent, 
+      int? requiredConfirmations,
+      double? feePercent,
       String? fullName, 
       String? tokenStandart,}){
     _id = id;
@@ -292,13 +292,13 @@ class FeeCoin {
   String? _cryptoId;
   bool? _isToken;
   int? _blockchain;
-  int? _minWithdraw;
+  double? _minWithdraw;
   String? _imageBig;
   String? _imageSmall;
   bool? _isActive;
   String? _explorerUrl;
   int? _requiredConfirmations;
-  int? _feePercent;
+  double? _feePercent;
   String? _fullName;
   String? _tokenStandart;
 
@@ -310,13 +310,13 @@ class FeeCoin {
   String? get cryptoId => _cryptoId;
   bool? get isToken => _isToken;
   int? get blockchain => _blockchain;
-  int? get minWithdraw => _minWithdraw;
+  double? get minWithdraw => _minWithdraw;
   String? get imageBig => _imageBig;
   String? get imageSmall => _imageSmall;
   bool? get isActive => _isActive;
   String? get explorerUrl => _explorerUrl;
   int? get requiredConfirmations => _requiredConfirmations;
-  int? get feePercent => _feePercent;
+  double? get feePercent => _feePercent;
   String? get fullName => _fullName;
   String? get tokenStandart => _tokenStandart;
 

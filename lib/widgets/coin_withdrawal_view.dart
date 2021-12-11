@@ -7,18 +7,18 @@ import 'package:intl/intl.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 
-class CoinTransactionView extends StatefulWidget {
+class CoinWithdrawalView extends StatefulWidget {
   final TransactionData data;
   final String? customLocale;
   
 
-  const CoinTransactionView({Key? key,required this.data, this.customLocale}) : super (key: key);
+  const CoinWithdrawalView({Key? key,required this.data, this.customLocale}) : super (key: key);
 
   @override
-  State<CoinTransactionView> createState() => _CoinTransactionViewState();
+  State<CoinWithdrawalView> createState() => _CoinWithdrawalViewState();
 }
 
-class _CoinTransactionViewState extends State<CoinTransactionView> {
+class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _CoinTransactionViewState extends State<CoinTransactionView> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
-                                  "Tx id: " + _formatTx(widget.data.transactionId!),
+                                  "Sent to: " + _formatTx(widget.data.toAddress!),
                                   style: Theme.of(context).textTheme.headline3,
                                   maxLines: 1,
                                   textAlign: TextAlign.start,
@@ -130,8 +130,8 @@ class _CoinTransactionViewState extends State<CoinTransactionView> {
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
                                       // widget.free!.toString(),
-                                      "+" + (widget.data.usdPrice! * widget.data.amount!).toStringAsFixed(3) + "  USD",
-                                      style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xff1AD37A)),
+                                      "-" + (widget.data.usdPrice! * widget.data.amount!).toStringAsFixed(3) + "  USD",
+                                      style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xffEA3913)),
                                       minFontSize: 8,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,

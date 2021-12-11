@@ -1,4 +1,3 @@
-
 import 'package:rocketbot/NetInterface/interface.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/get_deposits.dart';
@@ -11,32 +10,63 @@ class TransactionList {
   Future<List<TransactionData>?> fetchTransactions(int coinID) async {
     final _deposits = await _helper.get("Transfers/GetDeposits?page=1&pageSize=10&coinId=$coinID");
     final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=10&coinId=$coinID");
-    List<Data>? _r = WithdrawalsModels.fromJson(_withdrawals).data;
+    final price = await _helper.get("Coin/GetPriceData?coin=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
+
+    List<DataWithdrawals>? _r = WithdrawalsModels.fromJson(_withdrawals).data;
     List<DataDeposits>? _d = DepositsModel.fromJson(_deposits).data;
     List<TransactionData> _finalList = [];
+
+    double? priceValue;
 
     await Future.forEach(_d!, (item) async {
       try {
         var it = (item as DataDeposits);
-        var price = await _helper.get("Coin/GetPriceData?coin=$coinID");
-        CoinGraph cg = CoinGraph.fromJson(price, item.coin!.coinGeckoId!);
+        if(priceValue == null) {
+          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.coinGeckoId!);
+          priceValue = cg.data!.prices!.usd;
+        }
         TransactionData d = TransactionData.fromCustom(
             coin: it.coin,
             amount: it.amount,
             receivedAt: it.receivedAt,
             transactionId: it.transactionId,
-            usdPrice: cg.data!.prices!.usd);
-        // var coin = coinBal.coin;
-        // String? coinID = coin!.coinGeckoId;
-        // final price = priceData['data'][coinID!];
-        // PriceData? p = PriceData.fromJson(price);
-        // coinBal.setPriceData(p);
+            chainConfirmed: it.isConfirmed,
+            confirmations: it.confirmations,
+            usdPrice: priceValue);
         _finalList.add(d);
 
       } catch (e) {
         print(e);
       }
     });
+
+    await Future.forEach(_r!, (item) {
+      try {
+        var it = (item as DataWithdrawals);
+        if(priceValue == null) {
+          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.coinGeckoId!);
+          priceValue = cg.data!.prices!.usd;
+        }
+        TransactionData d = TransactionData.fromCustom(
+          coin: it.coin,
+          amount: it.amount,
+          toAddress: it.toAddress,
+          receivedAt: it.createdAt,
+          chainConfirmed: it.chainConfirmed,
+          usdPrice: priceValue,
+        );
+        _finalList.add(d);
+      }catch(e) {
+        print(e);
+      }
+    });
+
+    _finalList.sort((a,b) {
+      var A = DateTime.parse(a.receivedAt!);
+      var B = DateTime.parse(b.receivedAt!);
+      return A.compareTo(B);
+    });
+
     return _finalList;
   }
 }

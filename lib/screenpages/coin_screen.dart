@@ -3,7 +3,8 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/transaction_data.dart';
-import 'package:rocketbot/widgets/coin_transaction_view.dart';
+import 'package:rocketbot/widgets/coin_deposit_view.dart';
+import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
 import '../bloc/coins_price_bloc.dart';
 import '../component_widgets/button_neu.dart';
 import '../component_widgets/container_neu.dart';
@@ -296,9 +297,15 @@ class _CoinScreenState extends State<CoinScreen> {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
-                                return CoinTransactionView(
-                                  data: snapshot.data!.data![index],
-                                );
+                                if(snapshot.data!.data![index].toAddress == null) {
+                                  return CoinDepositView(
+                                    data: snapshot.data!.data![index],
+                                  );
+                                }else{
+                                  return CoinWithdrawalView(
+                                      data: snapshot.data!.data![index]
+                                  );
+                                }
                               });
                         }
                         break;
