@@ -37,13 +37,13 @@ class _MyAppState extends State<MyApp> {
     precacheImage(const AssetImage('images/rocket_pin.png'), context);
     precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
     precacheImage(const AssetImage('images/wave.png'), context);
-
+    precacheImage(const AssetImage('images/logo_big.png'), context);
   }
   @override
   Widget build(BuildContext context) {
 
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'RocketBot',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
@@ -79,7 +79,13 @@ class _MyAppState extends State<MyApp> {
             color: Colors.white.withOpacity(0.65),
             fontWeight: FontWeight.w400,
             fontSize: 10.0,
+            fontStyle: FontStyle.italic
           ),
+          bodyText1: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+          )
         ),
         primarySwatch: generateMaterialColor(Colors.white),
       ),
