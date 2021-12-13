@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/netinterface/interface.dart';
+import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 
 import 'main_screen.dart';
@@ -17,7 +18,12 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordRegController = TextEditingController();
+  TextEditingController passwordRegConfirmController = TextEditingController();
   bool _curtain = true;
+  var _page = 0;
 
   @override
   void initState() {
@@ -72,155 +78,403 @@ class _LoginScreenState extends State<LoginScreen> {
     }));
   }
 
+  _switchPage(int page) {
+    setState(() {
+      _page = page;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           Align(
-              alignment: Alignment.topCenter,
-              child: SafeArea(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 100,
-                      ),
-                      const LoginRegisterSwitcher(),
-                      const SizedBox(
-                        height: 80,
-                      ),
-                      SizedBox(
-                        width: 280,
-                        child: NeuContainer(
-                            child: TextField(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Colors.white, fontSize: 18.0),
-                                autocorrect: false,
-                                controller: loginController,
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  isDense: false,
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 10.0, bottom: 5.0),
-                                  hintStyle: Theme.of(context)
+            alignment: Alignment.topCenter,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                 LoginRegisterSwitcher(
+                     changeType: _switchPage
+                 ),
+                ],
+              ),
+
+            ),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(right:15.0, top: 17.0),
+                child: Text('v 1.0',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4!
+                      .copyWith(
+                      color: Colors.white70, fontSize: 12.0),
+                ),
+              )
+
+            ),
+          ),
+          AnimatedOpacity(
+            opacity: _page == 0 ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: Align(
+                alignment: Alignment.topCenter,
+                child: SafeArea(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 100,
+                        ),
+                        const SizedBox(
+                          height: 120,
+                        ),
+                        SizedBox(
+                          width: 280,
+                          child: NeuContainer(
+                              child: TextField(
+                                  style: Theme.of(context)
                                       .textTheme
-                                      .subtitle2!
+                                      .bodyText1!
                                       .copyWith(
-                                          color: Colors.white54,
-                                          fontSize: 14.0),
-                                  hintText: 'E-mail',
-                                  enabledBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                  ),
-                                  focusedBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                  ),
-                                ))),
-                      ),
-                      const SizedBox(
-                        height: 30.0,
-                      ),
-                      SizedBox(
-                        width: 280,
-                        child: NeuContainer(
-                            child: TextField(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Colors.white, fontSize: 18.0),
-                                autocorrect: false,
-                                controller: passwordController,
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  isDense: false,
-                                  contentPadding:
-                                  const EdgeInsets.only(left: 10.0, bottom: 5.0),
-                                  hintStyle: Theme.of(context)
+                                          color: Colors.white, fontSize: 18.0),
+                                  autocorrect: false,
+                                  controller: loginController,
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                    isDense: false,
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .subtitle2!
+                                        .copyWith(
+                                            color: Colors.white54,
+                                            fontSize: 14.0),
+                                    hintText: 'E-mail',
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                    ),
+                                  ))),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                        SizedBox(
+                          width: 280,
+                          child: NeuContainer(
+                              child: TextField(
+                                  style: Theme.of(context)
                                       .textTheme
-                                      .subtitle2!
+                                      .bodyText1!
                                       .copyWith(
-                                      color: Colors.white54,
-                                      fontSize: 14.0),
-                                  hintText: 'Password',
-                                  enabledBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
+                                          color: Colors.white, fontSize: 18.0),
+                                  obscureText: true,
+                                  enableSuggestions: false,
+                                  autocorrect: false,
+                                  controller: passwordController,
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                    isDense: false,
+
+                                    contentPadding:
+                                    const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .subtitle2!
+                                        .copyWith(
+                                        color: Colors.white54,
+                                        fontSize: 14.0),
+                                    hintText: 'Password',
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.transparent),
+                                    ),
+                                  ))),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Forgot Password?',
+                                style: Theme.of(context).textTheme.subtitle2,
+                              ),
+                              const SizedBox(
+                                width: 20.0,
+                              ),
+                              SizedBox(
+                                height: 30,
+                                width: 25,
+                                child: NeuButton(
+                                  onTap: () {
+                                    // widget.goBack();
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 20.0,
+                                    color: Colors.white70,
                                   ),
-                                  focusedBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                  ),
-                                ))),
-                      ),
-                      const SizedBox(
-                        height: 30.0,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 65.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Forgot Password?',
-                              style: Theme.of(context).textTheme.subtitle2,
-                            ),
-                            const SizedBox(
-                              width: 20.0,
-                            ),
-                            SizedBox(
-                              height: 30,
-                              width: 25,
-                              child: NeuButton(
-                                onTap: () {
-                                  // widget.goBack();
-                                },
-                                icon: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 20.0,
-                                  color: Colors.white70,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      SizedBox(
-                        width: 250,
-                        child: NeuButton(
-                          onTap: () {
-                            _loginUser(
-                                loginController.text, passwordController.text);
-                          },
-                          splashColor: Colors.purple,
-                          child: Container(
-                            width: 200,
-                            height: 50,
-                            color: Colors.transparent,
-                            child: Center(
-                                child: Text(
-                              "Sign in",
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        SizedBox(
+                          width: 250,
+                          child: NeuButton(
+                            onTap: () {
+                              _loginUser(
+                                  loginController.text, passwordController.text);
+                            },
+                            splashColor: Colors.purple,
+                            child: Container(
+                              width: 200,
+                              height: 50,
+                              color: Colors.transparent,
+                              child: Center(
+                                  child: Text(
+                                "Sign in",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                        fontSize: 22.0, color: Colors.white),
+                              )),
+                            ),
+                          ),
+                        ),
+                        const SizedBox( height: 20.0,),
+                        Text('or', style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 16.0, color: Colors.white),),
+                        const SizedBox( height: 20.0,),
+                        SizedBox(
+                          width: 250,
+                          height: 50,
+                          child: NeuButton(
+                            onTap: () {
+                              // _loginUser(
+                              //     loginController.text, passwordController.text
+                              // );
+                            },
+                            splashColor: Colors.purple,
+                            child:
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 25,
+                                    child: Image.asset('images/google_icon.png')),
+                               const SizedBox(
+                                  width: 10.0,
+                                ),
+                                Text('Sign in with Google', style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle2!
+                                    .copyWith(
+                                    fontSize: 14.0, color: Colors.white),),
+                              ],
+                            )
+                            // Container(
+                            //   width: 200,
+                            //   height: 50,
+                            //   color: Colors.transparent,
+                            //   child: Center(
+                            //       child: Text(
+                            //         "Sign in",
+                            //         style: Theme.of(context)
+                            //             .textTheme
+                            //             .bodyText1!
+                            //             .copyWith(
+                            //             fontSize: 22.0, color: Colors.white),
+                            //       )),
+                            // ),
+                          ),
+                        ),
+                      ]),
+                )),
+          ),
+          AnimatedOpacity(
+            opacity: _page == 1 ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: Align(
+                alignment: Alignment.topCenter,
+                child: SafeArea(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 100,
+                        ),
+                        const SizedBox(
+                          height: 120,
+                        ),
+                        SizedBox(
+                          width: 280,
+                          child: NeuContainer(
+                              child: TextField(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                      color: Colors.white, fontSize: 18.0),
+                                  autocorrect: false,
+                                  controller: usernameController,
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                    isDense: false,
+                                    contentPadding:
+                                    const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .subtitle2!
+                                        .copyWith(
+                                        color: Colors.white54,
+                                        fontSize: 14.0),
+                                    hintText: 'E-mail',
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                    ),
+                                  ))),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                        SizedBox(
+                          width: 280,
+                          child: NeuContainer(
+                              child: TextField(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                      color: Colors.white, fontSize: 18.0),
+                                  obscureText: true,
+                                  enableSuggestions: false,
+                                  autocorrect: false,
+                                  controller: passwordRegController,
+                                  textAlign: TextAlign.center,
+                                  decoration: InputDecoration(
+                                    isDense: false,
+
+                                    contentPadding:
+                                    const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .subtitle2!
+                                        .copyWith(
+                                        color: Colors.white54,
+                                        fontSize: 14.0),
+                                    hintText: 'Password',
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                    ),
+                                  ))),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                  SizedBox(
+                      width: 280,
+                      child: NeuContainer(
+                          child: TextField(
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText1!
                                   .copyWith(
-                                      fontSize: 22.0, color: Colors.white),
-                            )),
+                                  color: Colors.white, fontSize: 18.0),
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              controller: passwordRegConfirmController,
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                isDense: false,
+
+                                contentPadding:
+                                const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .subtitle2!
+                                    .copyWith(
+                                    color: Colors.white54,
+                                    fontSize: 14.0),
+                                hintText: 'Confirm Password',
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide:
+                                  BorderSide(color: Colors.transparent),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide:
+                                  BorderSide(color: Colors.transparent),
+                                ),
+                              ))),
+                  ),
+                        const SizedBox(
+                          height: 141,
+                        ),
+                        SizedBox(
+                          width: 250,
+                          height: 50,
+                          child: NeuButton(
+                              onTap: () {
+                                // _loginUser(
+                                //     loginController.text, passwordController.text
+                                // );
+                              },
+                              splashColor: Colors.purple,
+                              child:
+                              GradientText(
+                                'Register',
+                                gradient: const LinearGradient(colors: [
+                                  Color(0xFFF05523),
+                                  Color(0xFF812D88),
+                                ]),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                    fontSize: 22.0, color: Colors.white),
+                              )
                           ),
                         ),
-                      ),
-                    ]),
-              )),
+                      ]),
+                )),
+          ),
           Align(
             alignment: Alignment.topLeft,
             child: SafeArea(

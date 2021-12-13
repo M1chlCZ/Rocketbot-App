@@ -16,44 +16,45 @@ class _LoginRegisterSwitcherState extends State<LoginRegisterSwitcher> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 210,
+      width: 250,
       child: NeuContainer(
           child: Row(children: [
         SizedBox(
-          width: 100,
+          width: 120,
           child: AnimatedOpacity(
             opacity: _active == 0 ? 1.0 : 0.4,
             duration: _duration,
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  _active = 4;
+                  _active = 0;
                 });
                 widget.changeType!(0);
               },
               child: Text(
                 "LOGIN",
-                style:  Theme.of(context).textTheme.headline4!
+                textAlign: TextAlign.center,
+                style:  Theme.of(context).textTheme.headline4!.copyWith(fontWeight: FontWeight.bold)
               )),),
         ),
         Text('|',
           style: Theme.of(context).textTheme.headline4!),
         SizedBox(
-          width: 100,
+          width: 120,
           child: AnimatedOpacity(
             opacity: _active == 1 ? 1.0 : 0.4,
             duration: _duration,
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  _active = 3;
+                  _active = 1;
                 });
-                var _time = 24 * 7;
                 widget.changeType!(1);
               },
               child: Text(
                 "REGISTER",
-                style: Theme.of(context).textTheme.headline4
+                  textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headline4!.copyWith(fontWeight: FontWeight.bold)
               )),),
         ),
 
