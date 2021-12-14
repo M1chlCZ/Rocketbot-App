@@ -5,7 +5,7 @@ import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/screenPages/coin_screen.dart';
 
 import '../component_widgets/button_neu.dart';
-import '../screenPages/portfolio_screen.dart';
+import '../screenPages/portfolio_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);

@@ -12,13 +12,13 @@ class TransactionList {
     final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=10&coinId=$coinID");
     final price = await _helper.get("Coin/GetPriceData?coin=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
 
-    List<DataWithdrawals>? _r = WithdrawalsModels.fromJson(_withdrawals).data;
-    List<DataDeposits>? _d = DepositsModel.fromJson(_deposits).data;
+    List<DataWithdrawals>? _with = WithdrawalsModels.fromJson(_withdrawals).data;
+    List<DataDeposits>? _dep = DepositsModel.fromJson(_deposits).data;
     List<TransactionData> _finalList = [];
 
     double? priceValue;
 
-    await Future.forEach(_d!, (item) async {
+    await Future.forEach(_dep!, (item) async {
       try {
         var it = (item as DataDeposits);
         if(priceValue == null) {
@@ -40,7 +40,7 @@ class TransactionList {
       }
     });
 
-    await Future.forEach(_r!, (item) {
+    await Future.forEach(_with!, (item) {
       try {
         var it = (item as DataWithdrawals);
         if(priceValue == null) {

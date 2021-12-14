@@ -8,6 +8,7 @@ import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:rocketbot/screens/login_screen.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -92,6 +93,12 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                             child: NeuButton(
                               onTap: () async {
                                 await const FlutterSecureStorage().delete(key: "token");
+                                Navigator.of(context).pushReplacement(
+                                    PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+                                      return const LoginScreen();
+                                    }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                      return FadeTransition(opacity: animation, child: child);
+                                    }));
                               },
                               icon: const Icon(
                                 Icons.more_vert,
