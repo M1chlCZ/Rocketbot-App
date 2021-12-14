@@ -27,7 +27,7 @@
 
 
    <application
-        android:label="rocketbot"
+        android:label="RocketBot"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
