@@ -28,5 +28,6 @@
   "or_scan_qr" : "or receive via QR-code",
   "address" : "Address",
   "amount" : "Amount",
-  "or_send_scan_qr" : "or send via QR-code"
+  "or_send_scan_qr" : "or send via QR-code",
+  "graph_no_data" : "Sorry, we couldn't get the data for the graph"
 }

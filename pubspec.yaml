@@ -45,6 +45,7 @@ flutter:
 
   assets:
     - images/
+    - webpages/
 
 
   fonts:

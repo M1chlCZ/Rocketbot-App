@@ -1,8 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rocketbot/models/coin_graph.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class CoinPriceGraph extends StatefulWidget {
   final HistoryPrices? prices;
@@ -93,6 +94,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
 
       setState(() {});
     } catch (e) {
+      _values.clear();
       print(e);
     }
   }
@@ -225,7 +227,10 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       padding:
           const EdgeInsets.only(right: 0.0, left: 0.0, top: 10, bottom: 10),
       child: _values.isEmpty
-          ? const Placeholder()
+          ? Container( color: Colors.transparent, child: Center(child: Padding(
+            padding: const EdgeInsets.only(top: 130.0),
+            child: Text(AppLocalizations.of(context)!.graph_no_data, style: Theme.of(context).textTheme.subtitle2!.copyWith(color: Colors.white24), ),
+          )),)
           : LineChart(
               _mainData(),
               swapAnimationDuration: const Duration(milliseconds: 300),

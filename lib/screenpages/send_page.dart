@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -12,9 +11,8 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
-import '../widgets/coin_list_view.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SendPage extends StatefulWidget {

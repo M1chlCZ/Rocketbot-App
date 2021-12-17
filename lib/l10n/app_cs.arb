@@ -28,5 +28,6 @@
   "or_scan_qr" : "nebo pomocí scanu QR-kódu",
   "address" : "Adresa",
   "amount" : "Množství mincí",
-  "or_send_scan_qr" : "nebo pomocí scanu QR-kódu"
+  "or_send_scan_qr" : "nebo pomocí scanu QR-kódu",
+  "graph_no_data" : "Omlouváme se, data pro graf jsou nedostupná"
 }

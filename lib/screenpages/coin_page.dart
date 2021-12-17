@@ -277,6 +277,11 @@ class _CoinScreenState extends State<CoinScreen> {
                       ))),
             ],
           ),
+    Container(
+    decoration: BoxDecoration(
+    border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
+    ),
+    ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => _txBloc!.fetchTransactionData(widget.activeCoin),
