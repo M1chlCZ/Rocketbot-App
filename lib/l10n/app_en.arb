@@ -1,10 +1,23 @@
 {
   "@@locale": "en",
 
-  "helloWorld": "Rocketbot",
+  "appName": "Rocketbot",
   "appTitle": "Rocketbot",
   "@appTitle": {
     "description": "Rocketbot app"
   },
-  "portfolio": "Portfolio"
+  "portfolio": "Portfolio",
+  "receive": "Receive",
+  "send" : "Send",
+  "sentTo" : "Sent to",
+  "txid" : "TX id:",
+  "all" : "all",
+  "copy" : "Copy",
+  "explorer" : "Explorer",
+  "txdet" : "Transaction Detail",
+  "txcopy" : "TX id copied to clipboard",
+  "confirmations" : "confirmations",
+  "history_popup" : "HISTORY",
+  "settings_popup" : "SETTINGS",
+  "about_popup" : "ABOUT"
 }

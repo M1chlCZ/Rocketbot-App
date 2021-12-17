@@ -6,6 +6,6 @@ class CoinPrices {
 
   Future<PriceData?> fetchCoinPrice(String coin) async {
     final response = await _helper.get("Coin/GetPriceData?CoinGeckoId=$coin&IncludeHistoryPrices=true&IncludeChange=true");
-    return CoinGraph.fromJson(response,coin ).data;
+    return CoinGraph.fromJson(response,coin).data;
   }
 }

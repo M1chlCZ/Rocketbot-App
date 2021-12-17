@@ -52,6 +52,7 @@ class TransactionList {
           amount: it.amount,
           toAddress: it.toAddress,
           receivedAt: it.createdAt,
+          transactionId: it.transactionId,
           chainConfirmed: it.chainConfirmed,
           usdPrice: priceValue,
         );

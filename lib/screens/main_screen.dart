@@ -2,7 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/screenPages/coin_screen.dart';
+import 'package:rocketbot/screenPages/coin_page.dart';
+import 'package:rocketbot/screenpages/deposit_page.dart';
+import 'package:rocketbot/screenpages/send_page.dart';
 
 import '../component_widgets/button_neu.dart';
 import '../screenPages/portfolio_page.dart';
@@ -16,8 +18,10 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final _portfolioKey = GlobalKey<PortfolioScreenState>();
+  final _pageController = PageController(initialPage: 1);
+  int _selectedPageIndex = 1;
   late List<CoinBalance> lc;
-  int index = 0;
+  int _mainPageIndex = 0;
   late Coin _coinActive;
 
   @override
@@ -29,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     // _bloc!.dispose();
     // _priceBlock!.dispose();
     super.dispose();
@@ -36,14 +41,14 @@ class _MainScreenState extends State<MainScreen> {
 
   void goBack() {
     setState(() {
-      index = 0;
+      _mainPageIndex = 0;
     });
   }
 
   void changeCoinName(Coin? s) {
     lc = _portfolioKey.currentState!.getList();
     setState(() {
-      index = 1;
+      _mainPageIndex = 1;
       _coinActive = s!;
     });
   }
@@ -52,108 +57,154 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: PageTransitionSwitcher(
-          duration: const Duration(milliseconds: 800),
-          transitionBuilder: (child, animation, secondaryAnimation) =>
-              FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          ),
-          child: index == 0
-              ? PortfolioScreen(key: _portfolioKey, coinSwitch: changeCoinName)
-              : CoinScreen(
-                  activeCoin: _coinActive,
-                  allCoins: lc,
-                  goBack: goBack,
+        child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedPageIndex = index;
+              });
+            },
+            children: <Widget>[
+              DepositPage(),
+              PageTransitionSwitcher(
+                duration: const Duration(milliseconds: 800),
+                transitionBuilder: (child, animation, secondaryAnimation) =>
+                    FadeThroughTransition(
+                  animation: animation,
+                  secondaryAnimation: secondaryAnimation,
+                  child: child,
                 ),
+                child: _mainPageIndex == 0
+                    ? PortfolioScreen(
+                        key: _portfolioKey, coinSwitch: changeCoinName)
+                    : CoinScreen(
+                        activeCoin: _coinActive,
+                        allCoins: lc,
+                        goBack: goBack,
+                      ),
+              ),
+              SendPage(),
+            ]),
+      ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          onTap: _onTappedBar,
+          currentIndex: _selectedPageIndex,
+          fixedColor: const Color(0xFF1B1B1B),
+          type: BottomNavigationBarType.fixed,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(0);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu1.png",
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+              label: '',
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(0);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu1.png",
+                    color: Color(0xFF15D37A),
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+            ),
+            BottomNavigationBarItem(
+              icon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(1);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu2.png",
+                    color: Colors.white,
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+              label: '',
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(1);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu2.png",
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+            ),
+            BottomNavigationBarItem(
+              icon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(2);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu3.png",
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+              label: '',
+              activeIcon: SizedBox(
+                width: 40,
+                height: 40,
+                child: NeuButton(
+                  onTap: () {
+                    _onTappedBar(2);
+                  },
+                  imageIcon: Image.asset(
+                    "images/bottommenu3.png",
+                    color: Color(0xFFEB3A13),
+                    width: 20,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu1.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-            label: '',
-            activeIcon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu1.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu2.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-            label: '',
-            activeIcon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu2.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu3.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-            label: '',
-            activeIcon: SizedBox(
-              width: 40,
-              height: 40,
-              child: NeuButton(
-                onTap: () {},
-                imageIcon: Image.asset(
-                  "images/bottommenu3.png",
-                  width: 20,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+  }
+
+  void _onTappedBar(int value) {
+    setState(() {
+      _selectedPageIndex = value;
+    });
+    _pageController.animateToPage(value,
+    duration: Duration(milliseconds: 300), curve: Curves.easeInOutCirc);
+    // _pageController.jumpToPage(value);
   }
 }

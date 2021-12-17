@@ -1,4 +1,22 @@
 {
-  "helloWorld": "Hezký den",
-  "portfolio": "Portfólio"
+  "@@locale": "cs",
+
+  "appName": "RocketBot",
+  "@appTitle": {
+    "description": "Rocketbot app"
+  },
+  "portfolio": "Portfolio",
+  "receive" : "Obdržet",
+  "send" : "Poslat",
+  "sentTo" : "Posláno na:",
+  "txid" : "TX id:",
+  "all" : "vše",
+  "copy" : "Kopírovat",
+  "explorer" : "Prohlížeč",
+  "txdet" : "Detaily transakce",
+  "txcopy" : "TX id zkopírována do schránky",
+  "confirmations" : "potvrzení",
+  "history_popup" : "HISTORIE",
+  "settings_popup" : "NASTAVENÍ",
+  "about_popup" : "O APPCE"
 }

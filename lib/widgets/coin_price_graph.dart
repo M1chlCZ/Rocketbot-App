@@ -57,40 +57,44 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   }
 
   void _preparePriceData(int timeInHours) async {
-    double minY = double.maxFinite;
-    double maxY = double.minPositive;
+    try {
+      double minY = double.maxFinite;
+      double maxY = double.minPositive;
 
-    var timeNow = DateTime.now().millisecondsSinceEpoch;
-    var hourAgo = 0;
+      var timeNow = DateTime.now().millisecondsSinceEpoch;
+      var hourAgo = 0;
 
-    if (timeInHours != 0) {
-      hourAgo = timeNow - 3600000 * timeInHours;
-    } else {
-      hourAgo = 0;
+      if (timeInHours != 0) {
+            hourAgo = timeNow - 3600000 * timeInHours;
+          } else {
+            hourAgo = 0;
+          }
+
+      for (List<double> data in _price!.usd!) {
+            if (data[0] >= hourAgo) {
+              if (minY > data[1]) minY = data[1];
+              if (maxY < data[1]) maxY = data[1];
+              var _spot = FlSpot(data[0].toDouble(), data[1]);
+              _values.add(_spot);
+            }
+          }
+
+      _minX = _values.first.x;
+      _maxX = _values.last.x;
+
+      _divider = maxY /100;
+
+      _minY = (minY / _divider).floorToDouble() * _divider;
+      _maxY = (maxY / _divider).ceilToDouble() * _divider;
+
+
+      _leftTitlesInterval =
+              ((_maxY - _minY) / (_leftLabelsCount - 1)).floorToDouble();
+
+      setState(() {});
+    } catch (e) {
+      print(e);
     }
-
-    for (List<double> data in _price!.usd!) {
-      if (data[0] >= hourAgo) {
-        if (minY > data[1]) minY = data[1];
-        if (maxY < data[1]) maxY = data[1];
-        var _spot = FlSpot(data[0].toDouble(), data[1]);
-        _values.add(_spot);
-      }
-    }
-
-    _minX = _values.first.x;
-    _maxX = _values.last.x;
-
-    _divider = maxY /100;
-
-    _minY = (minY / _divider).floorToDouble() * _divider;
-    _maxY = (maxY / _divider).ceilToDouble() * _divider;
-
-
-    _leftTitlesInterval =
-        ((_maxY - _minY) / (_leftLabelsCount - 1)).floorToDouble();
-
-    setState(() {});
   }
 
   LineChartData _mainData() {

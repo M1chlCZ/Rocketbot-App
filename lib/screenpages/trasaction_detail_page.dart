@@ -44,16 +44,6 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
     }
   }
 
-  void _launchURL(String url) async {
-    var _url = url.replaceAll("{0}", "");
-    print(_url);
-    try {
-      await launch(_url);
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Matrix4 scaleXYZTransform({
     double scaleX = 1.05,
     double scaleY = 1.00,

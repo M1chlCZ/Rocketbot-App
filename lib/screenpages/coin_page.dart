@@ -303,6 +303,7 @@ class _CoinScreenState extends State<CoinScreen> {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
+                                // print(snapshot.data!.data![index].transactionId);
                                 if(snapshot.data!.data![index].toAddress == null) {
                                   return CoinDepositView(
                                     data: snapshot.data!.data![index],

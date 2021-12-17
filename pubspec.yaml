@@ -23,7 +23,7 @@ dependencies:
   animations: ^2.0.2
   progress_indicators: ^1.0.0
   url_launcher: ^6.0.17
-
+  webview_flutter_plus: ^0.2.3+1
 
   cupertino_icons: ^1.0.4
 

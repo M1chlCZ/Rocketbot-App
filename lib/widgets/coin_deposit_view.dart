@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/transaction_data.dart';
-import 'package:rocketbot/screenpages/trasaction_detail_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CoinDepositView extends StatefulWidget {
@@ -73,13 +73,13 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: widget.data.chainConfirmed! ? Text(
-                                  "Tx id: " + _formatTx(widget.data.transactionId!),
+                                  AppLocalizations.of(context)!.txid +" " + _formatTx(widget.data.transactionId!),
                                   style: Theme.of(context).textTheme.headline3,
                                   maxLines: 1,
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.ellipsis,
                                 ) : Text(
-                                  widget.data.confirmations!.toString() + "confirmation",
+                                  widget.data.confirmations!.toString() + AppLocalizations.of(context)!.confirmations,
                                   style: Theme.of(context).textTheme.headline4,
                                   maxLines: 1,
                                   textAlign: TextAlign.start,
@@ -218,129 +218,177 @@ class _CoinDepositViewState extends State<CoinDepositView> {
     return format.format(date);
   }
 
-  void _showDetails(TransactionData td) async {
-    Navigator.of(context).push(PageRouteBuilder(
-        pageBuilder: (BuildContext context, _, __) {
-          return TransactionDetailPage(transactionData: td);
-        }, transitionsBuilder:
-        (_, Animation<double> animation, __, Widget child) {
-      return FadeTransition(opacity: animation, child: child);
-    }));
+  void _launchURL(String url) async {
+    var _url = url.replaceAll("{0}", "");
+    print(_url);
+    try {
+      await launch(_url);
+    } catch (e) {
+      print(e);
+    }
   }
-}
 
-// void _showDetails(TransactionData td) async {
-//   await showGeneralDialog(
-//       context: context,
-//       pageBuilder: (BuildContext buildContext,
-//           Animation<double> animation,
-//           Animation<double> secondaryAnimation) {
-//         return SafeArea(
-//           child: Builder(builder: (context) {
-//             return Center(
-//               child: SizedBox(
-//                   width: 400,
-//                   height: 500,
-//                   child: StatefulBuilder(
-//                       builder: (context, snapshot) {
-//                         return Card(
-//                           color: const Color(0xFF1B1B1B),
-//                           child: InkWell(
-//                             child: Padding(
-//                               padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-//                               child: Column(
-//                                 mainAxisAlignment: MainAxisAlignment.start,
-//                                 crossAxisAlignment: CrossAxisAlignment.center,
-//                                 children: [
-//                                   const SizedBox(
-//                                     height: 30,
-//                                   ),
-//                                   SizedBox(
-//                                     width: 100,
-//                                     child: CachedNetworkImage(
-//                                       imageUrl:'https://app.rocketbot.pro/coins/' + td.coin!.imageBig!,
-//                                       // progressIndicatorBuilder: (context, url, downloadProgress) =>
-//                                       //     CircularProgressIndicator(value: downloadProgress.progress),
-//                                       errorWidget: (context, url, error) => const Icon(Icons.error),
-//                                       fit: BoxFit.fitWidth,),
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   Text('Deposit transaction',
-//                                     style: Theme.of(context).textTheme.headline4,
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: Text('TX id:',
-//                                       style: Theme.of(context).textTheme.headline4,
-//                                       textAlign: TextAlign.start,
-//                                     ),
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 10,
-//                                   ),
-//                                   Text(td.transactionId!,
-//                                     style: Theme.of(context).textTheme.headline4,
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: Text('Confirmations:  ' + td.confirmations!.toString(),
-//                                       style: Theme.of(context).textTheme.headline4,
-//                                       textAlign: TextAlign.start,
-//                                     ),
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: Text('Date:  ' + _getMeDate(td.receivedAt!),
-//                                       style: Theme.of(context).textTheme.headline4,
-//                                       textAlign: TextAlign.start,
-//                                     ),
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: Text('Amount:  ' + td.amount!.toString(),
-//                                       style: Theme.of(context).textTheme.headline4,
-//                                       textAlign: TextAlign.start,
-//                                     ),
-//                                   ),
-//                                   const SizedBox(
-//                                     height: 20,
-//                                   ),
-//                                   GestureDetector(
-//                                     onTap: () {
-//                                       _launchURL(td.coin!.explorerUrl! + td.transactionId!);
-//                                     },
-//                                     child: SizedBox(
-//                                       width: double.infinity,
-//                                       child: Text('Launch explorer',
-//                                         style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.blue),
-//                                         textAlign: TextAlign.start,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ),
-//                         );})),);
-//           }),
-//         );
-//       },
-//       barrierDismissible: true,
-//       barrierLabel: MaterialLocalizations.of(context)
-//           .modalBarrierDismissLabel,
-//       transitionDuration: const Duration(milliseconds: 150));
-// }
+  void _showDetails(TransactionData td) async {
+    await showGeneralDialog(
+        context: context,
+        pageBuilder: (BuildContext buildContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return SafeArea(
+            child: Builder(builder: (context) {
+              var _copied = false;
+              return Center(
+                child: SizedBox(
+                    width: 300,
+                    height: 200,
+                    child: StatefulBuilder(
+                        builder: (context, StateSetter setState) {
+                          return Card(
+                            color: const Color(0xFF1B1B1B),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 15.0,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Stack(
+                                      alignment: AlignmentDirectional.topCenter,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 5.0),
+                                          child: Text(AppLocalizations.of(context)!.txdet, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline4!.copyWith(fontSize: 16.0),),
+                                        ),
+                                        Row(
+                                          children: [
+                                            const SizedBox(width: 240.0,),
+                                            SizedBox(
+                                                width: 30.0,
+                                                height: 30.0,
+                                                child: NeuButton(
+                                                  onTap: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  icon: Icon(Icons.clear, color: Colors.white, size: 20.0,),)),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15.0,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(AppLocalizations.of(context)!.txid,
+                                      style: Theme.of(context).textTheme.headline4,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10.0,),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child:
+                                        GestureDetector(
+                                          onTap: () {
+                                            Clipboard.setData(ClipboardData(text: td.transactionId.toString()));
+                                            setState(() {
+                                              _copied = true;
+                                            });
+                                          },
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                            child: Container(
+                                              color: Colors.black38,
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(td.transactionId!,
+                                                style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 12.0),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      IgnorePointer(
+                                        child: AnimatedOpacity(
+                                          duration:Duration(milliseconds: 300) ,
+                                          opacity: _copied ? 1.0 : 0.0,
+                                          child: SizedBox(
+                                            width: double.infinity,
+                                            child:
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                              child: Container(
+                                                color: Colors.green,
+                                                padding: EdgeInsets.all(5.0),
+                                                child: Text(AppLocalizations.of(context)!.txcopy + "\n",
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 12.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(15.0, 22.0, 15.0, 0.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Clipboard.setData(ClipboardData(text: td.transactionId.toString()));
+                                            setState(() {
+                                              _copied = true;
+                                            });
+                                          },
+                                          child: SizedBox(
+                                            width: 90.0,
+                                            child: NeuButton(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(AppLocalizations.of(context)!.copy,
+                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            _launchURL(td.coin!.explorerUrl! + td.transactionId!);
+                                          },
+                                          child: SizedBox(
+                                            width: 90.0,
+                                            child: NeuButton(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(AppLocalizations.of(context)!.explorer,
+                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          );})),);
+            }),
+          );
+        },
+        barrierDismissible: true,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        transitionDuration: const Duration(milliseconds: 150));
+  }
+
+}

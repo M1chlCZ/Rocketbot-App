@@ -24,8 +24,10 @@ class BalancesBloc {
     coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
       List<CoinBalance>? _coins = await _balanceList.fetchAllBalances();
-      coinsListSink.add(ApiResponse.completed(_coins));
+      if (!_coinListController!.isClosed)
+        coinsListSink.add(ApiResponse.completed(_coins));
     } catch (e) {
+      if (!_coinListController!.isClosed)
       coinsListSink.add(ApiResponse.error(e.toString()));
       // print(e);
     }
