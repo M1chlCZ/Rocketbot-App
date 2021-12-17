@@ -2,15 +2,20 @@
   "@@locale": "cs",
 
   "appName": "RocketBot",
+  "appTitle": "Rocketbot",
   "@appTitle": {
     "description": "Rocketbot app"
   },
   "portfolio": "Portfolio",
   "receive" : "Obdržet",
-  "send" : "Poslat",
-  "sentTo" : "Posláno na:",
+  "send" : "Odeslat",
+  "sentTo" : "Odesláno na:",
   "txid" : "TX id:",
-  "all" : "vše",
+  "all" : "VŠE",
+  "onew" : "1T",
+  "oned" : "1D",
+  "twelveh" : "12H",
+  "no_tx" : "Žádné transakce",
   "copy" : "Kopírovat",
   "explorer" : "Prohlížeč",
   "txdet" : "Detaily transakce",
@@ -18,5 +23,10 @@
   "confirmations" : "potvrzení",
   "history_popup" : "HISTORIE",
   "settings_popup" : "NASTAVENÍ",
-  "about_popup" : "O APPCE"
+  "about_popup" : "O APPCE",
+  "choose_coin" : "Zvolte minci",
+  "or_scan_qr" : "nebo pomocí scanu QR-kódu",
+  "address" : "Adresa",
+  "amount" : "Množství mincí",
+  "or_send_scan_qr" : "nebo pomocí scanu QR-kódu"
 }

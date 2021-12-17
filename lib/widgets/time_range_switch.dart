@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TimeRangeSwitcher extends StatefulWidget {
   final Function(int time) changeTime;
@@ -15,10 +16,11 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
 
   @override
   Widget build(BuildContext context) {
+    var _width = MediaQuery.of(context).size.width * 0.10;
     return NeuContainer(
         child: Row(children: [
       SizedBox(
-        width: 35,
+        width: _width,
         child: AnimatedOpacity(
           opacity: _active == 4 ? 1.0 : 0.4,
           duration: _duration,
@@ -29,13 +31,12 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
               });
               widget.changeTime(0);
             },
-            child: Text(
-              "ALL",
+            child: Text(AppLocalizations.of(context)!.all,
               style:  Theme.of(context).textTheme.subtitle1
             )),),
       ),
       SizedBox(
-        width: 35,
+        width: _width,
         child: AnimatedOpacity(
           opacity: _active == 3 ? 1.0 : 0.4,
           duration: _duration,
@@ -48,12 +49,12 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
               widget.changeTime(_time);
             },
             child: Text(
-              "1W",
+                AppLocalizations.of(context)!.onew,
               style: Theme.of(context).textTheme.subtitle1
             )),),
       ),
       SizedBox(
-        width: 30,
+        width: _width,
         child: AnimatedOpacity(
           opacity: _active == 2 ? 1.0 : 0.4,
           duration: _duration,
@@ -65,11 +66,11 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
                 var _time = 24;
                 widget.changeTime(_time);
               },
-              child: Text("1D", style: Theme.of(context).textTheme.subtitle1)),
+              child: Text(AppLocalizations.of(context)!.oned, style: Theme.of(context).textTheme.subtitle1)),
         ),
       ),
       SizedBox(
-        width: 35,
+        width: _width,
         child: AnimatedOpacity(
           opacity: _active == 1 ? 1.0 : 0.4,
           duration: _duration,
@@ -81,7 +82,7 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
                 widget.changeTime(12);
               },
               child: Text(
-                "12H",
+                AppLocalizations.of(context)!.twelveh,
                 style: Theme.of(context).textTheme.subtitle1,
               )),
         ),

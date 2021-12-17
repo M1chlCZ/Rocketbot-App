@@ -7,19 +7,24 @@ class CoinsList {
   final NetInterface _helper = NetInterface();
 
   Future<List<Coin>?> fetchAllCoins() async {
-    final response = await _helper.get("Coin/GetAllCoins");
-    List<Coin>? r = CoinList.fromJson(response).data;
-    List<Coin> finalList = [];
+    try {
+      final response = await _helper.get("Coin/GetAllCoins");
+      List<Coin>? r = CoinList.fromJson(response).data;
+      List<Coin> finalList = [];
 
-    await Future.forEach(r!, (item) async {
-      var coin = (item as Coin);
-      String? coinID = coin.coinGeckoId;
-      var res = await _helper.get("Coin/GetPriceData?coin=$coinID");
-      PriceData? p = CoinGraph.fromJson(res, coinID!).data;
-      coin.setPriceData(p!);
-      finalList.add(coin);
-      });
+      await Future.forEach(r!, (item) async {
+            var coin = (item as Coin);
+            String? coinID = coin.coinGeckoId;
+            var res = await _helper.get("Coin/GetPriceData?coin=$coinID");
+            PriceData? p = CoinGraph.fromJson(res, coinID!).data;
+            coin.setPriceData(p!);
+            finalList.add(coin);
+            });
 
-    return finalList;
+      return finalList;
+    } catch (e) {
+      print(e);
+      return Future.error(e);
+    }
   }
 }

@@ -9,13 +9,15 @@ class NeuButton extends StatelessWidget {
   final Color? splashColor;
   final Image? imageIcon;
   final Widget? child;
+  final double? height;
+  final double? width;
 
-  const NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0, this.child}) : super(key: key);
+  const NeuButton({Key? key, this.color, this.onTap, this.icon, this.imageIcon, this.splashColor, this.animIcon, this.radius = 4.0, this.child, this.height, this.width}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
+    return _getContainer(height, width,
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         boxShadow: [
           BoxShadow(
@@ -51,5 +53,14 @@ class NeuButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Container _getContainer(double? height, double? width, {required BoxDecoration decoration, required Widget child}) {
+   if(height != null) {
+     assert (width !=null);
+     return Container(height: height, width: width, decoration: decoration, child: child,);
+   }else{
+     return Container(decoration: decoration, child: child,);
+   }
   }
 }

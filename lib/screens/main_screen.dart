@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   final _portfolioKey = GlobalKey<PortfolioScreenState>();
   final _pageController = PageController(initialPage: 1);
   int _selectedPageIndex = 1;
-  late List<CoinBalance> lc;
+  List<CoinBalance>? _lc;
   int _mainPageIndex = 0;
   late Coin _coinActive;
 
@@ -45,8 +45,12 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void getBalances(List<CoinBalance>? lc) {
+    _lc = lc;
+  }
+
   void changeCoinName(Coin? s) {
-    lc = _portfolioKey.currentState!.getList();
+    _lc = _portfolioKey.currentState!.getList();
     setState(() {
       _mainPageIndex = 1;
       _coinActive = s!;
@@ -76,32 +80,36 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 child: _mainPageIndex == 0
                     ? PortfolioScreen(
-                        key: _portfolioKey, coinSwitch: changeCoinName)
+                        key: _portfolioKey, coinSwitch: changeCoinName, listBalances: _lc, passBalances: getBalances)
                     : CoinScreen(
                         activeCoin: _coinActive,
-                        allCoins: lc,
+                        allCoins: _lc,
                         goBack: goBack,
                       ),
               ),
-              SendPage(),
+              SendPage(listBalances: _lc, passBalances: getBalances),
             ]),
       ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
         ),
-        child: BottomNavigationBar(
-          onTap: _onTappedBar,
-          currentIndex: _selectedPageIndex,
-          fixedColor: const Color(0xFF1B1B1B),
-          type: BottomNavigationBarType.fixed,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: BottomNavigationBar(
+            elevation: 10.0,
+            onTap: _onTappedBar,
+            currentIndex: _selectedPageIndex,
+            fixedColor: const Color(0xFF1B1B1B),
+            type: BottomNavigationBarType.fixed,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
                     _onTappedBar(0);
                   },
@@ -111,12 +119,10 @@ class _MainScreenState extends State<MainScreen> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-              ),
-              label: '',
-              activeIcon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+                label: '',
+                activeIcon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
                     _onTappedBar(0);
                   },
@@ -128,13 +134,12 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-            ),
-            BottomNavigationBarItem(
-              icon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+              BottomNavigationBarItem(
+                icon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
+                    _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
                   imageIcon: Image.asset(
@@ -144,13 +149,12 @@ class _MainScreenState extends State<MainScreen> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-              ),
-              label: '',
-              activeIcon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+                label: '',
+                activeIcon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
+                    _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
                   imageIcon: Image.asset(
@@ -160,12 +164,10 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-            ),
-            BottomNavigationBarItem(
-              icon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+              BottomNavigationBarItem(
+                icon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
                     _onTappedBar(2);
                   },
@@ -175,12 +177,10 @@ class _MainScreenState extends State<MainScreen> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-              ),
-              label: '',
-              activeIcon: SizedBox(
-                width: 40,
-                height: 40,
-                child: NeuButton(
+                label: '',
+                activeIcon: NeuButton(
+                  width: 45,
+                  height: 45,
                   onTap: () {
                     _onTappedBar(2);
                   },
@@ -192,8 +192,8 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

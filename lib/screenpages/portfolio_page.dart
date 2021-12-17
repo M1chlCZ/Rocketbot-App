@@ -12,8 +12,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PortfolioScreen extends StatefulWidget {
   final Function(Coin? coin) coinSwitch;
+  final List<CoinBalance>? listBalances;
+  final Function(List<CoinBalance>? lc) passBalances;
 
-  const PortfolioScreen({Key? key, required this.coinSwitch}) : super(key: key);
+  const PortfolioScreen({Key? key, required this.coinSwitch, this.listBalances, required this.passBalances})
+      : super(key: key);
 
   @override
   PortfolioScreenState createState() => PortfolioScreenState();
@@ -32,7 +35,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = BalancesBloc();
+    _bloc = BalancesBloc(widget.listBalances);
+    portCalc = widget.listBalances != null ? true : false;
   }
 
   @override
@@ -232,6 +236,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                           case Status.COMPLETED:
                             if (listCoins == null) {
                               listCoins = snapshot.data!.data!;
+                              widget.passBalances(listCoins);
                               _calculatePortfolio();
                             }
                             return ListView.builder(
@@ -256,12 +261,27 @@ class PortfolioScreenState extends State<PortfolioScreen> {
               ),
             ],
           ),
+          Visibility(
+              visible: popMenu ? true : false,
+              child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      popMenu = false;
+                    });
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 50.0),
+                    color: Colors.transparent,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ))),
           Positioned(
               top: 50.0,
               right: 4.0,
               child: AnimatedOpacity(
                 opacity: popMenu ? 1.0 : 0.0,
                 duration: Duration(milliseconds: 300),
+                curve: Curves.decelerate,
                 child: Card(
                   elevation: 10.0,
                   color: Colors.transparent,
@@ -276,7 +296,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               height: 32,
                               child: Center(
                                   child: Text(
-                                    AppLocalizations.of(context)!.history_popup,
+                                AppLocalizations.of(context)!.history_popup,
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline1!
@@ -292,7 +312,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               height: 32,
                               child: Center(
                                   child: Text(
-                                    AppLocalizations.of(context)!.settings_popup,
+                                AppLocalizations.of(context)!.settings_popup,
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline1!
@@ -310,7 +330,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               height: 32,
                               child: Center(
                                   child: Text(
-                                    AppLocalizations.of(context)!.about_popup,
+                                AppLocalizations.of(context)!.about_popup,
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline1!
@@ -325,6 +345,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
           Visibility(
             visible: !portCalc,
             child: Container(
+              margin: EdgeInsets.only(top: 50),
               color: const Color(0xFF1B1B1B),
               child: Center(
                 child: HeartbeatProgressIndicator(
@@ -344,7 +365,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Future _refreshData() async {
-    await _bloc!.fetchBalancesList();
+    await _bloc!.fetchBalancesList(null);
     listCoins = null;
     setState(() {});
   }

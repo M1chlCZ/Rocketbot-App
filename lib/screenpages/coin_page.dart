@@ -5,6 +5,7 @@ import 'package:rocketbot/bloc/get_transaction_bloc.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/widgets/coin_deposit_view.dart';
 import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../bloc/coins_price_bloc.dart';
 import '../component_widgets/button_neu.dart';
 import '../component_widgets/container_neu.dart';
@@ -296,7 +297,7 @@ class _CoinScreenState extends State<CoinScreen> {
                       case Status.COMPLETED:
                         if(snapshot.data!.data!.isEmpty) {
                           return Center(child:
-                          Text('No transactions',
+                          Text(AppLocalizations.of(context)!.no_tx,
                             style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),)
                           );
                         }else {
@@ -315,14 +316,14 @@ class _CoinScreenState extends State<CoinScreen> {
                                 }
                               });
                         }
-                        break;
+                        // break;
                       case Status.ERROR:
                         return Center(child:
                         Text('There has been an error communicating with the server',
                           style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),)
                         );
                         // print(snapshot.error);
-                        break;
+                        // break;
                     }
                   }
                   return Container();
@@ -338,18 +339,6 @@ class _CoinScreenState extends State<CoinScreen> {
   _changeTime(int time) {
     setState(() {
       _graphKey.currentState!.changeTime(time);
-    });
-    // _time = time;
-    // _preparePriceData(time);
-  }
-
-  _changeCoin(HistoryPrices? h) {
-    // _graphKey.currentState!.changeCoin(h!);
-  }
-
-  _changeCoinName(String s) {
-    setState(() {
-      // _coinActive = s;
     });
   }
 

@@ -11,7 +11,11 @@
   "send" : "Send",
   "sentTo" : "Sent to",
   "txid" : "TX id:",
-  "all" : "all",
+  "all" : "ALL",
+  "onew" : "1W",
+  "oned" : "1D",
+  "twelveh" : "12H",
+  "no_tx" : "No transactions",
   "copy" : "Copy",
   "explorer" : "Explorer",
   "txdet" : "Transaction Detail",
@@ -19,5 +23,10 @@
   "confirmations" : "confirmations",
   "history_popup" : "HISTORY",
   "settings_popup" : "SETTINGS",
-  "about_popup" : "ABOUT"
+  "about_popup" : "ABOUT",
+  "choose_coin" : "Choose coin",
+  "or_scan_qr" : "or receive via QR-code",
+  "address" : "Address",
+  "amount" : "Amount",
+  "or_send_scan_qr" : "or send via QR-code"
 }

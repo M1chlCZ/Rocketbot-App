@@ -7,7 +7,7 @@ class CoinBalances {
 
   Future<List<CoinBalance>?> fetchAllBalances() async {
     final response = await _helper.get("User/GetBalances");
-    final priceData = await _helper.get("Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=false&IncludeMarketcap=true&IncludeChange=true");
+    final priceData = await _helper.get("Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=true&IncludeMarketcap=true&IncludeChange=true");
     List<CoinBalance>? r = BalanceList.fromJson(response).data;
     List<CoinBalance> finalList = [];
 
@@ -20,9 +20,8 @@ class CoinBalances {
         PriceData? p = PriceData.fromJson(price);
         coinBal.setPriceData(p);
         finalList.add(coinBal);
-
       } catch (e) {
-        // print(e);
+        print(e);
       }
     });
 

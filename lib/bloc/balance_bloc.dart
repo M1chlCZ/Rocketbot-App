@@ -15,13 +15,16 @@ class BalancesBloc {
   Stream<ApiResponse<List<CoinBalance>>> get coinsListStream =>
       _coinListController!.stream;
 
-  BalancesBloc() {
+  BalancesBloc(List<CoinBalance>? lc) {
     _coinListController = StreamController<ApiResponse<List<CoinBalance>>>();
-    fetchBalancesList();
+    if(lc != null) {
+      coinsListSink.add(ApiResponse.completed(lc));
+    }
+    fetchBalancesList(lc);
   }
 
-  fetchBalancesList() async {
-    coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
+  fetchBalancesList(List<CoinBalance>? lc) async {
+    if(lc == null)  coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
       List<CoinBalance>? _coins = await _balanceList.fetchAllBalances();
       if (!_coinListController!.isClosed)
