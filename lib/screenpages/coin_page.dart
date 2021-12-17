@@ -59,6 +59,7 @@ class _CoinScreenState extends State<CoinScreen> {
 
   @override
   void dispose() {
+    _listCoins.clear();
     _priceBlock!.dispose();
     _txBloc!.dispose();
     super.dispose();

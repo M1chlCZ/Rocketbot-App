@@ -240,7 +240,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
               return Center(
                 child: SizedBox(
                     width: 300,
-                    height: 200,
+                    height: MediaQuery.of(context).size.height * 0.26,
                     child: StatefulBuilder(
                         builder: (context, StateSetter setState) {
                           return Card(
