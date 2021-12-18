@@ -27,11 +27,14 @@ class TransactionBloc {
   }
 
   fetchTransactionData(Coin coin) async {
+    if (!_coinListController!.isClosed)
     coinsListSink.add(ApiResponse.loading('Fetching Transactions'));
     try {
       List<TransactionData>? _coins = await _coinBalances.fetchTransactions(coin.id!);
+      if (!_coinListController!.isClosed)
       coinsListSink.add(ApiResponse.completed(_coins));
     } catch (e) {
+      if (!_coinListController!.isClosed)
       coinsListSink.add(ApiResponse.error(e.toString()));
       // print(e);
     }

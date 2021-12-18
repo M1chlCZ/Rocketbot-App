@@ -10,7 +10,9 @@ import '../component_widgets/button_neu.dart';
 import '../screenPages/portfolio_page.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final CoinBalance coinBalance;
+  final List<CoinBalance>? listCoins;
+  const MainScreen({Key? key, required this.coinBalance, this.listCoins}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -23,10 +25,14 @@ class _MainScreenState extends State<MainScreen> {
   List<CoinBalance>? _lc;
   int _mainPageIndex = 0;
   late Coin _coinActive;
+  double _free = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _coinActive = widget.coinBalance.coin!;
+    _free = widget.coinBalance.free!;
+    _lc = widget.listCoins!;
     // _bloc = BalancesBloc();
     // _priceBlock = CoinPriceBloc("merge");
   }
@@ -43,6 +49,13 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _mainPageIndex = 0;
     });
+  }
+
+  void _setActiveCoin(Coin? c) {
+    final index = _lc!.indexWhere((element) =>
+                                      element.coin == c);
+    _free = _lc![index].free!;
+    _coinActive = c!;
   }
 
   void getBalances(List<CoinBalance>? lc) {
@@ -69,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
               });
             },
             children: <Widget>[
-              DepositPage(),
+              DepositPage(coin: _coinActive, free: _free,),
               PageTransitionSwitcher(
                 duration: const Duration(milliseconds: 800),
                 transitionBuilder: (child, animation, secondaryAnimation) =>
@@ -78,16 +91,14 @@ class _MainScreenState extends State<MainScreen> {
                   secondaryAnimation: secondaryAnimation,
                   child: child,
                 ),
-                child: _mainPageIndex == 0
-                    ? PortfolioScreen(
-                        key: _portfolioKey, coinSwitch: changeCoinName, listBalances: _lc, passBalances: getBalances)
-                    : CoinScreen(
+                child: CoinScreen(
+                  setActiveCoin: _setActiveCoin,
                         activeCoin: _coinActive,
                         allCoins: _lc,
                         goBack: goBack,
                       ),
               ),
-              SendPage(listBalances: _lc, passBalances: getBalances),
+              SendPage(coinActive: _coinActive, free: _free,),
             ]),
       ),
       bottomNavigationBar: Container(
@@ -114,8 +125,8 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(0);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu1.png",
-                    width: 20,
+                    "images/receive_nav_icon.png",
+                    width: 25,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
@@ -127,9 +138,9 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(0);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu1.png",
+                    "images/receive_nav_icon.png",
                     color: Color(0xFF15D37A),
-                    width: 20,
+                    width: 25,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
@@ -143,9 +154,9 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(1);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu2.png",
+                    "images/coin_nav_icon.png",
                     color: Colors.white,
-                    width: 20,
+                    width: 34,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
@@ -158,9 +169,10 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(1);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu2.png",
-                    width: 20,
+                    "images/coin_nav_icon.png",
+                    width: 34,
                     fit: BoxFit.fitWidth,
+                    color: Colors.blue,
                   ),
                 ),
               ),
@@ -172,8 +184,8 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(2);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu3.png",
-                    width: 20,
+                    "images/send_nav_icon.png",
+                    width: 25,
                     fit: BoxFit.fitWidth,
                   ),
                 ),
@@ -185,9 +197,9 @@ class _MainScreenState extends State<MainScreen> {
                     _onTappedBar(2);
                   },
                   imageIcon: Image.asset(
-                    "images/bottommenu3.png",
+                    "images/send_nav_icon.png",
                     color: Color(0xFFEB3A13),
-                    width: 20,
+                    width: 25,
                     fit: BoxFit.fitWidth,
                   ),
                 ),

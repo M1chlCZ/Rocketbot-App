@@ -14,11 +14,10 @@ import 'price_badge.dart';
 class CoinListView extends StatefulWidget {
   final CoinBalance coin;
   final String? customLocale;
-  final Function(HistoryPrices? h) coinSwitch;
-  final Function (Coin? coin) activeCoin;
+  final Function(CoinBalance h) coinSwitch;
   final double? free;
 
-  const CoinListView({Key? key,required this.coin, this.customLocale, this.free, required this.coinSwitch, required this.activeCoin}) : super (key: key);
+  const CoinListView({Key? key,required this.coin, this.customLocale, this.free, required this.coinSwitch}) : super (key: key);
 
   @override
   State<CoinListView> createState() => _CoinListViewState();
@@ -50,8 +49,8 @@ class _CoinListViewState extends State<CoinListView> {
               splashColor: Colors.black54,
               highlightColor: Colors.black54,
               onTap: () {
-                widget.coinSwitch(widget.coin.priceData!.historyPrices!);
-                widget.activeCoin(widget.coin.coin!);
+                widget.coinSwitch(widget.coin);
+                // widget.activeCoin(widget.coin.coin!);
               },
               child: Container(
                 alignment: Alignment.centerLeft,

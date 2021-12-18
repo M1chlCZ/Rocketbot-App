@@ -406,6 +406,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.3"
+  share:
+    dependency: "direct main"
+    description:
+      name: share
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -551,6 +558,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  vibration:
+    dependency: "direct main"
+    description:
+      name: vibration
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.4-nullsafety.0"
+  vibration_web:
+    dependency: transitive
+    description:
+      name: vibration_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.3-nullsafety.0"
   webview_flutter:
     dependency: transitive
     description:

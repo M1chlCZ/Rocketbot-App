@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,14 +13,16 @@ import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:share/share.dart';
+import 'package:vibration/vibration.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SendPage extends StatefulWidget {
-  final List<CoinBalance>? listBalances;
-  final Function(List<CoinBalance>? lc) passBalances;
+  final Coin? coinActive;
+  final double? free;
 
-  const SendPage({Key? key, this.listBalances, required this.passBalances})
+  const SendPage({Key? key, this.coinActive, this.free})
       : super(key: key);
 
   @override
@@ -29,16 +32,16 @@ class SendPage extends StatefulWidget {
 class _SendPageState extends State<SendPage> {
   TextEditingController _addressController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
-  BalancesBloc? _bloc;
-  List<CoinBalance>? listCoins;
+
   Coin? _coinActive;
-  bool _finished = true;
+  bool _curtain = true;
   bool _copyIconVisible = true;
   double _free = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _coinActive = widget.coinActive!;
     _addressController.text = '';
     _addressController.addListener(() {
       if(_addressController.text.length == 0) {
@@ -47,8 +50,7 @@ class _SendPageState extends State<SendPage> {
         setState(() {_copyIconVisible = false;});
       }
     });
-    _bloc = BalancesBloc(widget.listBalances);
-    _finished = widget.listBalances != null ? false : true;
+    _curtain = false;
   }
 
   _getClipBoardData() async {
@@ -69,12 +71,6 @@ class _SendPageState extends State<SendPage> {
   }
 
   @override
-  void dispose() {
-    _bloc!.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Material(
       child: Stack(
@@ -83,100 +79,116 @@ class _SendPageState extends State<SendPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
+      padding: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
                 child: Row(
                   children: [
+                    SizedBox(
+                      height: 30,
+                      width: 25,
+                      child: NeuButton(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          size: 20.0,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    ),
                     Text(AppLocalizations.of(context)!.send,
                         style: Theme.of(context).textTheme.headline4),
                     const SizedBox(
                       width: 50,
                     ),
-                    SizedBox(
-                      width: 90.0,
-                      child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
-                        stream: _bloc!.coinsListStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            switch (snapshot.data!.status) {
-                              case Status.LOADING:
-                                listCoins = null;
-                                Future.delayed(Duration(milliseconds: 100), () {
-                                  setState(() {
-                                    _finished = true;
-                                  });
-                                });
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 30.0),
-                                  child: SizedBox(
-                                    child: _finished
-                                        ? Container()
-                                        : const CircularProgressIndicator(),
-                                  ),
-                                );
-                              case Status.COMPLETED:
-                                Future.delayed(Duration(milliseconds: 500), () {
-                                  setState(() {
-                                    _finished = false;
-                                  });
-                                });
-                                if (listCoins == null) {
-                                  listCoins = snapshot.data!.data!;
-                                  widget.passBalances(listCoins);
-                                  if(_coinActive == null) {
-                                    _coinActive = listCoins![0].coin!;
-                                    _free = listCoins![0].free!;
-                                  };
-                                  // _calculatePortfolio();
-                                }
-                                return SizedBox(
-                                  height: 30,
-                                  child: NeuContainer(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 8.0),
-                                        child: Center(
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<Coin>(
-                                              value: _coinActive,
-                                              isDense: true,
-                                              onChanged: (Coin? coin) {
-                                                setState(() {
-                                                  _coinActive = coin!;
-                                                  final index = listCoins!.indexWhere((element) =>
-                                                  element.coin == coin);
-                                                  _free = listCoins![index].free!;
-                                                  // _priceBlock!.changeCoin(coin.coinGeckoId!);
-                                                  // _coinNameOpacity = 0.0;
-                                                  // _txBloc!.changeCoin(coin);
-                                                });
-                                                // _calculatePortfolio();
-                                              },
-                                              items: listCoins!
-                                                  .map((e) => DropdownMenuItem(
-                                                  value: e.coin!,
-                                                  child: SizedBox(
-                                                      width: 50,
-                                                      child: Text(e.coin!.cryptoId!))))
-                                                  .toList(),
-                                            ),
-                                          ),
-                                        ),
-                                      )),
-                                );
-                              case Status.ERROR:
-                                Future.delayed(Duration(milliseconds: 500), () {
-                                  setState(() {
-                                    _finished = false;
-                                  });
-                                });
-                                print("error");
-                                break;
-                            }
-                          }
-                          return Container();
-                        },
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: 90.0,
+                    //   child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
+                    //     stream: _bloc!.coinsListStream,
+                    //     builder: (context, snapshot) {
+                    //       if (snapshot.hasData) {
+                    //         switch (snapshot.data!.status) {
+                    //           case Status.LOADING:
+                    //             listCoins = null;
+                    //             Future.delayed(Duration(milliseconds: 100), () {
+                    //               setState(() {
+                    //                 _finished = true;
+                    //               });
+                    //             });
+                    //             return Padding(
+                    //               padding: const EdgeInsets.only(top: 30.0),
+                    //               child: SizedBox(
+                    //                 child: _finished
+                    //                     ? Container()
+                    //                     : const CircularProgressIndicator(),
+                    //               ),
+                    //             );
+                    //           case Status.COMPLETED:
+                    //             Future.delayed(Duration(milliseconds: 500), () {
+                    //               setState(() {
+                    //                 _finished = false;
+                    //               });
+                    //             });
+                    //             if (listCoins == null) {
+                    //               listCoins = snapshot.data!.data!;
+                    //               widget.passBalances(listCoins);
+                    //               if(_coinActive == null) {
+                    //                 _coinActive = listCoins![0].coin!;
+                    //                 _free = listCoins![0].free!;
+                    //               };
+                    //               // _calculatePortfolio();
+                    //             }
+                    //             return SizedBox(
+                    //               height: 30,
+                    //               child: NeuContainer(
+                    //                   child: Padding(
+                    //                     padding: const EdgeInsets.only(left: 8.0),
+                    //                     child: Center(
+                    //                       child: DropdownButtonHideUnderline(
+                    //                         child: DropdownButton<Coin>(
+                    //                           value: _coinActive,
+                    //                           isDense: true,
+                    //                           onChanged: (Coin? coin) {
+                    //                             setState(() {
+                    //                               _coinActive = coin!;
+                    //                               final index = listCoins!.indexWhere((element) =>
+                    //                               element.coin == coin);
+                    //                               _free = listCoins![index].free!;
+                    //                               // _priceBlock!.changeCoin(coin.coinGeckoId!);
+                    //                               // _coinNameOpacity = 0.0;
+                    //                               // _txBloc!.changeCoin(coin);
+                    //                             });
+                    //                             // _calculatePortfolio();
+                    //                           },
+                    //                           items: listCoins!
+                    //                               .map((e) => DropdownMenuItem(
+                    //                               value: e.coin!,
+                    //                               child: SizedBox(
+                    //                                   width: 50,
+                    //                                   child: Text(e.coin!.cryptoId!))))
+                    //                               .toList(),
+                    //                         ),
+                    //                       ),
+                    //                     ),
+                    //                   )),
+                    //             );
+                    //           case Status.ERROR:
+                    //             Future.delayed(Duration(milliseconds: 500), () {
+                    //               setState(() {
+                    //                 _finished = false;
+                    //               });
+                    //             });
+                    //             print("error");
+                    //             break;
+                    //         }
+                    //       }
+                    //       return Container();
+                    //     },
+                    //   ),
+                    // ),
                     const SizedBox(
                       width: 50,
                     ),
@@ -424,29 +436,31 @@ class _SendPageState extends State<SendPage> {
               const SizedBox(height: 20.0,),
               Text(AppLocalizations.of(context)!.or_send_scan_qr, style: Theme.of(context).textTheme.headline3,),
               const SizedBox(height: 20.0,),
-              NeuContainer(
+              NeuButton(
+                onTap: () {_openQR(context, widget.coinActive!.fullName!);},
                 width: 200,
                 height: 200,
                 child: Container(
-                  decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  decoration: BoxDecoration(color: Colors.transparent,borderRadius: BorderRadius.all(Radius.circular(5.0))),
                   margin: EdgeInsets.all(10.0),
-                  child: QrImage(
-                    dataModuleStyle: QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.square),
-                    eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-                    errorCorrectionLevel: QrErrorCorrectLevel.H,
-                    data: "Nečum".toString(),
-                    foregroundColor: Colors.black87,
-                    version: QrVersions.auto,
-                    // size: 250,
-                    gapless: false,
-                  ),
+                  child: Image.asset("images/qr_code_scan.png"),
+                  // child: QrImage(
+                  //   dataModuleStyle: QrDataModuleStyle(
+                  //       dataModuleShape: QrDataModuleShape.square),
+                  //   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+                  //   errorCorrectionLevel: QrErrorCorrectLevel.H,
+                  //   data: "Nečum".toString(),
+                  //   foregroundColor: Colors.black87,
+                  //   version: QrVersions.auto,
+                  //   // size: 250,
+                  //   gapless: false,
+                  // ),
                 ),
               ),
             ],
           ),
           Visibility(
-            visible: _finished,
+            visible: _curtain,
             child: Container(
               margin: EdgeInsets.only(top: 50),
               color: const Color(0xFF1B1B1B),
@@ -465,5 +479,100 @@ class _SendPageState extends State<SendPage> {
         ],
       ),
     );
+  }
+  _openQR(context, String qr) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return BackdropFilter(
+            filter: new ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+            child: Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Color(0xFF9F9FA4)),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              child: Wrap(children: [
+                Container(
+                  width: 400.0,
+                  padding: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: 10.0, left: 10.0, right: 10.0, bottom: 2.0),
+                          child: SizedBox(
+                            width: 380,
+                            child: AutoSizeText(
+                              "Send address",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              minFontSize: 8.0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(
+                                  fontSize: 22.0, color: Colors.black87),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                          child: Text(
+                            '(tap to copy, long press to share)',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5!
+                                .copyWith(fontSize: 14.0, color: Colors.black54),
+                          )),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Divider(
+                        color: Colors.grey,
+                        height: 4.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(new ClipboardData(text: qr));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("QR code copied to clipboard"),
+                              duration: Duration(seconds: 3),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.fixed,
+                              elevation: 5.0,
+                            ));
+                            Navigator.pop(context);
+                          },
+                          onLongPress: () {
+                            Vibration.vibrate(duration: 200);
+                            Share.share(qr);
+                            Navigator.pop(context);
+                          },
+                          child: QrImage(
+                            dataModuleStyle: QrDataModuleStyle(
+                                dataModuleShape: QrDataModuleShape.square),
+                            eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+                            errorCorrectionLevel: QrErrorCorrectLevel.H,
+                            data: qr.toString(),
+                            foregroundColor: Colors.black87,
+                            version: QrVersions.auto,
+                            // size: 250,
+                            gapless: false,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ]),
+            ),
+          );
+        });
   }
 }

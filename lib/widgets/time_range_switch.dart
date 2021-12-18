@@ -16,7 +16,7 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
 
   @override
   Widget build(BuildContext context) {
-    var _width = MediaQuery.of(context).size.width * 0.10;
+    var _width = MediaQuery.of(context).size.width * 0.12;
     return NeuContainer(
         child: Row(children: [
       SizedBox(

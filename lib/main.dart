@@ -44,7 +44,19 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'RocketBot',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localeListResolutionCallback: (locales, supportedLocales) {
+
+        print('device locales=$locales supported locales=$supportedLocales');
+
+        for (Locale locale in locales!) {
+          if (supportedLocales.contains(locale)) {
+            print('supported');
+            return locale;
+          }
+        }
+        return Locale('en', '');
+      },
+      supportedLocales: [Locale('cs', 'CZ'), Locale('en', '')],
       theme: ThemeData(
         fontFamily: "Montserrat",
         canvasColor: const Color(0xFF1B1B1B),

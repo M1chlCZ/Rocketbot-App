@@ -9,6 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
+import 'package:vibration/vibration.dart';
 
 class DepositPage extends StatefulWidget {
   final Coin? coin;
@@ -53,10 +55,26 @@ class _DepositPageState extends State<DepositPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
+                padding: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
                 child: Row(
                   children: [
+                    SizedBox(
+                      height: 30,
+                      width: 25,
+                      child: NeuButton(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          size: 20.0,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    ),
                     Text(AppLocalizations.of(context)!.receive,
                         style: Theme.of(context).textTheme.headline4),
                     const SizedBox(
@@ -305,25 +323,25 @@ class _DepositPageState extends State<DepositPage> {
               const SizedBox(
                 height: 20.0,
               ),
-              NeuContainer(
+              NeuButton(
+                onTap: () {_openQR(context, widget.coin!.fullName!);},
                 width: 200,
                 height: 200,
                 child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  decoration: BoxDecoration(color: Colors.transparent,borderRadius: BorderRadius.all(Radius.circular(5.0))),
                   margin: EdgeInsets.all(10.0),
-                  child: QrImage(
-                    dataModuleStyle: QrDataModuleStyle(
-                        dataModuleShape: QrDataModuleShape.square),
-                    eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-                    errorCorrectionLevel: QrErrorCorrectLevel.H,
-                    data: _qrText,
-                    foregroundColor: Colors.black87,
-                    version: QrVersions.auto,
-                    // size: 250,
-                    gapless: false,
-                  ),
+                  child: Image.asset("images/qr_code_scan.png"),
+                  // child: QrImage(
+                  //   dataModuleStyle: QrDataModuleStyle(
+                  //       dataModuleShape: QrDataModuleShape.square),
+                  //   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+                  //   errorCorrectionLevel: QrErrorCorrectLevel.H,
+                  //   data: "Nečum".toString(),
+                  //   foregroundColor: Colors.black87,
+                  //   version: QrVersions.auto,
+                  //   // size: 250,
+                  //   gapless: false,
+                  // ),
                 ),
               ),
             ],
@@ -562,5 +580,101 @@ class _DepositPageState extends State<DepositPage> {
       return Colors.white30;
     }
     return Color(0xFF1B1B1A);
+  }
+
+  _openQR(context, String qr) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return BackdropFilter(
+            filter: new ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+            child: Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Color(0xFF9F9FA4)),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              child: Wrap(children: [
+                Container(
+                  width: 400.0,
+                  padding: EdgeInsets.all(5.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: 10.0, left: 10.0, right: 10.0, bottom: 2.0),
+                          child: SizedBox(
+                            width: 380,
+                            child: AutoSizeText(
+                              "Send address",
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              minFontSize: 8.0,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(
+                                  fontSize: 22.0, color: Colors.black87),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                          child: Text(
+                            '(tap to copy, long press to share)',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5!
+                                .copyWith(fontSize: 14.0, color: Colors.black54),
+                          )),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Divider(
+                        color: Colors.grey,
+                        height: 4.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(new ClipboardData(text: qr));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("QR code copied to clipboard"),
+                              duration: Duration(seconds: 3),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.fixed,
+                              elevation: 5.0,
+                            ));
+                            Navigator.pop(context);
+                          },
+                          onLongPress: () {
+                            Vibration.vibrate(duration: 200);
+                            Share.share(qr);
+                            Navigator.pop(context);
+                          },
+                          child: QrImage(
+                            dataModuleStyle: QrDataModuleStyle(
+                                dataModuleShape: QrDataModuleShape.square),
+                            eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
+                            errorCorrectionLevel: QrErrorCorrectLevel.H,
+                            data: qr.toString(),
+                            foregroundColor: Colors.black87,
+                            version: QrVersions.auto,
+                            // size: 250,
+                            gapless: false,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ]),
+            ),
+          );
+        });
   }
 }

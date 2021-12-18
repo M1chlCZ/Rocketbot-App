@@ -21,9 +21,10 @@ class CoinScreen extends StatefulWidget {
   final Coin activeCoin;
   final VoidCallback goBack;
   final List<CoinBalance>? allCoins;
+  final Function(Coin? c) setActiveCoin;
 
   const CoinScreen(
-      {Key? key, required this.activeCoin, this.allCoins, required this.goBack})
+      {Key? key, required this.activeCoin, this.allCoins, required this.goBack, required this.setActiveCoin})
       : super(key: key);
 
   @override
@@ -59,7 +60,7 @@ class _CoinScreenState extends State<CoinScreen> {
 
   @override
   void dispose() {
-    _listCoins.clear();
+    // _listCoins.clear();
     _priceBlock!.dispose();
     _txBloc!.dispose();
     super.dispose();
@@ -87,7 +88,7 @@ class _CoinScreenState extends State<CoinScreen> {
                   width: 25,
                   child: NeuButton(
                     onTap: () {
-                      widget.goBack();
+                      Navigator.of(context).pop();
                     },
                     icon: const Icon(
                       Icons.arrow_back_ios_new,
@@ -112,6 +113,7 @@ class _CoinScreenState extends State<CoinScreen> {
                             isDense: true,
                             onChanged: (Coin? coin) {
                               setState(() {
+                                widget.setActiveCoin(coin);
                                 _coinActive = coin!;
                                 _priceBlock!.changeCoin(coin.coinGeckoId!);
                                 _coinNameOpacity = 0.0;
@@ -134,7 +136,7 @@ class _CoinScreenState extends State<CoinScreen> {
                 else
                   Container(),
                 const SizedBox(
-                  width: 50,
+                  width: 12,
                 ),
                 SizedBox(
                     height: 30,
