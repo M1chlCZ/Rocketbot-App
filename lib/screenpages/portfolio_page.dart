@@ -7,7 +7,9 @@ import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
+import 'package:rocketbot/screens/settings_screen.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -16,10 +18,10 @@ class PortfolioScreen extends StatefulWidget {
   // final List<CoinBalance>? listBalances;
   // final Function(List<CoinBalance>? lc) passBalances;
 
-  const PortfolioScreen({Key? key,
+  const PortfolioScreen({
+    Key? key,
     // required this.coinSwitch, this.listBalances, required this.passBalances
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   PortfolioScreenState createState() => PortfolioScreenState();
@@ -173,8 +175,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 130.0, top: 25.0),
+                              padding: const EdgeInsets.only(
+                                  bottom: 130.0, top: 25.0),
                               child: Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -184,8 +186,9 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                                       width: 200,
                                       child: AutoSizeText(
                                         "\$" + totalUSD.toStringAsFixed(2),
-                                        style:
-                                            Theme.of(context).textTheme.headline1,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
                                         minFontSize: 8.0,
                                         maxLines: 1,
                                         textAlign: TextAlign.center,
@@ -198,8 +201,9 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                                       width: 130,
                                       child: AutoSizeText(
                                         "$totalBTC BTC",
-                                        style:
-                                            Theme.of(context).textTheme.headline2,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline2,
                                         minFontSize: 8.0,
                                         maxLines: 1,
                                         textAlign: TextAlign.center,
@@ -296,15 +300,40 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                         child: Column(
                           children: [
                             SizedBox(
-                                height: 32,
+                                // SizedBox(
+                                height: 40,
                                 child: Center(
-                                    child: Text(
-                                  AppLocalizations.of(context)!.history_popup,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline1!
-                                      .copyWith(fontSize: 14.0),
-                                ))),
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: SizedBox(
+                                      width: 140,
+                                      child: TextButton(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.history_popup,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline1!
+                                              .copyWith(fontSize: 14.0),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.resolveWith(
+                                                    (states) =>
+                                                        qrColors(states)),
+                                            shape: MaterialStateProperty.all<
+                                                    RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            0.0),
+                                                    side: BorderSide(
+                                                        color: Colors
+                                                            .transparent)))),
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  ),
+                                )),
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -312,15 +341,48 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                                   Container(height: 0.5, color: Colors.white12),
                             ),
                             SizedBox(
-                                height: 32,
+                              // SizedBox(
+                                height: 40,
                                 child: Center(
-                                    child: Text(
-                                  AppLocalizations.of(context)!.settings_popup,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline1!
-                                      .copyWith(fontSize: 14.0),
-                                ))),
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: SizedBox(
+                                      width: 140,
+                                      child: TextButton(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.settings_popup,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline1!
+                                              .copyWith(fontSize: 14.0),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                            MaterialStateProperty.resolveWith(
+                                                    (states) =>
+                                                    qrColors(states)),
+                                            shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(
+                                                        0.0),
+                                                    side: BorderSide(
+                                                        color: Colors
+                                                            .transparent)))),
+                                        onPressed: () {
+                                          Navigator.of(context).push(PageRouteBuilder(
+                                              pageBuilder: (BuildContext context, _, __) {
+                                                return const SettingsScreen();
+                                              }, transitionsBuilder:
+                                              (_, Animation<double> animation, __, Widget child) {
+                                            return FadeTransition(opacity: animation, child: child);
+                                          }));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                )),
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -330,15 +392,48 @@ class PortfolioScreenState extends State<PortfolioScreen> {
                               ),
                             ),
                             SizedBox(
-                                height: 32,
+                              // SizedBox(
+                                height: 40,
                                 child: Center(
-                                    child: Text(
-                                  AppLocalizations.of(context)!.about_popup,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline1!
-                                      .copyWith(fontSize: 14.0),
-                                ))),
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: SizedBox(
+                                      width: 140,
+                                      child: TextButton(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.about_popup,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline1!
+                                              .copyWith(fontSize: 14.0),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                            MaterialStateProperty.resolveWith(
+                                                    (states) =>
+                                                    qrColors(states)),
+                                            shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(
+                                                        0.0),
+                                                    side: BorderSide(
+                                                        color: Colors
+                                                            .transparent)))),
+                                        onPressed: () {
+                                          Navigator.of(context).push(PageRouteBuilder(
+                                              pageBuilder: (BuildContext context, _, __) {
+                                                return const AboutScreen();
+                                              }, transitionsBuilder:
+                                              (_, Animation<double> animation, __, Widget child) {
+                                            return FadeTransition(opacity: animation, child: child);
+                                          }));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                )),
                           ],
                         ),
                       ),
@@ -375,15 +470,16 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   _changeCoin(CoinBalance c) {
-    Navigator.of(context).push(PageRouteBuilder(
-        pageBuilder: (BuildContext context, _, __) {
-          return MainScreen(coinBalance: c, listCoins: _listCoins,);
-        }, transitionsBuilder:
-        (_, Animation<double> animation, __, Widget child) {
+    Navigator.of(context)
+        .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+      return MainScreen(
+        coinBalance: c,
+        listCoins: _listCoins,
+      );
+    }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
     }));
   }
-
 
   _calculatePortfolio() {
     totalUSD = 0;
@@ -404,5 +500,16 @@ class PortfolioScreenState extends State<PortfolioScreen> {
         portCalc = true;
       });
     });
+  }
+  Color qrColors(Set<MaterialState> states) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.pressed,
+      MaterialState.hovered,
+      MaterialState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Colors.white30;
+    }
+    return Color(0xFF1B1B1A);
   }
 }

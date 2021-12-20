@@ -6,7 +6,18 @@
   "@appTitle": {
     "description": "Rocketbot app"
   },
+  "login" : "Login",
+  "register" : "Register",
+  "register_button" : "Register",
+  "e_mail" : "E-mail",
+  "password" : "Password",
+  "conf_password" : "Confirm Password",
+  "forgot_pass": "Forgot Password?",
+  "or" : "or",
+  "sign_in" : "Sign in",
+  "sign_in_google": "Sign in with Google",
   "portfolio": "Portfolio",
+  "about" : "About",
   "receive": "Receive",
   "send" : "Send",
   "sentTo" : "Sent to",
@@ -29,5 +40,8 @@
   "address" : "Address",
   "amount" : "Amount",
   "or_send_scan_qr" : "or send via QR-code",
-  "graph_no_data" : "Sorry, we couldn't get the data for the graph"
+  "graph_no_data" : "Sorry, we couldn't get the data for the graph",
+  "settings_screen" : "Settings",
+  "settings_main" : "Main Settings",
+  "settings_privacy": "Privacy Settings"
 }

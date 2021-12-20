@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -31,7 +32,9 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
               });
               widget.changeTime(0);
             },
-            child: Text(AppLocalizations.of(context)!.all,
+            child: AutoSizeText(AppLocalizations.of(context)!.all,
+              minFontSize: 6,
+              maxLines: 1,
               style:  Theme.of(context).textTheme.subtitle1
             )),),
       ),
@@ -48,8 +51,10 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
               var _time = 24 * 7;
               widget.changeTime(_time);
             },
-            child: Text(
+            child: AutoSizeText(
                 AppLocalizations.of(context)!.onew,
+                minFontSize: 6,
+                maxLines: 1,
               style: Theme.of(context).textTheme.subtitle1
             )),),
       ),
@@ -66,7 +71,10 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
                 var _time = 24;
                 widget.changeTime(_time);
               },
-              child: Text(AppLocalizations.of(context)!.oned, style: Theme.of(context).textTheme.subtitle1)),
+              child: AutoSizeText(AppLocalizations.of(context)!.oned,
+                  minFontSize: 6,
+                  maxLines: 1,
+                  style: Theme.of(context).textTheme.subtitle1)),
         ),
       ),
       SizedBox(
@@ -81,8 +89,10 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
                 });
                 widget.changeTime(12);
               },
-              child: Text(
+              child: AutoSizeText(
                 AppLocalizations.of(context)!.twelveh,
+                minFontSize: 6,
+                maxLines: 1,
                 style: Theme.of(context).textTheme.subtitle1,
               )),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screenpages/portfolio_page.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    // _curtain = false;
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();
       if (b) {
@@ -149,108 +151,118 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SizedBox(
                                   height: 120,
                                 ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white, fontSize: 18.0),
-                                          autocorrect: false,
-                                          controller: loginController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle2!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText: 'E-mail',
-                                            enabledBorder: const UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: Colors.transparent),
-                                            ),
-                                            focusedBorder: const UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white, fontSize: 18.0),
-                                          obscureText: true,
-                                          enableSuggestions: false,
-                                          autocorrect: false,
-                                          controller: passwordController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-
-                                            contentPadding:
-                                            const EdgeInsets.only(left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle2!
-                                                .copyWith(
-                                                color: Colors.white54,
-                                                fontSize: 14.0),
-                                            hintText: 'Password',
-                                            enabledBorder: const UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: Colors.transparent),
-                                            ),
-                                            focusedBorder: const UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 50.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'Forgot Password?',
-                                        style: Theme.of(context).textTheme.subtitle2,
-                                      ),
-                                      const SizedBox(
-                                        width: 20.0,
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                        width: 25,
-                                        child: NeuButton(
-                                          onTap: () {
-                                            // widget.goBack();
-                                          },
-                                          icon: const Icon(
-                                            Icons.arrow_forward_ios,
-                                            size: 20.0,
-                                            color: Colors.white70,
-                                          ),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: 280,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        SizedBox(
+                                          width: 280,
+                                          child: NeuContainer(
+                                              child: TextField(
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1!
+                                                      .copyWith(
+                                                          color: Colors.white, fontSize: 18.0),
+                                                  autocorrect: false,
+                                                  controller: loginController,
+                                                  textAlign: TextAlign.center,
+                                                  decoration: InputDecoration(
+                                                    isDense: false,
+                                                    contentPadding:
+                                                        const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                                    hintStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2!
+                                                        .copyWith(
+                                                            color: Colors.white54,
+                                                            fontSize: 14.0),
+                                                    hintText: AppLocalizations.of(context)!.e_mail,
+                                                    enabledBorder: const UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide(color: Colors.transparent),
+                                                    ),
+                                                    focusedBorder: const UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide(color: Colors.transparent),
+                                                    ),
+                                                  ))),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(
+                                          height: 30.0,
+                                        ),
+                                        SizedBox(
+                                          width: 280,
+                                          child: NeuContainer(
+                                              child: TextField(
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1!
+                                                      .copyWith(
+                                                          color: Colors.white, fontSize: 18.0),
+                                                  obscureText: true,
+                                                  enableSuggestions: false,
+                                                  autocorrect: false,
+                                                  controller: passwordController,
+                                                  textAlign: TextAlign.center,
+                                                  decoration: InputDecoration(
+                                                    isDense: false,
+
+                                                    contentPadding:
+                                                    const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                                    hintStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2!
+                                                        .copyWith(
+                                                        color: Colors.white54,
+                                                        fontSize: 14.0),
+                                                    hintText: AppLocalizations.of(context)!.password,
+                                                    enabledBorder: const UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide(color: Colors.transparent),
+                                                    ),
+                                                    focusedBorder: const UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide(color: Colors.transparent),
+                                                    ),
+                                                  ))),
+                                        ),
+                                        const SizedBox(
+                                          height: 30.0,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              AppLocalizations.of(context)!.forgot_pass,
+                                              style: Theme.of(context).textTheme.subtitle2,
+                                            ),
+                                            const SizedBox(
+                                              width: 20.0,
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                              width: 25,
+                                              child: NeuButton(
+                                                onTap: () {
+                                                  // widget.goBack();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 20.0,
+                                                  color: Colors.white70,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(
@@ -270,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       color: Colors.transparent,
                                       child: Center(
                                           child: Text(
-                                        "Sign in",
+                                            AppLocalizations.of(context)!.sign_in,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText1!
@@ -281,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 const SizedBox( height: 20.0,),
-                                Text('or', style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 16.0, color: Colors.white),),
+                                Text(AppLocalizations.of(context)!.or, style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 16.0, color: Colors.white),),
                                 const SizedBox( height: 20.0,),
                                 SizedBox(
                                   width: 250,
@@ -303,27 +315,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                        const SizedBox(
                                           width: 10.0,
                                         ),
-                                        Text('Sign in with Google', style: Theme.of(context)
+                                        Text(AppLocalizations.of(context)!.sign_in_google, style: Theme.of(context)
                                             .textTheme
                                             .subtitle2!
                                             .copyWith(
                                             fontSize: 14.0, color: Colors.white),),
                                       ],
                                     )
-                                    // Container(
-                                    //   width: 200,
-                                    //   height: 50,
-                                    //   color: Colors.transparent,
-                                    //   child: Center(
-                                    //       child: Text(
-                                    //         "Sign in",
-                                    //         style: Theme.of(context)
-                                    //             .textTheme
-                                    //             .bodyText1!
-                                    //             .copyWith(
-                                    //             fontSize: 22.0, color: Colors.white),
-                                    //       )),
-                                    // ),
                                   ),
                                 ),
                               ]),
@@ -370,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 .copyWith(
                                                 color: Colors.white54,
                                                 fontSize: 14.0),
-                                            hintText: 'E-mail',
+                                            hintText: AppLocalizations.of(context)!.e_mail,
                                             enabledBorder: const UnderlineInputBorder(
                                               borderSide:
                                               BorderSide(color: Colors.transparent),
@@ -409,7 +407,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 .copyWith(
                                                 color: Colors.white54,
                                                 fontSize: 14.0),
-                                            hintText: 'Password',
+                                            hintText: AppLocalizations.of(context)!.password,
                                             enabledBorder: const UnderlineInputBorder(
                                               borderSide:
                                               BorderSide(color: Colors.transparent),
@@ -448,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             .copyWith(
                                             color: Colors.white54,
                                             fontSize: 14.0),
-                                        hintText: 'Confirm Password',
+                                        hintText: AppLocalizations.of(context)!.conf_password,
                                         enabledBorder: const UnderlineInputBorder(
                                           borderSide:
                                           BorderSide(color: Colors.transparent),
@@ -474,7 +472,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       splashColor: Colors.purple,
                                       child:
                                       GradientText(
-                                        'Register',
+                                        AppLocalizations.of(context)!.register_button,
                                         gradient: const LinearGradient(colors: [
                                           Color(0xFFF05523),
                                           Color(0xFF812D88),

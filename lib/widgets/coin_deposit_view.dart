@@ -72,18 +72,26 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
-                                child: widget.data.chainConfirmed! ? Text(
-                                  AppLocalizations.of(context)!.txid +" " + _formatTx(widget.data.transactionId!),
-                                  style: Theme.of(context).textTheme.headline3,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
-                                ) : Text(
-                                  widget.data.confirmations!.toString() + AppLocalizations.of(context)!.confirmations,
-                                  style: Theme.of(context).textTheme.headline4,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
+                                child: widget.data.chainConfirmed! ? SizedBox(
+                                  width: 130,
+                                  child: AutoSizeText(
+                                    AppLocalizations.of(context)!.txid +" " + _formatTx(widget.data.transactionId!),
+                                    style: Theme.of(context).textTheme.headline3,
+                                    maxLines: 1,
+                                    minFontSize: 8,
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ) : SizedBox(
+                                  width: 130,
+                                  child: AutoSizeText(
+                                    widget.data.confirmations!.toString() + AppLocalizations.of(context)!.confirmations,
+                                    style: Theme.of(context).textTheme.headline4,
+                                    maxLines: 1,
+                                    minFontSize: 8,
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               // const SizedBox(
@@ -157,14 +165,18 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                    // widget.coin.free!.toStringAsFixed(3),
-                                    widget.data.amount.toString() + " " + widget.data.coin!.name!,
-                                    style: Theme.of(context).textTheme.headline3,
-                                    maxLines: 1,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: AutoSizeText(
+                                      // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
+                                      // widget.coin.free!.toStringAsFixed(3),
+                                      widget.data.amount.toString() + " " + widget.data.coin!.name!,
+                                      style: Theme.of(context).textTheme.headline3,
+                                      maxLines: 1,
+                                      minFontSize: 8,
+                                      textAlign: TextAlign.end,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(

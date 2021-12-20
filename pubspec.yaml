@@ -27,6 +27,7 @@ dependencies:
   qr_flutter: ^4.0.0
   share: any
   vibration: ^1.7.4-nullsafety.0
+  flutter_switch: ^0.3.2
 
   cupertino_icons: ^1.0.4
 

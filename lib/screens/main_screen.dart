@@ -124,10 +124,13 @@ class _MainScreenState extends State<MainScreen> {
                   onTap: () {
                     _onTappedBar(0);
                   },
-                  imageIcon: Image.asset(
-                    "images/receive_nav_icon.png",
-                    width: 25,
-                    fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "images/receive_nav_icon.png",
+                      width: 25,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
                 label: '',
@@ -137,11 +140,14 @@ class _MainScreenState extends State<MainScreen> {
                   onTap: () {
                     _onTappedBar(0);
                   },
-                  imageIcon: Image.asset(
-                    "images/receive_nav_icon.png",
-                    color: Color(0xFF15D37A),
-                    width: 25,
-                    fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "images/receive_nav_icon.png",
+                      color: Color(0xFF15D37A),
+                      width: 25,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
               ),
@@ -153,11 +159,14 @@ class _MainScreenState extends State<MainScreen> {
                     _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
-                  imageIcon: Image.asset(
-                    "images/coin_nav_icon.png",
-                    color: Colors.white,
-                    width: 34,
-                    fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0),
+                    child: Image.asset(
+                      "images/coin_nav_icon.png",
+                      color: Colors.white,
+                      width: 34,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
                 label: '',
@@ -168,11 +177,14 @@ class _MainScreenState extends State<MainScreen> {
                     _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
-                  imageIcon: Image.asset(
-                    "images/coin_nav_icon.png",
-                    width: 34,
-                    fit: BoxFit.fitWidth,
-                    color: Colors.blue,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Image.asset(
+                      "images/coin_nav_icon.png",
+                      width: 34,
+                      fit: BoxFit.fitWidth,
+                      color: Colors.blue,
+                    ),
                   ),
                 ),
               ),
@@ -183,10 +195,13 @@ class _MainScreenState extends State<MainScreen> {
                   onTap: () {
                     _onTappedBar(2);
                   },
-                  imageIcon: Image.asset(
-                    "images/send_nav_icon.png",
-                    width: 25,
-                    fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "images/send_nav_icon.png",
+                      width: 25,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
                 label: '',
@@ -196,11 +211,14 @@ class _MainScreenState extends State<MainScreen> {
                   onTap: () {
                     _onTappedBar(2);
                   },
-                  imageIcon: Image.asset(
-                    "images/send_nav_icon.png",
-                    color: Color(0xFFEB3A13),
-                    width: 25,
-                    fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "images/send_nav_icon.png",
+                      color: Color(0xFFEB3A13),
+                      width: 25,
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
               ),

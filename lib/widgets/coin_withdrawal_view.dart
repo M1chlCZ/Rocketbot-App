@@ -74,12 +74,16 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
-                                child: Text(
-                                  AppLocalizations.of(context)!.sentTo + " " + _formatTx(widget.data.toAddress!),
-                                  style: Theme.of(context).textTheme.headline3,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
+                                child: SizedBox(
+                                  width: 140,
+                                  child: AutoSizeText(
+                                    AppLocalizations.of(context)!.sentTo + " " + _formatTx(widget.data.toAddress!),
+                                    style: Theme.of(context).textTheme.headline3,
+                                    maxLines: 1,
+                                    minFontSize: 8,
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               // const SizedBox(
@@ -153,14 +157,18 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                    // widget.coin.free!.toStringAsFixed(3),
-                                    widget.data.amount.toString() + " " + widget.data.coin!.name!,
-                                    style: Theme.of(context).textTheme.headline3,
-                                    maxLines: 1,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: AutoSizeText(
+                                      // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
+                                      // widget.coin.free!.toStringAsFixed(3),
+                                      widget.data.amount.toString() + " " + widget.data.coin!.name!,
+                                      style: Theme.of(context).textTheme.headline3,
+                                      maxLines: 1,
+                                      minFontSize: 8,
+                                      textAlign: TextAlign.end,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(

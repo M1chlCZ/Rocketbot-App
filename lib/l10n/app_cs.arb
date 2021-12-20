@@ -6,7 +6,18 @@
   "@appTitle": {
     "description": "Rocketbot app"
   },
+  "login" : "Přihlásit",
+  "register" : "Registrovat",
+  "register_button" : "Registrovat",
+  "e_mail" : "E-mail",
+  "password" : "Heslo",
+  "conf_password" : "Potvrdit Heslo",
+  "forgot_pass": "Zapoměli jste heslo?",
+  "or" : "nebo",
+  "sign_in" : "Přihlásit",
+  "sign_in_google": "Přihlásit s Google",
   "portfolio": "Portfolio",
+  "about" : "O applikaci",
   "receive" : "Obdržet",
   "send" : "Odeslat",
   "sentTo" : "Odesláno na:",
@@ -29,5 +40,8 @@
   "address" : "Adresa",
   "amount" : "Množství mincí",
   "or_send_scan_qr" : "nebo pomocí scanu QR-kódu",
-  "graph_no_data" : "Omlouváme se, data pro graf jsou nedostupná"
+  "graph_no_data" : "Omlouváme se, data pro graf jsou nedostupná",
+  "settings_screen" : "Nastavení",
+  "settings_main" : "Hlavní nastavení",
+  "settings_privacy": "Nastavení soukromí"
 }
