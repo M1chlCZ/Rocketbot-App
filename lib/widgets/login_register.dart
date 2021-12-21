@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -33,12 +34,17 @@ class _LoginRegisterSwitcherState extends State<LoginRegisterSwitcher> {
                   });
                   widget.changeType!(0);
                 },
-                child: Text(AppLocalizations.of(context)!.login.toUpperCase(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4!
-                        .copyWith(fontWeight: FontWeight.bold))),
+                child: SizedBox(
+                  width: 120,
+                  child: AutoSizeText(AppLocalizations.of(context)!.login.toUpperCase(),
+                       maxLines: 1,
+                      minFontSize: 8.0,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4!
+                          .copyWith(fontWeight: FontWeight.bold)),
+                )),
           ),
         ),
         Text('|', style: Theme.of(context).textTheme.headline4!),
@@ -54,12 +60,17 @@ class _LoginRegisterSwitcherState extends State<LoginRegisterSwitcher> {
                   });
                   widget.changeType!(1);
                 },
-                child: Text(AppLocalizations.of(context)!.register.toUpperCase(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4!
-                        .copyWith(fontWeight: FontWeight.bold))),
+                child: SizedBox(
+                  width: 120,
+                  child: AutoSizeText(AppLocalizations.of(context)!.register.toUpperCase(),
+                      maxLines: 1,
+                      minFontSize: 8.0,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4!
+                          .copyWith(fontWeight: FontWeight.bold)),
+                )),
           ),
         ),
       ])),
