@@ -129,8 +129,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
           } else if (event is FlPanStartEvent ||
               event is FlLongPressMoveUpdate) {
               widget.blockTouch(true);
-          } else if (event is FlPanEndEvent ||
-              event is FlPanCancelEvent) {
+          } else if (event is FlPanEndEvent) {
               widget.blockTouch(false);
           }
         },

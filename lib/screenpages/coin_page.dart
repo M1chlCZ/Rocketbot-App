@@ -184,11 +184,18 @@ class _CoinScreenState extends State<CoinScreen> {
                                 portCalc = true;
                               });
                             });
-                            return CoinPriceGraph(
-                              key: _graphKey,
-                              prices: snapshot.data!.data!.historyPrices,
-                              time: 24,
-                              blockTouch: _blockSwipe,
+                            return GestureDetector(
+                              behavior: HitTestBehavior.deferToChild,
+                              onTap: () {
+                                print("tre");
+                                _blockSwipe(true);
+                              },
+                              child: CoinPriceGraph(
+                                key: _graphKey,
+                                prices: snapshot.data!.data!.historyPrices,
+                                time: 24,
+                                blockTouch: _blockSwipe,
+                              ),
                             );
                           case Status.LOADING:
                             // return Center(child: Text("loading data"));

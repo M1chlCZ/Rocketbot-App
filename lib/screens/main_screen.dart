@@ -77,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: SafeArea(
         child: PageView(
-            physics: CustomLockScrollPhysics(lockLeft: _swipeBlock, lockRight: _swipeBlock),
+            physics: NeverScrollableScrollPhysics(),
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
