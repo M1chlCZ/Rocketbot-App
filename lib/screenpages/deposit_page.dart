@@ -327,22 +327,7 @@ class _DepositPageState extends State<DepositPage> {
                 onTap: () {_openQR(context, widget.coin!.fullName!);},
                 width: 200,
                 height: 200,
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.transparent,borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                  margin: EdgeInsets.all(10.0),
-                  child: Image.asset("images/qr_code_scan.png"),
-                  // child: QrImage(
-                  //   dataModuleStyle: QrDataModuleStyle(
-                  //       dataModuleShape: QrDataModuleShape.square),
-                  //   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-                  //   errorCorrectionLevel: QrErrorCorrectLevel.H,
-                  //   data: "Nečum".toString(),
-                  //   foregroundColor: Colors.black87,
-                  //   version: QrVersions.auto,
-                  //   // size: 250,
-                  //   gapless: false,
-                  // ),
-                ),
+                child: Image.asset("images/qr_code_scan.png"),
               ),
             ],
           ),

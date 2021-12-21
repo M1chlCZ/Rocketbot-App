@@ -7,15 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
-import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:share/share.dart';
 import 'package:vibration/vibration.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SendPage extends StatefulWidget {
@@ -440,22 +436,7 @@ class _SendPageState extends State<SendPage> {
                 onTap: () {_openQR(context, widget.coinActive!.fullName!);},
                 width: 200,
                 height: 200,
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.transparent,borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                  margin: EdgeInsets.all(10.0),
-                  child: Image.asset("images/qr_code_scan.png"),
-                  // child: QrImage(
-                  //   dataModuleStyle: QrDataModuleStyle(
-                  //       dataModuleShape: QrDataModuleShape.square),
-                  //   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-                  //   errorCorrectionLevel: QrErrorCorrectLevel.H,
-                  //   data: "Nečum".toString(),
-                  //   foregroundColor: Colors.black87,
-                  //   version: QrVersions.auto,
-                  //   // size: 250,
-                  //   gapless: false,
-                  // ),
-                ),
+                child: Image.asset("images/qr_code_scan.png"),
               ),
             ],
           ),

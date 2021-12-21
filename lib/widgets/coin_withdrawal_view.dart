@@ -156,7 +156,7 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                               runAlignment: WrapAlignment.end,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
+                                  padding: const EdgeInsets.only(top: 9.0),
                                   child: SizedBox(
                                     width: 150,
                                     child: AutoSizeText(

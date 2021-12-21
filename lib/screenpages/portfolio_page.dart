@@ -4,8 +4,6 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
-import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
@@ -36,6 +34,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
 
   bool portCalc = false;
   bool popMenu = false;
+
+  double _listHeight = 0.0;
 
   @override
   void initState() {
@@ -75,198 +75,208 @@ class PortfolioScreenState extends State<PortfolioScreen> {
       child: SafeArea(
         child: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
-                  child: Row(
-                    children: [
-                      Text(AppLocalizations.of(context)!.portfolio,
-                          style: Theme.of(context).textTheme.headline4),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      // SizedBox(
-                      //     height: 30,
-                      //     child: TimeRangeSwitcher(
-                      //       changeTime: _changeTime,
-                      //     )),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: SizedBox(
-                              height: 30,
-                              width: 25,
-                              child: NeuButton(
-                                onTap: () async {
-                                  setState(() {
-                                    if (popMenu) {
-                                      popMenu = false;
-                                    } else {
-                                      popMenu = true;
-                                    }
-                                  });
-                                  // await const FlutterSecureStorage().delete(key: "token");
-                                  // Navigator.of(context).pushReplacement(
-                                  //     PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-                                  //       return const LoginScreen();
-                                  //     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                                  //       return FadeTransition(opacity: animation, child: child);
-                                  //     }));
-                                },
-                                icon: const Icon(
-                                  Icons.more_vert,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
+            SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.3 + _listHeight,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
+                      child: Row(
+                        children: [
+                          Text(AppLocalizations.of(context)!.portfolio,
+                              style: Theme.of(context).textTheme.headline4),
+                          const SizedBox(
+                            width: 50,
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 250,
-                  child: portCalc
-                      ? Stack(
-                          // alignment: AlignmentDirectional.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 0.0, right: 10.0, top: 50.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Transform(
-                                  transform: scaleXYZTransform(),
-                                  child: const Image(
-                                    fit: BoxFit.fitWidth,
-                                    image: AssetImage("images/wave.png"),
+                          // SizedBox(
+                          //     height: 30,
+                          //     child: TimeRangeSwitcher(
+                          //       changeTime: _changeTime,
+                          //     )),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: SizedBox(
+                                  height: 30,
+                                  width: 25,
+                                  child: NeuButton(
+                                    onTap: () async {
+                                      setState(() {
+                                        if (popMenu) {
+                                          popMenu = false;
+                                        } else {
+                                          popMenu = true;
+                                        }
+                                      });
+                                      // await const FlutterSecureStorage().delete(key: "token");
+                                      // Navigator.of(context).pushReplacement(
+                                      //     PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+                                      //       return const LoginScreen();
+                                      //     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                                      //       return FadeTransition(opacity: animation, child: child);
+                                      //     }));
+                                    },
+                                    icon: const Icon(
+                                      Icons.more_vert,
+                                      color: Colors.white70,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 170.0, right: 0.0, top: 90.0),
-                              child: Transform.scale(
-                                scale: 0.35,
-                                child: const Image(
-                                  image: AssetImage("images/rocket_pin.png"),
-                                ),
-                              ),
-                            ),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 98.0),
-                                child: AspectRatio(
-                                  aspectRatio: 1.6,
-                                  child: Image(
-                                      fit: BoxFit.fitWidth,
-                                      image:
-                                          AssetImage("images/price_frame.png")),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 130.0, top: 25.0),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 200,
-                                      child: AutoSizeText(
-                                        "\$" + totalUSD.toStringAsFixed(2),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline1,
-                                        minFontSize: 8.0,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 3.0,
-                                    ),
-                                    SizedBox(
-                                      width: 130,
-                                      child: AutoSizeText(
-                                        "$totalBTC BTC",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline2,
-                                        minFontSize: 8.0,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
-                ),
-                SizedBox(
-                  height: 0.5,
-                  child: Container(
-                    color: portCalc ? Colors.white12 : Colors.transparent,
-                  ),
-                ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshData,
-                    child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
-                      stream: _bloc!.coinsListStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          switch (snapshot.data!.status) {
-                            case Status.LOADING:
-                              _listCoins = null;
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 30.0),
-                                child: SizedBox(
-                                  child: portCalc
-                                      ? Container()
-                                      : const CircularProgressIndicator(),
-                                ),
-                              );
-                            case Status.COMPLETED:
-                              if (_listCoins == null) {
-                                _listCoins = snapshot.data!.data!;
-                                // widget.passBalances(listCoins);
-                                _calculatePortfolio();
-                              }
-                              return ListView.builder(
-                                  itemCount: snapshot.data!.data!.length,
-                                  itemBuilder: (ctx, index) {
-                                    return CoinListView(
-                                      coin: snapshot.data!.data![index],
-                                      free: snapshot.data!.data![index].free!,
-                                      coinSwitch: _changeCoin,
-                                    );
-                                  });
-                            case Status.ERROR:
-                              print("error");
-                              break;
-                          }
-                        }
-                        return Container();
-                      },
+                          )
+                        ],
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 250,
+                      child: portCalc
+                          ? Stack(
+                              // alignment: AlignmentDirectional.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 0.0, right: 10.0, top: 50.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Transform(
+                                      transform: scaleXYZTransform(),
+                                      child: const Image(
+                                        fit: BoxFit.fitWidth,
+                                        image: AssetImage("images/wave.png"),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 170.0, right: 0.0, top: 90.0),
+                                  child: Transform.scale(
+                                    scale: 0.35,
+                                    child: const Image(
+                                      image: AssetImage("images/rocket_pin.png"),
+                                    ),
+                                  ),
+                                ),
+                                const Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 98.0),
+                                    child: AspectRatio(
+                                      aspectRatio: 1.6,
+                                      child: Image(
+                                          fit: BoxFit.fitWidth,
+                                          image:
+                                              AssetImage("images/price_frame.png")),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 130.0, top: 25.0),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 200,
+                                          child: AutoSizeText(
+                                            "\$" + totalUSD.toStringAsFixed(2),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline1,
+                                            minFontSize: 8.0,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 3.0,
+                                        ),
+                                        SizedBox(
+                                          width: 130,
+                                          child: AutoSizeText(
+                                            _formatPrice(totalBTC) + " BTC",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline2,
+                                            minFontSize: 8.0,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container(),
+                    ),
+                    SizedBox(
+                      height: 0.5,
+                      child: Container(
+                        color: portCalc ? Colors.white12 : Colors.transparent,
+                      ),
+                    ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: _refreshData,
+                        child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
+                          stream: _bloc!.coinsListStream,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              switch (snapshot.data!.status) {
+                                case Status.LOADING:
+                                  _listCoins = null;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: SizedBox(
+                                      child: portCalc
+                                          ? Container()
+                                          : const CircularProgressIndicator(),
+                                    ),
+                                  );
+                                case Status.COMPLETED:
+                                  if (_listCoins == null) {
+                                    _listCoins = snapshot.data!.data!;
+                                    _listHeight =_listCoins!.length * 70.0;
+                                    // widget.passBalances(listCoins);
+                                    _calculatePortfolio();
+                                  }
+                                  return ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: snapshot.data!.data!.length,
+                                      itemBuilder: (ctx, index) {
+                                        return CoinListView(
+                                          coin: snapshot.data!.data![index],
+                                          free: snapshot.data!.data![index].free!,
+                                          coinSwitch: _changeCoin,
+                                        );
+                                      });
+                                case Status.ERROR:
+                                  print("error");
+                                  break;
+                              }
+                            }
+                            return Container();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             Visibility(
                 visible: popMenu ? true : false,
@@ -479,6 +489,17 @@ class PortfolioScreenState extends State<PortfolioScreen> {
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
     }));
+  }
+
+  String _formatPrice(double d) {
+    var _split = d.toString().split('.');
+    var _decimal = _split[1];
+    if(_decimal.length >= 8) {
+      var _sub = _decimal.substring(0, 7);
+      return _split[0] + "." + _sub;
+    }else{
+      return d.toString();
+    }
   }
 
   _calculatePortfolio() {

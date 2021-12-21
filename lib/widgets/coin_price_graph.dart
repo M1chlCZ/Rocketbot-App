@@ -8,8 +8,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class CoinPriceGraph extends StatefulWidget {
   final HistoryPrices? prices;
   final int? time;
+  final Function (bool touch) blockTouch;
 
-  const CoinPriceGraph({Key? key, this.prices, this.time}) : super(key: key);
+  const CoinPriceGraph({Key? key, this.prices, this.time, required this.blockTouch}) : super(key: key);
 
   @override
   CoinPriceGraphState createState() => CoinPriceGraphState();
@@ -116,6 +117,23 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       minY: _minY,
       maxY: _maxY,
       lineTouchData: LineTouchData(
+        touchCallback: (FlTouchEvent? event, LineTouchResponse? touchResponse) {
+          if (event is FlTapDownEvent ||
+              event is FlPointerHoverEvent ||
+              event is FlPanDownEvent) {
+              widget.blockTouch(true);
+          } else if (event is FlLongPressEnd || event is FlTapUpEvent) {
+              widget.blockTouch(false);
+          } else if (event is FlTapCancelEvent) {
+              widget.blockTouch(false);
+          } else if (event is FlPanStartEvent ||
+              event is FlLongPressMoveUpdate) {
+              widget.blockTouch(true);
+          } else if (event is FlPanEndEvent ||
+              event is FlPanCancelEvent) {
+              widget.blockTouch(false);
+          }
+        },
           touchTooltipData: LineTouchTooltipData(
               fitInsideHorizontally: true,
               fitInsideVertically: true,

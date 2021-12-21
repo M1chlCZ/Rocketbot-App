@@ -22,9 +22,10 @@ class CoinScreen extends StatefulWidget {
   final VoidCallback goBack;
   final List<CoinBalance>? allCoins;
   final Function(Coin? c) setActiveCoin;
+  final Function (bool touch) blockTouch;
 
   const CoinScreen(
-      {Key? key, required this.activeCoin, this.allCoins, required this.goBack, required this.setActiveCoin})
+      {Key? key, required this.activeCoin, this.allCoins, required this.goBack, required this.setActiveCoin, required this.blockTouch})
       : super(key: key);
 
   @override
@@ -187,6 +188,7 @@ class _CoinScreenState extends State<CoinScreen> {
                               key: _graphKey,
                               prices: snapshot.data!.data!.historyPrices,
                               time: 24,
+                              blockTouch: _blockSwipe,
                             );
                           case Status.LOADING:
                             // return Center(child: Text("loading data"));
@@ -348,6 +350,10 @@ class _CoinScreenState extends State<CoinScreen> {
     setState(() {
       _graphKey.currentState!.changeTime(time);
     });
+  }
+
+  _blockSwipe(bool b ) {
+ widget.blockTouch(b);
   }
 
   _calculatePortfolio() {
