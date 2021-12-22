@@ -26,6 +26,12 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Camera is used for scanning QR code</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>User is allowed to download a csv file of theirs transactions.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>User is allowed to import picture from the library for their avatar</string>
 	<key>LSApplicationQueriesSchemes</key>
     <array>
       <string>https</string>

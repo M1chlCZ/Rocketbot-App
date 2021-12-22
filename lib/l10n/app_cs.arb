@@ -43,5 +43,10 @@
   "graph_no_data" : "Omlouváme se, data pro graf jsou nedostupná",
   "settings_screen" : "Nastavení",
   "settings_main" : "Hlavní nastavení",
-  "settings_privacy": "Nastavení soukromí"
+  "settings_privacy": "Nastavení soukromí",
+  "qr_scan_flash" : "Blesk",
+  "qr_scan_on" : "Zap.",
+  "qr_scan_off" : "Vyp.",
+  "qr_scan_back" : "Přední foťák",
+  "qr_scan_front" : "Zadní foťák"
 }

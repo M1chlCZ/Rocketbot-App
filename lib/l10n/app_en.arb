@@ -43,5 +43,10 @@
   "graph_no_data" : "Sorry, we couldn't get the data for the graph",
   "settings_screen" : "Settings",
   "settings_main" : "Main Settings",
-  "settings_privacy": "Privacy Settings"
+  "settings_privacy": "Privacy Settings",
+  "qr_scan_flash" : "Flash",
+  "qr_scan_on" : "on",
+  "qr_scan_off" : "off",
+  "qr_scan_back" : "Back Camera",
+  "qr_scan_front" : "Fron Camera"
 }

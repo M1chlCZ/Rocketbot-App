@@ -28,6 +28,8 @@ dependencies:
   share: any
   vibration: ^1.7.4-nullsafety.0
   flutter_switch: ^0.3.2
+  qr_code_scanner: ^0.6.1
+  permission_handler: ^8.3.0
 
   cupertino_icons: ^1.0.4
 

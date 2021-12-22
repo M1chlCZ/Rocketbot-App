@@ -10,9 +10,11 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/support/QCodeScanner.dart';
 import 'package:share/share.dart';
 import 'package:vibration/vibration.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SendPage extends StatefulWidget {
   final Coin? coinActive;
@@ -433,7 +435,7 @@ class _SendPageState extends State<SendPage> {
               Text(AppLocalizations.of(context)!.or_send_scan_qr, style: Theme.of(context).textTheme.headline3,),
               const SizedBox(height: 20.0,),
               NeuButton(
-                onTap: () {_openQR(context, widget.coinActive!.fullName!);},
+                onTap: () {_openQRScanner();},
                 width: 200,
                 height: 200,
                 child: Image.asset("images/qr_code_scan.png"),
@@ -555,5 +557,40 @@ class _SendPageState extends State<SendPage> {
             ),
           );
         });
+  }
+
+  void _openQRScanner() async {
+    FocusScope.of(context).unfocus();
+
+    Future.delayed(const Duration(milliseconds: 200), () async {
+      var status = await Permission.camera.status;
+      if (await Permission.camera.isPermanentlyDenied) {
+        // await Dialogs.openAlertBoxReturn(context, "Warning", "Please grant this app permissions for Camera");
+        openAppSettings();
+      } else if (status.isDenied) {
+        var r = await Permission.camera.request();
+        if (r.isGranted) {
+          Navigator.of(context).push(new PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+            return QScanWidget(
+              scanResult: (String s) {
+                _addressController.text = s;
+              },
+            );
+          }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          }));
+        }
+      } else {
+        Navigator.of(context).push(new PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+          return QScanWidget(
+            scanResult: (String s) {
+              _addressController.text = s;
+            },
+          );
+        }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(opacity: animation, child: child);
+        }));
+      }
+    });
   }
 }
