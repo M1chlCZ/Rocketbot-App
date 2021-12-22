@@ -26,6 +26,7 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class PortfolioScreenState extends State<PortfolioScreen> {
+  ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
 
@@ -41,6 +42,10 @@ class PortfolioScreenState extends State<PortfolioScreen> {
   void initState() {
     super.initState();
     _bloc = BalancesBloc(null);
+    _scrollController.addListener(() {
+      if(popMenu)
+      setState(() {popMenu = false;});
+    });
     // portCalc = widget.listBalances != null ? true : false;
   }
 
@@ -76,6 +81,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
+              controller: _scrollController,
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: _listHeight == 0.0 ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 0.3 + _listHeight,
@@ -279,7 +285,7 @@ class PortfolioScreenState extends State<PortfolioScreen> {
               ),
             ),
             Visibility(
-                visible: popMenu ? true : false,
+                visible: false,
                 child: GestureDetector(
                     onTap: () {
                       setState(() {
