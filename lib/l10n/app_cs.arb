@@ -62,5 +62,13 @@
   "as_enter_pin" : "Prosím zadejte PIN",
   "as_wrong_pin" : "Nespravný PIN, prosím zkuste to znovu",
   "as_enter_desired_pin" : "Zadejte požadovaný PIN",
-  "as_enter_desired_confirm_pin" : "Prosím potvrďte požadovaný PIN"
+  "as_enter_desired_confirm_pin" : "Prosím potvrďte požadovaný PIN",
+  "about_rocket" : "RocketBot Wallet App, používá kryptoměnu na sociálních sítích (Twitter, Telegram & Discord).",
+  "about_terms" :"Zásadý používání",
+  "about_policy" :"Zásady soukromí",
+  "about_visit" :"Navšivte naší stránku",
+  "about_merge" :"Projekt Merge",
+  "about_devs" : "Vývoj",
+  "about_develop" : "Stránka vývoje",
+  "about_licences" : "Zobrazit licence"
 }

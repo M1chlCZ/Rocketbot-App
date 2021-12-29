@@ -62,6 +62,14 @@
   "as_enter_pin" : "Please enter PIN",
   "as_wrong_pin" : "Wrong PIN, please try again",
   "as_enter_desired_pin" : "Please enter desired PIN",
-  "as_enter_desired_confirm_pin" : "Please confirm desired PIN"
+  "as_enter_desired_confirm_pin" : "Please confirm desired PIN",
+  "about_rocket" : "RocketBot Wallet App, uses cryptocurrencies for micropayments on social media platforms(Twitter, Telegram & Discord).",
+  "about_terms" :"Terms of Use",
+  "about_policy" :"Privacy Policy",
+  "about_visit" :"Visit our website",
+  "about_merge" :"Project Merge ",
+  "about_devs" : "Development",
+  "about_develop" : "Development site",
+  "about_licences" : "View licences"
 
 }

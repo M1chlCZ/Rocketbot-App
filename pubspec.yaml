@@ -32,6 +32,7 @@ dependencies:
   permission_handler: ^8.3.0
   local_auth: ^1.1.9
   flutter_phoenix: ^1.0.0
+  package_info: any
   flutter_lock_screen: ^2.0.1
 
   cupertino_icons: ^1.0.4
