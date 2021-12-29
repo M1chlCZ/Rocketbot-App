@@ -20,15 +20,28 @@ class _SecurityScreenState extends State<SecurityScreen> {
   var firstValue = false;
   var secondValue = true;
 
-  String dropValue = 'PIN';
-  List<String> dropValues = [
+  String _dropValue = 'PIN';
+  List<String> _dropValues = [
     'PIN',
-    'PIN + ' + (Platform.isAndroid ? 'Fingeprint' : 'FaceID')
+    Platform.isAndroid ? 'Fingerprint' : 'FaceID',
+    'PIN + ' + (Platform.isAndroid ? 'Fingerprint' : 'FaceID')
   ];
 
   @override
   void initState() {
     super.initState();
+    _getAuthType();
+  }
+
+  void _getAuthType() async {
+    String? auth = await _storage.read(key: "AUTH_TYPE");
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        _dropValue = _dropValues[int.parse(auth!)];
+        print("///////////////////");
+        print(_dropValue);
+      });
+    });
   }
 
   @override
@@ -109,7 +122,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 100.0, right: 8.0),
+                                    left: 80.0, right: 8.0),
                                 child: SizedBox(
                                   height: 30,
                                   child: NeuContainer(
@@ -117,16 +130,16 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                       padding: const EdgeInsets.only(left: 8.0),
                                       child: DropdownButtonHideUnderline(
                                         child: DropdownButton<String>(
-                                          value: dropValue,
+                                          value: _dropValue,
                                           isDense: true,
                                           onChanged: (String? val) {
                                             setState(() {
-                                              dropValue = val!;
+                                              _dropValue = val!;
                                             });
-                                           int index = dropValues.indexWhere((values) => values.contains(val!));
+                                           int index = _dropValues.indexWhere((values) => values.contains(val!));
                                             _storage.write(key: "AUTH_TYPE", value: index.toString());
                                           },
-                                          items: dropValues
+                                          items: _dropValues
                                               .map((e) => DropdownMenuItem(
                                                   value: e,
                                                   child: SizedBox(

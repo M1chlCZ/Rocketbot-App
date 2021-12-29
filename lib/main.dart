@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'Support/material_color_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -12,7 +13,11 @@ void main() async {
       DeviceOrientation.portraitDown,
     ],
   );
-  runApp(const MyApp());
+  runApp(
+    Phoenix(
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

@@ -44,12 +44,15 @@ class _AuthScreenState extends State<AuthScreen> {
     _myPass = nums.split('').map(int.parse).toList();
   }
 
+
   void _getAuthType() async {
    var i = await _storage.read(key: "AUTH_TYPE");
    if(int.parse(i!) == 0) {
      setState(() {
        _showFinger = false;
      });
+   }else if(int.parse(i) == 1) {
+     biometrics();
    }else{
      setState(() {
        _showFinger = true;

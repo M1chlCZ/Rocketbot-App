@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
@@ -8,6 +10,7 @@ import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
+import 'package:rocketbot/support/life_cycle_watcher.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -25,7 +28,8 @@ class PortfolioScreen extends StatefulWidget {
   PortfolioScreenState createState() => PortfolioScreenState();
 }
 
-class PortfolioScreenState extends State<PortfolioScreen> {
+class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
+  final _storage = FlutterSecureStorage();
   ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
@@ -35,6 +39,8 @@ class PortfolioScreenState extends State<PortfolioScreen> {
 
   bool portCalc = false;
   bool popMenu = false;
+  bool _paused = false;
+  bool _pinEnabled = false;
 
   double _listHeight = 0.0;
 
@@ -538,5 +544,47 @@ class PortfolioScreenState extends State<PortfolioScreen> {
       return Colors.white30;
     }
     return Color(0xFF1B1B1A);
+  }
+
+  Future _getPinFuture() async {
+    var s = _storage.read(key: "PIN");
+    return s;
+  }
+
+  Future <void> _getPin() async {
+    final String? pin = await _getPinFuture();
+    if (pin != null) _pinEnabled = true;
+  }
+
+  void _restartApp() async {
+    Phoenix.rebirth(context);
+  }
+
+  @override
+  void onDetached() {
+    _paused = true;
+  }
+
+  @override
+  void onInactive() {
+  }
+
+  @override
+  void onPaused() {
+    _paused = true;
+  }
+
+  @override
+  void onResumed() async {
+    print("//resumed");
+    // FlutterAppBadger.removeBadge();
+    // flutterLocalNotificationsPlugin.cancelAll();
+    // _checkNot();
+    await _getPin();
+    // _getMessages();
+    if (_pinEnabled == true && _paused) {
+      _paused = false;
+      _restartApp();
+    }
   }
 }
