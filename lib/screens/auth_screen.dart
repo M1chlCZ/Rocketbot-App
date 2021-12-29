@@ -11,8 +11,7 @@ class AuthScreen extends StatefulWidget {
   final bool setupPIN;
   final int type;
 
-  const AuthScreen(
-      {Key? key, this.setupPIN = false, this.type = 0})
+  const AuthScreen({Key? key, this.setupPIN = false, this.type = 0})
       : super(key: key);
 
   @override
@@ -44,22 +43,21 @@ class _AuthScreenState extends State<AuthScreen> {
     _myPass = nums.split('').map(int.parse).toList();
   }
 
-
   void _getAuthType() async {
-   var i = await _storage.read(key: "AUTH_TYPE");
-   if(int.parse(i!) == 0) {
-     setState(() {
-       _showFinger = false;
-     });
-   }else if(int.parse(i) == 1) {
-     biometrics();
-   }else{
-     setState(() {
-       _showFinger = true;
-     });
-
-   }
-
+    if (widget.setupPIN != true) {
+      var i = await _storage.read(key: "AUTH_TYPE");
+      if (int.parse(i!) == 0) {
+        setState(() {
+          _showFinger = false;
+        });
+      } else if (int.parse(i) == 1) {
+        biometrics();
+      } else {
+        setState(() {
+          _showFinger = true;
+        });
+      }
+    }
   }
 
   Future<Null> biometrics() async {
@@ -116,7 +114,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     fingerVerify: _isFingerprint,
                     borderColor: Colors.white,
                     showWrongPassDialog: false,
-                    wrongPassContent: AppLocalizations.of(context)!.as_wrong_pin,
+                    wrongPassContent:
+                        AppLocalizations.of(context)!.as_wrong_pin,
                     wrongPassTitle: "Opps!",
                     wrongPassCancelButtonText: "Cancel",
                     passCodeVerify: (passcode) async {
@@ -168,7 +167,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: IgnorePointer(
                       ignoring: !_firstPIN,
                       child: LockScreen(
-                          title: AppLocalizations.of(context)!.as_enter_desired_pin,
+                          title: AppLocalizations.of(context)!
+                              .as_enter_desired_pin,
                           passLength: 6,
                           numColor: Colors.white70,
                           bgImage: "images/pending_rocket_pin.png",
@@ -182,17 +182,16 @@ class _AuthScreenState extends State<AuthScreen> {
                           wrongPassTitle: "",
                           wrongPassCancelButtonText: "Cancel",
                           passCodeVerify: (passcode) async {
-                              if (passcode.length != 6) {
-                                return false;
-                              }
-                              _tempPIN = passcode;
-                              return true;
-
+                            if (passcode.length != 6) {
+                              return false;
+                            }
+                            _tempPIN = passcode;
+                            return true;
                           },
                           onSuccess: () {
-                              setState(() {
-                                _firstPIN = false;
-                              });
+                            setState(() {
+                              _firstPIN = false;
+                            });
                           }),
                     )),
                 Visibility(
@@ -200,7 +199,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: IgnorePointer(
                       ignoring: _firstPIN,
                       child: LockScreen(
-                          title: AppLocalizations.of(context)!.as_enter_desired_confirm_pin,
+                          title: AppLocalizations.of(context)!
+                              .as_enter_desired_confirm_pin,
                           passLength: 6,
                           numColor: Colors.white70,
                           bgImage: "images/pending_rocket_pin.png",
