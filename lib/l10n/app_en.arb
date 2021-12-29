@@ -59,6 +59,7 @@
   "sc_change_fuck": "PIN change unsuccessful",
   "sc_pin_removed": "PIN removed successfully",
   "sc_pin_removed_fucked": "PIN hasn't been removed",
+  "sc_security": "Security",
   "as_enter_pin" : "Please enter PIN",
   "as_wrong_pin" : "Wrong PIN, please try again",
   "as_enter_desired_pin" : "Please enter desired PIN",

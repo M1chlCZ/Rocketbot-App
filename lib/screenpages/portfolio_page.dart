@@ -321,41 +321,43 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                         color: Color(0xFF1B1B1B),
                         child: Column(
                           children: [
-                            SizedBox(
-                                // SizedBox(
-                                height: 40,
-                                child: Center(
-                                  child: Directionality(
-                                    textDirection: TextDirection.ltr,
-                                    child: SizedBox(
-                                      width: 140,
-                                      child: TextButton(
-                                        child: Text(
-                                          AppLocalizations.of(context)!.history_popup,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline1!
-                                              .copyWith(fontSize: 14.0),
-                                        ),
-                                        style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.resolveWith(
-                                                    (states) =>
-                                                        qrColors(states)),
-                                            shape: MaterialStateProperty.all<
-                                                    RoundedRectangleBorder>(
-                                                RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            0.0),
-                                                    side: BorderSide(
-                                                        color: Colors
-                                                            .transparent)))),
-                                        onPressed: () {},
-                                      ),
-                                    ),
-                                  ),
-                                )),
+                            // SizedBox(
+                            //     // SizedBox(
+                            //     height: 40,
+                            //     child: Center(
+                            //       child: Directionality(
+                            //         textDirection: TextDirection.ltr,
+                            //         child: SizedBox(
+                            //           width: 140,
+                            //           child: TextButton(
+                            //             child: Text(
+                            //               AppLocalizations.of(context)!.history_popup,
+                            //               style: Theme.of(context)
+                            //                   .textTheme
+                            //                   .headline1!
+                            //                   .copyWith(fontSize: 14.0),
+                            //             ),
+                            //             style: ButtonStyle(
+                            //                 backgroundColor:
+                            //                     MaterialStateProperty.resolveWith(
+                            //                         (states) =>
+                            //                             qrColors(states)),
+                            //                 shape: MaterialStateProperty.all<
+                            //                         RoundedRectangleBorder>(
+                            //                     RoundedRectangleBorder(
+                            //                         borderRadius:
+                            //                             BorderRadius.circular(
+                            //                                 0.0),
+                            //                         side: BorderSide(
+                            //                             color: Colors
+                            //                                 .transparent)))),
+                            //             onPressed: () {
+                            //               setState(() {popMenu = false;});
+                            //             },
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     )),
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -393,6 +395,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
+                                            setState(() {popMenu = false;});
                                           Navigator.of(context).push(PageRouteBuilder(
                                               pageBuilder: (BuildContext context, _, __) {
                                                 return const SettingsScreen();
@@ -444,6 +447,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
+                                          setState(() {popMenu = false;});
                                           Navigator.of(context).push(PageRouteBuilder(
                                               pageBuilder: (BuildContext context, _, __) {
                                                 return const AboutScreen();
@@ -576,7 +580,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
   @override
   void onResumed() async {
-    print("//resumed");
     // FlutterAppBadger.removeBadge();
     // flutterLocalNotificationsPlugin.cancelAll();
     // _checkNot();

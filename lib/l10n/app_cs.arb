@@ -57,6 +57,7 @@
   "sc_remove_pin" : "Odstranit PIN",
   "sc_change_succ": "Změna PIN úspěšná",
   "sc_change_fuck": "Změna PIN neúspěšná",
+  "sc_security": "Security",
   "sc_pin_removed": "PIN odstraněn",
   "sc_pin_removed_fucked": "PIN hasn't been removed",
   "as_enter_pin" : "Prosím zadejte PIN",

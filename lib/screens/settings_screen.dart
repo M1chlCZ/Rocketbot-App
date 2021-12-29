@@ -176,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text('Setup APP security',
+                                  Text(AppLocalizations.of(context)!.sc_security,
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline4!

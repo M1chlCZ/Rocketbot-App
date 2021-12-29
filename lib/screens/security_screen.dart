@@ -38,8 +38,6 @@ class _SecurityScreenState extends State<SecurityScreen> {
     Future.delayed(Duration.zero, () {
       setState(() {
         _dropValue = _dropValues[int.parse(auth!)];
-        print("///////////////////");
-        print(_dropValue);
       });
     });
   }
@@ -74,7 +72,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                       const SizedBox(
                         width: 20.0,
                       ),
-                      Text(AppLocalizations.of(context)!.sc_headline,
+                      Text(AppLocalizations.of(context)!.sc_security,
                           style: Theme.of(context).textTheme.headline4),
                     ],
                   ),

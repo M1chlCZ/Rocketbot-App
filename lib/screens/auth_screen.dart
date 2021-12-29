@@ -71,6 +71,9 @@ class _AuthScreenState extends State<AuthScreen> {
           useErrorDialogs: true,
           stickyAuth: false);
     } on PlatformException catch (e) {
+      setState(() {
+        _showFinger = false;
+      });
       print(e);
     }
     if (!mounted) return;
