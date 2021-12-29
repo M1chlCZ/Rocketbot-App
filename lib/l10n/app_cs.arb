@@ -48,5 +48,19 @@
   "qr_scan_on" : "Zap.",
   "qr_scan_off" : "Vyp.",
   "qr_scan_back" : "Přední foťák",
-  "qr_scan_front" : "Zadní foťák"
+  "qr_scan_front" : "Zadní foťák",
+  "sc_headline" : "Zabezpečení aplikace",
+  "sc_auth_headline" : "Nastavení zabezpečení",
+  "sc_auth_type" : "Ověřit pomocí:",
+  "sc_pin_settings" : "Nastavení PIN",
+  "sc_change_pin" : "Změnit PIN",
+  "sc_remove_pin" : "Odstranit PIN",
+  "sc_change_succ": "Změna PIN úspěšná",
+  "sc_change_fuck": "Změna PIN neúspěšná",
+  "sc_pin_removed": "PIN odstraněn",
+  "sc_pin_removed_fucked": "PIN hasn't been removed",
+  "as_enter_pin" : "Prosím zadejte PIN",
+  "as_wrong_pin" : "Nespravný PIN, prosím zkuste to znovu",
+  "as_enter_desired_pin" : "Zadejte požadovaný PIN",
+  "as_enter_desired_confirm_pin" : "Prosím potvrďte požadovaný PIN"
 }

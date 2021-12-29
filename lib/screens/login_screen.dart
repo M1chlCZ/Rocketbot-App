@@ -19,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _storage = FlutterSecureStorage();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -73,13 +74,27 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  _nextPage() {
-    Navigator.of(context).pushReplacement(
-        PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-      return const AuthScreen();
-    }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-      return FadeTransition(opacity: animation, child: child);
-    }));
+  _nextPage() async {
+    String? res = await _storage.read(key: "PIN");
+    if(res == null) {
+      Navigator.of(context).pushReplacement(
+          PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+            return const PortfolioScreen();
+          },
+              transitionsBuilder: (_, Animation<double> animation, __,
+                  Widget child) {
+                return FadeTransition(opacity: animation, child: child);
+              }));
+    }else {
+      Navigator.of(context).pushReplacement(
+          PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+            return const AuthScreen();
+          },
+              transitionsBuilder: (_, Animation<double> animation, __,
+                  Widget child) {
+                return FadeTransition(opacity: animation, child: child);
+              }));
+    }
   }
 
   _switchPage(int page) {
