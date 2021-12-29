@@ -30,6 +30,8 @@ dependencies:
   flutter_switch: ^0.3.2
   qr_code_scanner: ^0.6.1
   permission_handler: ^8.3.0
+  local_auth: ^1.1.9
+  flutter_lock_screen: ^2.0.1
 
   cupertino_icons: ^1.0.4
 

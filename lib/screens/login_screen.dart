@@ -8,6 +8,8 @@ import 'package:rocketbot/screenpages/portfolio_page.dart';
 import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 
+import 'auth_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -74,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _nextPage() {
     Navigator.of(context).pushReplacement(
         PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-      return const PortfolioScreen();
+      return const AuthScreen();
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
     }));
