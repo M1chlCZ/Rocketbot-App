@@ -46,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loggedIN() async {
-    return true;
     String? lg = await _storage.read(key: NetInterface.token);
     if (lg != null && lg.isNotEmpty) {
       return true;
