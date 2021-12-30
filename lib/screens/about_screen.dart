@@ -607,6 +607,9 @@ class _AboutScreenState extends State<AboutScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(
+                  height: 30.0,
+                ),
             ],)
           ],),
         ),

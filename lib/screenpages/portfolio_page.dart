@@ -305,7 +305,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                       height: double.infinity,
                     ))),
             Positioned(
-                top: 50.0,
+                top: 40.0,
                 right: 4.0,
                 child: AnimatedOpacity(
                   opacity: popMenu ? 1.0 : 0.0,
@@ -358,12 +358,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                             //         ),
                             //       ),
                             //     )),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 4.0, right: 4.0),
-                              child:
-                                  Container(height: 0.5, color: Colors.white12),
-                            ),
+                            // Padding(
+                            //   padding:
+                            //       const EdgeInsets.only(left: 4.0, right: 4.0),
+                            //   child:
+                            //       Container(height: 0.5, color: Colors.white12),
+                            // ),
                             SizedBox(
                               // SizedBox(
                                 height: 40,

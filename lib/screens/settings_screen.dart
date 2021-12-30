@@ -172,33 +172,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               // widget.coinSwitch(widget.coin);
                               // widget.activeCoin(widget.coin.coin!);
 
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(AppLocalizations.of(context)!.sc_security,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline4!
-                                          .copyWith(
-                                              fontSize: 14.0,
-                                              color: Colors.white)),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.4,
-                                  ),
-                                  NeuButton(
-                                      height: 25,
-                                      width: 20,
-                                      onTap: () async {
-                                        _handlePIN();
-                                      },
-                                      child: Icon(
-                                        Icons.arrow_forward_ios_sharp,
-                                        color: Colors.white,
-                                        size: 22.0,
-                                      ))
-                                ],
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(AppLocalizations.of(context)!.sc_security,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline4!
+                                            .copyWith(
+                                                fontSize: 14.0,
+                                                color: Colors.white)),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    NeuButton(
+                                        height: 25,
+                                        width: 20,
+                                        onTap: () async {
+                                          _handlePIN();
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_forward_ios_sharp,
+                                          color: Colors.white,
+                                          size: 22.0,
+                                        ))
+                                  ],
+                                ),
                               ),
                             )),
                       ),
