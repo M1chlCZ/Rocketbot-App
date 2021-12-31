@@ -12,15 +12,16 @@ class NetInterface {
 
   Future<dynamic> get(String url) async {
     var _token = await const FlutterSecureStorage().read(key: token);
+    print(_token);
 // print(_baseUrl + url);
     dynamic responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
         "accept": "application/json",
-        "Authorization":" Basic $_token",
+        "Authorization":" Bearer $_token",
       });
       responseJson = _returnResponse(response);
-      // print(responseJson.toString());
+      print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
@@ -28,6 +29,7 @@ class NetInterface {
   }
 
   dynamic _returnResponse(http.Response response) {
+    print(response.statusCode);
     switch (response.statusCode) {
       case 200:
         var responseJson = json.decode(response.body.toString());
@@ -44,19 +46,121 @@ class NetInterface {
     }
   }
 
-  static Future<int> createToken(String login, String pass) async  {
-    var credentials = login + ":" + pass;
-    String encoded = base64.encode(utf8.encode(credentials));
-    final response = await http.get(Uri.parse("https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"), headers: {
-      "accept": "application/json",
-      "Authorization":" Basic $encoded",
-    });
-    if(response.statusCode == 200) {
-      await const FlutterSecureStorage().write(key: NetInterface.token , value: encoded);
+  static Future<String?> getKey(String login, String pass) async  {
+    try {
+      Map _request = {
+        "email": login,
+        "password": pass
+      };
+      var _query = json.encoder.convert(_request);
+      final response = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signin"),
+          body: _query,
+          headers: {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+          });
+      // print(response.body);
+      // print(response.headers.toString());
+      if (response.statusCode == 200) {
+        var js = json.decode(response.body);
+        return js['data'];
+      } else {
+        await const FlutterSecureStorage().delete(key: NetInterface.token);
+        return null;
+      }
+    }catch(e) {
+      return null;
+    }
+  }
+
+  static Future<String?> getToken(String key, String code) async  {
+    try {
+      Map _request = {
+        "key": key,
+        "code": code
+      };
+      var _query = json.encoder.convert(_request);
+      // print(_query);
+      final response = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignInCode"),
+          body: _query,
+          headers: {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+          });
+      // print(response.body);
+      // response.headers.keys.forEach((element) {
+      //  print(element.toString());
+      // });
+
+      if (response.statusCode == 200) {
+        String? token;
+        response.headers.entries.forEach((element) {
+          if(element.key == 'token') {
+            token = element.value;
+          }
+        });
+        return token;
+      } else {
+        await const FlutterSecureStorage().delete(key: NetInterface.token);
+        return null;
+      }
+    }catch(e) {
+      return null;
+    }
+  }
+
+  static Future<int> registerUser({required String email, required String pass, required String passConf, required String name, required String surname, required bool agreed}) async  {
+    try {
+      Map _request = {
+        "email": email,
+        "password": pass,
+        "confirmPassword": passConf,
+        "name": name,
+        "surname": surname,
+        "agreeToConditions": agreed
+      };
+      var _query = json.encoder.convert(_request);
+      final response = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
+          body: _query,
+          headers: {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+          });
+
+      if (response.statusCode == 200) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }catch(e) {
       return 0;
-    }else {
-      await const FlutterSecureStorage().delete(key: NetInterface.token);
-      return 1;
+    }
+  }
+
+  static Future<int> forgotPass(String email) async  {
+    try {
+      Map _request = {
+        "email": email,
+      };
+      var _query = json.encoder.convert(_request);
+      final response = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ForgotPassword"),
+          body: _query,
+          headers: {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+          });
+
+      if (response.statusCode == 200) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }catch(e) {
+      return 0;
     }
   }
 
@@ -64,12 +168,12 @@ class NetInterface {
     String? encoded = await const FlutterSecureStorage().read(key: NetInterface.token);
     final response = await http.get(Uri.parse("https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"), headers: {
       "accept": "application/json",
-      "Authorization":" Basic $encoded",
+      "Authorization":" Bearer $encoded",
     });
     if(response.statusCode == 200) {
       return 0;
     }else {
-      await const FlutterSecureStorage().delete(key: NetInterface.token);
+      // await const FlutterSecureStorage().delete(key: NetInterface.token);
       return 1;
     }
   }

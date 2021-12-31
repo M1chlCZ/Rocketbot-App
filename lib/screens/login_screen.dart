@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
@@ -7,6 +8,7 @@ import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screenpages/portfolio_page.dart';
 import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'auth_screen.dart';
 
@@ -23,16 +25,22 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailRegController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController secondNameController = TextEditingController();
   TextEditingController passwordRegController = TextEditingController();
   TextEditingController passwordRegConfirmController = TextEditingController();
+
   bool _curtain = true;
+  bool _termsAgreed = false;
   var _page = 0;
 
   @override
   void initState() {
     super.initState();
     // _curtain = false;
+    loginController.text = 'm1chlcz18@gmail.com';
+    passwordController.text = 'MvQ.u:3kML_WjGX';
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();
       if (b) {
@@ -46,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loggedIN() async {
+    // await _storage.delete(key: NetInterface.token);
     String? lg = await _storage.read(key: NetInterface.token);
     if (lg != null && lg.isNotEmpty) {
       return true;
@@ -55,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _goodCredentials() async {
+    // _nextPage();
     int i = await NetInterface.checkToken();
     if (i == 0) {
       _nextPage();
@@ -74,8 +84,50 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _loginUser(String login, String pass) async {
+    String? res = await NetInterface.getKey(login, pass);
+    if (res != null) {
+      _codeDialog(res);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          "Credentials doesn't match any user!",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.fixed,
+        elevation: 5.0,
+      ));
+    }
+  }
+
+  void _getToken(String key, String code) async {
+    String? res = await NetInterface.getToken(key, code);
+    if (res != null) {
+      _storage.write(key: NetInterface.token, value: res);
+      Navigator.of(context).pushReplacement(PageRouteBuilder(
+          pageBuilder: (BuildContext context, _, __) {
+            return const PortfolioScreen();
+          }, transitionsBuilder:
+          (_, Animation<double> animation, __, Widget child) {
+        return FadeTransition(opacity: animation, child: child);
+      }));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          "Credentials doesn't match any user!",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.fixed,
+        elevation: 5.0,
+      ));
+    }
+  }
+
   _nextPage() async {
-    String? res = await _storage.read(key: "PIN");
+    // String? res = await _storage.read(key: "PIN");
+    String? res;
     if(res == null) {
       Navigator.of(context).pushReplacement(
           PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
@@ -100,13 +152,39 @@ class _LoginScreenState extends State<LoginScreen> {
   _switchPage(int page) {
     FocusScope.of(context).unfocus();
     loginController.text = '';
+    firstNameController.text = '';
+    secondNameController.text = '';
     passwordController.text = '';
-    usernameController.text = '';
+    emailRegController.text = '';
     passwordRegController.text = '';
     passwordRegConfirmController.text = '';
     setState(() {
       _page = page;
     });
+  }
+
+  void _onTermsChanged(bool? newValue) => setState(() {
+    _termsAgreed = newValue!;
+
+  });
+
+  void _registerUser() async {
+    int res = await NetInterface.registerUser(
+        agreed: _termsAgreed,
+        passConf: passwordRegConfirmController.text,
+        email: emailRegController.text,
+        pass: passwordRegController.text,
+        surname: secondNameController.text,
+        name: firstNameController.text);
+    if(res == 1) {
+      _registrationDialog(true);
+    }else{
+      _registrationDialog(false);
+    }
+  }
+
+  void _forgotPass(String email) async {
+    var i = NetInterface.forgotPass(email);
   }
 
   @override
@@ -124,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         const SizedBox(
-                          height: 100,
+                          height: 60,
                         ),
                        LoginRegisterSwitcher(
                            changeType: _switchPage
@@ -163,10 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const SizedBox(
-                                  height: 100,
-                                ),
-                                const SizedBox(
-                                  height: 120,
+                                  height: 150,
                                 ),
                                 Align(
                                   alignment: Alignment.center,
@@ -195,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                         const EdgeInsets.only(left: 10.0, bottom: 5.0),
                                                     hintStyle: Theme.of(context)
                                                         .textTheme
-                                                        .subtitle2!
+                                                        .subtitle1!
                                                         .copyWith(
                                                             color: Colors.white54,
                                                             fontSize: 14.0),
@@ -234,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     const EdgeInsets.only(left: 10.0, bottom: 5.0),
                                                     hintStyle: Theme.of(context)
                                                         .textTheme
-                                                        .subtitle2!
+                                                        .subtitle1!
                                                         .copyWith(
                                                         color: Colors.white54,
                                                         fontSize: 14.0),
@@ -252,31 +327,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                         const SizedBox(
                                           height: 30.0,
                                         ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context)!.forgot_pass,
-                                              style: Theme.of(context).textTheme.subtitle2,
-                                            ),
-                                            const SizedBox(
-                                              width: 20.0,
-                                            ),
-                                            SizedBox(
-                                              height: 30,
-                                              width: 25,
-                                              child: NeuButton(
-                                                onTap: () {
-                                                  // widget.goBack();
-                                                },
-                                                icon: const Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 20.0,
-                                                  color: Colors.white70,
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 55.0),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                AppLocalizations.of(context)!.forgot_pass,
+                                                style: Theme.of(context).textTheme.subtitle1,
+                                              ),
+                                              const SizedBox(
+                                                width: 20.0,
+                                              ),
+                                              SizedBox(
+                                                height: 30,
+                                                width: 25,
+                                                child: NeuButton(
+                                                  onTap: () {
+                                                    _forgotDialog();
+                                                  },
+                                                  icon: const Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 20.0,
+                                                    color: Colors.white70,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -310,7 +388,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 const SizedBox( height: 20.0,),
-                                Text(AppLocalizations.of(context)!.or, style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 16.0, color: Colors.white),),
+                                Text(AppLocalizations.of(context)!.or, style: Theme.of(context).textTheme.subtitle1!.copyWith(fontSize: 16.0, color: Colors.white),),
                                 const SizedBox( height: 20.0,),
                                 SizedBox(
                                   width: 250,
@@ -334,7 +412,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         Text(AppLocalizations.of(context)!.sign_in_google, style: Theme.of(context)
                                             .textTheme
-                                            .subtitle2!
+                                            .subtitle1!
                                             .copyWith(
                                             fontSize: 14.0, color: Colors.white),),
                                       ],
@@ -358,10 +436,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const SizedBox(
-                                  height: 100,
-                                ),
-                                const SizedBox(
-                                  height: 120,
+                                  height: 150,
                                 ),
                                 SizedBox(
                                   width: 280,
@@ -373,7 +448,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               .copyWith(
                                               color: Colors.white, fontSize: 18.0),
                                           autocorrect: false,
-                                          controller: usernameController,
+                                          controller: emailRegController,
                                           textAlign: TextAlign.center,
                                           decoration: InputDecoration(
                                             isDense: false,
@@ -381,11 +456,83 @@ class _LoginScreenState extends State<LoginScreen> {
                                             const EdgeInsets.only(left: 10.0, bottom: 5.0),
                                             hintStyle: Theme.of(context)
                                                 .textTheme
-                                                .subtitle2!
+                                                .subtitle1!
                                                 .copyWith(
                                                 color: Colors.white54,
                                                 fontSize: 14.0),
                                             hintText: AppLocalizations.of(context)!.e_mail,
+                                            enabledBorder: const UnderlineInputBorder(
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent),
+                                            ),
+                                            focusedBorder: const UnderlineInputBorder(
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent),
+                                            ),
+                                          ))),
+                                ),
+                                const SizedBox(
+                                  height: 30.0,
+                                ),
+                                SizedBox(
+                                  width: 280,
+                                  child: NeuContainer(
+                                      child: TextField(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                              color: Colors.white, fontSize: 18.0),
+                                          autocorrect: false,
+                                          controller: firstNameController,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration(
+                                            isDense: false,
+                                            contentPadding:
+                                            const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                            hintStyle: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1!
+                                                .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                            hintText: AppLocalizations.of(context)!.name,
+                                            enabledBorder: const UnderlineInputBorder(
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent),
+                                            ),
+                                            focusedBorder: const UnderlineInputBorder(
+                                              borderSide:
+                                              BorderSide(color: Colors.transparent),
+                                            ),
+                                          ))),
+                                ),
+                                const SizedBox(
+                                  height: 30.0,
+                                ),
+                                SizedBox(
+                                  width: 280,
+                                  child: NeuContainer(
+                                      child: TextField(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                              color: Colors.white, fontSize: 18.0),
+                                          autocorrect: false,
+                                          controller: secondNameController,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration(
+                                            isDense: false,
+                                            contentPadding:
+                                            const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                            hintStyle: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1!
+                                                .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                            hintText: AppLocalizations.of(context)!.surname,
                                             enabledBorder: const UnderlineInputBorder(
                                               borderSide:
                                               BorderSide(color: Colors.transparent),
@@ -420,7 +567,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             const EdgeInsets.only(left: 10.0, bottom: 5.0),
                                             hintStyle: Theme.of(context)
                                                 .textTheme
-                                                .subtitle2!
+                                                .subtitle1!
                                                 .copyWith(
                                                 color: Colors.white54,
                                                 fontSize: 14.0),
@@ -459,7 +606,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         const EdgeInsets.only(left: 10.0, bottom: 5.0),
                                         hintStyle: Theme.of(context)
                                             .textTheme
-                                            .subtitle2!
+                                            .subtitle1!
                                             .copyWith(
                                             color: Colors.white54,
                                             fontSize: 14.0),
@@ -474,17 +621,49 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ))),
                           ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: AppLocalizations.of(context)!.agreed_to + ' ',
+                                      style: Theme.of(context).textTheme.subtitle1,
+                                    ),
+                                    TextSpan(
+                                      text: AppLocalizations.of(context)!.terms,
+                                      style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.blue),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () { _launchURL('https://rocketbot.pro/terms');
+                                        },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              Checkbox(
+                                  checkColor: Colors.lightGreen,
+                                  activeColor: Colors.white12,
+                                  value: _termsAgreed,
+                                  onChanged: _onTermsChanged
+                              ),
+                            ],
+                          ),
                                 const SizedBox(
-                                  height: 141,
+                                  height: 15,
                                 ),
                                 SizedBox(
                                   width: 250,
                                   height: 50,
                                   child: NeuButton(
                                       onTap: () {
-                                        // _loginUser(
-                                        //     loginController.text, passwordController.text
-                                        // );
+                                        _registerUser();
                                       },
                                       splashColor: Colors.purple,
                                       child:
@@ -532,26 +711,326 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _loginUser(String login, String pass) async {
-    int i = await NetInterface.createToken(login, pass);
-    if (i == 0) {
-      Navigator.of(context).pushReplacement(PageRouteBuilder(
-          pageBuilder: (BuildContext context, _, __) {
-        return const PortfolioScreen();
-      }, transitionsBuilder:
-              (_, Animation<double> animation, __, Widget child) {
-        return FadeTransition(opacity: animation, child: child);
-      }));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          "Credentials doesn't match any user!",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.fixed,
-        elevation: 5.0,
-      ));
+  void _codeDialog(String key) async {
+    await showGeneralDialog(
+        context: context,
+        pageBuilder: (BuildContext buildContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return SafeArea(
+            child: Builder(builder: (context) {
+              final TextEditingController _codeControl = TextEditingController();
+              return Center(
+                child: SizedBox(
+                    width: 300,
+                    height: MediaQuery.of(context).size.height * 0.22,
+                    child: StatefulBuilder(
+                        builder: (context, StateSetter setState) {
+                          return Card(
+                            color: const Color(0xFF1B1B1B),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 15.0,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(AppLocalizations.of(context)!.enter_code,
+                                      style: Theme.of(context).textTheme.headline4,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15.0,),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child:
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          child: Container(
+                                            color: Colors.black38,
+                                            padding: EdgeInsets.all(5.0),
+                                            child: TextField(controller: _codeControl,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1!
+                                                    .copyWith(
+                                                    color: Colors.white, fontSize: 18.0),
+                                                autocorrect: false,
+                                                textAlign: TextAlign.center,
+                                                decoration: InputDecoration(
+                                                  isDense: false,
+                                                  contentPadding:
+                                                  const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                                  hintStyle: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1!
+                                                      .copyWith(
+                                                      color: Colors.white54,
+                                                      fontSize: 14.0),
+                                                  hintText: AppLocalizations.of(context)!.enter_code_hint,
+                                                  enabledBorder: const UnderlineInputBorder(
+                                                    borderSide:
+                                                    BorderSide(color: Colors.transparent),
+                                                  ),
+                                                  focusedBorder: const UnderlineInputBorder(
+                                                    borderSide:
+                                                    BorderSide(color: Colors.transparent),
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(15.0, 22.0, 15.0, 0.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            _getToken(key, _codeControl.text);
+                                          },
+                                          child: SizedBox(
+                                            width: 90.0,
+                                            child: NeuButton(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text('OK',
+                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          );})),);
+            }),
+          );
+        },
+        barrierDismissible: true,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        transitionDuration: const Duration(milliseconds: 150));
+  }
+
+  void _forgotDialog() async {
+    await showGeneralDialog(
+        context: context,
+        pageBuilder: (BuildContext buildContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return SafeArea(
+            child: Builder(builder: (context) {
+              final TextEditingController _forgotPassControl = TextEditingController();
+              return Center(
+                child: SizedBox(
+                    width: 300,
+                    height: MediaQuery.of(context).size.height * 0.22,
+                    child: StatefulBuilder(
+                        builder: (context, StateSetter setState) {
+                          return Card(
+                            color: const Color(0xFF1B1B1B),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 15.0,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(AppLocalizations.of(context)!.forgot_email,
+                                      style: Theme.of(context).textTheme.headline4,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15.0,),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child:
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          child: Container(
+                                            color: Colors.black38,
+                                            padding: EdgeInsets.all(5.0),
+                                            child: TextField(controller: _forgotPassControl,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1!
+                                                    .copyWith(
+                                                    color: Colors.white, fontSize: 18.0),
+                                                autocorrect: false,
+                                                textAlign: TextAlign.center,
+                                                decoration: InputDecoration(
+                                                  isDense: false,
+                                                  contentPadding:
+                                                  const EdgeInsets.only(left: 10.0, bottom: 5.0),
+                                                  hintStyle: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle1!
+                                                      .copyWith(
+                                                      color: Colors.white54,
+                                                      fontSize: 14.0),
+                                                  hintText: AppLocalizations.of(context)!.e_mail,
+                                                  enabledBorder: const UnderlineInputBorder(
+                                                    borderSide:
+                                                    BorderSide(color: Colors.transparent),
+                                                  ),
+                                                  focusedBorder: const UnderlineInputBorder(
+                                                    borderSide:
+                                                    BorderSide(color: Colors.transparent),
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(15.0, 22.0, 15.0, 0.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            _forgotPass(_forgotPassControl.text);
+                                          },
+                                          child: SizedBox(
+                                            width: 90.0,
+                                            child: NeuButton(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text('OK',
+                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          );})),);
+            }),
+          );
+        },
+        barrierDismissible: true,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        transitionDuration: const Duration(milliseconds: 150));
+  }
+
+  void _registrationDialog(bool succ) async {
+    await showGeneralDialog(
+        context: context,
+        pageBuilder: (BuildContext buildContext,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return SafeArea(
+            child: Builder(builder: (context) {
+              return Center(
+                child: SizedBox(
+                    width: 300,
+                    height: MediaQuery.of(context).size.height * 0.22,
+                    child: StatefulBuilder(
+                        builder: (context, StateSetter setState) {
+                          return Card(
+                            color: const Color(0xFF1B1B1B),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 15.0,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Text(succ ? 'Registration complete' : 'Registration Error',
+                                      style: Theme.of(context).textTheme.headline4,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15.0,),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child:
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          child: Container(
+                                            color: Colors.black38,
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(succ ? 'Please confirm your registration in e-mail' : 'Registration unsuccessful')
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(15.0, 22.0, 15.0, 0.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: SizedBox(
+                                            width: 90.0,
+                                            child: NeuButton(
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text('OK',
+                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          );})),);
+            }),
+          );
+        },
+        barrierDismissible: true,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        transitionDuration: const Duration(milliseconds: 150));
+  }
+
+  void _launchURL(String url) async {
+    var _url = url.replaceAll("{0}", "");
+    print(_url);
+    try {
+      await launch(_url);
+    } catch (e) {
+      print(e);
     }
   }
 }
