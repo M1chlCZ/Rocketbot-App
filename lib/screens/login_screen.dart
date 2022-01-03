@@ -64,24 +64,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _goodCredentials() async {
-    // _nextPage();
-    int i = await NetInterface.checkToken();
-    if (i == 0) {
-      _nextPage();
-    } else {
-      setState(() {
-        _curtain = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          "Invalid credentials",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.fixed,
-        elevation: 5.0,
-      ));
-    }
+    _nextPage();
+    // int i = await NetInterface.checkToken();
+    // if (i == 0) {
+    //   _nextPage();
+    // } else {
+    //   setState(() {
+    //     _curtain = false;
+    //   });
+    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //     content: Text(
+    //       "Invalid credentials",
+    //       textAlign: TextAlign.center,
+    //     ),
+    //     backgroundColor: Colors.red,
+    //     behavior: SnackBarBehavior.fixed,
+    //     elevation: 5.0,
+    //   ));
+    // }
   }
 
   void _loginUser(String login, String pass) async {

@@ -30,6 +30,7 @@ class NetInterface {
 
   dynamic _returnResponse(http.Response response) {
     print(response.statusCode);
+    // print(response.toString());
     switch (response.statusCode) {
       case 200:
         var responseJson = json.decode(response.body.toString());

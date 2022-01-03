@@ -17,7 +17,7 @@ class NeuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _getContainer(height, width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         boxShadow: [
           BoxShadow(

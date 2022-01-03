@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "307873550141",
+    "project_id": "rocketbot-wallet",
+    "storage_bucket": "rocketbot-wallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307873550141:android:1255e5c50636a28d3a3f54",
+        "android_client_info": {
+          "package_name": "com.m1chl.rocketbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "307873550141-i3gu9ijdg3je1pcm16ep2pnt6n1s9rjn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.m1chl.rocketbot",
+            "certificate_hash": "ee44ad3228099ba87e3e40078260efa5fa161a96"
+          }
+        },
+        {
+          "client_id": "307873550141-aoq2n0uvgmesv1u96jeqcrh50srl715b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBax2G-uSrjquMJ5uQXNz-7IorW5uLZfCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "307873550141-aoq2n0uvgmesv1u96jeqcrh50srl715b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "307873550141-fc0qml0m8k895iess2t6l10tnuaok8q4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.m1chl.rocketbot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

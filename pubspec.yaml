@@ -15,6 +15,8 @@ dependencies:
     sdk: flutter
   flutter_svg: ^1.0.0
   flutter_secure_storage: ^5.0.2
+  firebase_messaging: any
+  firebase_core: any
   http: ^0.13.4
   auto_size_text: ^3.0.0
   intl: ^0.17.0
