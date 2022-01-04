@@ -42,7 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
     // _curtain = false;
     // loginController.text = 'm1chlcz18@gmail.com';
     // passwordController.text = 'MvQ.u:3kML_WjGX';
+
     Future.delayed(const Duration(milliseconds: 50), () async {
+      // await  _storage.delete(key: "PIN");
       bool b = await _loggedIN();
       if (b) {
         _goodCredentials();
@@ -1031,7 +1033,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           child: Container(
                                             color: Colors.black38,
                                             padding: EdgeInsets.all(5.0),
-                                            child: Text(succ ? 'Please confirm your registration in e-mail' : 'Registration unsuccessful')
+                                            child: Text(succ ? 'Please confirm your registration in e-mail' : 'Registration unsuccessful', style: Theme.of(context).textTheme.bodyText1, textAlign: TextAlign.center,)
                                           ),
                                         ),
                                       ),

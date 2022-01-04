@@ -165,6 +165,7 @@ class _AuthScreenState extends State<AuthScreen> {
             child: SafeArea(
                 child: Stack(
               children: [
+
                 Visibility(
                     visible: _firstPIN,
                     child: IgnorePointer(
@@ -226,7 +227,32 @@ class _AuthScreenState extends State<AuthScreen> {
                           onSuccess: () {
                             _checkSetupPIN();
                           }),
-                    ))
+                    )),
+                Container(
+                  margin: const EdgeInsets.only(top: 80.0, left: 20.0),
+                  child: SizedBox.fromSize(
+                    size: const Size(40, 40), // button width and height
+
+                    child: ClipOval(
+                      child: Material(
+                        color: Colors.black12, // button color
+                        child: InkWell(
+                          splashColor: Colors.white.withOpacity(0.8), // splash color
+                          onTap: () {
+                            _storage.delete(key: "PIN");
+                            Navigator.pop(context);
+                          }, // button pressed
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const <Widget>[
+                              Icon(Icons.arrow_back, color: Colors.white70,),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             )),
           ),
@@ -253,7 +279,9 @@ class _AuthScreenState extends State<AuthScreen> {
     var _succ = false;
     if (_first == _second) {
       _succ = true;
-      _storage.write(key: "PIN", value: _first.toString());
+      await _storage.write(key: "PIN", value: _first.toString());
+    }else{
+      await _storage.delete(key: "PIN");
     }
     Navigator.of(context).pop(_succ);
   }

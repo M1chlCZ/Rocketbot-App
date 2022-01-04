@@ -65,7 +65,7 @@ class TransactionList {
     _finalList.sort((a,b) {
       var A = DateTime.parse(a.receivedAt!);
       var B = DateTime.parse(b.receivedAt!);
-      return A.compareTo(B);
+      return B.compareTo(A);
     });
 
     return _finalList;

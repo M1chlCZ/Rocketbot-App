@@ -99,7 +99,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                     children: [
                       Padding(
                         padding:
-                            const EdgeInsets.only(left: 40.0, top: 10.0, bottom: 0.0),
+                            const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 0.0),
                         child: Row(
                           children: [
                             Text(AppLocalizations.of(context)!.portfolio,

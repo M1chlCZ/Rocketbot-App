@@ -296,25 +296,25 @@ class _SendPageState extends State<SendPage> {
                       const SizedBox(
                         width: 50,
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: SizedBox(
-                              height: 30,
-                              width: 25,
-                              child: NeuButton(
-                                onTap: () async {},
-                                icon: const Icon(
-                                  Icons.more_vert,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
+                      // Expanded(
+                      //   child: Align(
+                      //     alignment: Alignment.centerRight,
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.only(right: 8.0),
+                      //       child: SizedBox(
+                      //         height: 30,
+                      //         width: 25,
+                      //         child: NeuButton(
+                      //           onTap: () async {},
+                      //           icon: const Icon(
+                      //             Icons.more_vert,
+                      //             color: Colors.white70,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
                     ],
                   ),
                 ),

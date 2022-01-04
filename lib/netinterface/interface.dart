@@ -142,6 +142,7 @@ class NetInterface {
         "agreeToConditions": agreed
       };
       var _query = json.encoder.convert(_request);
+      print(_query);
       final response = await http.post(
           Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
           body: _query,
@@ -149,13 +150,14 @@ class NetInterface {
             "accept": "application/json",
             "Content-Type": "application/json",
           });
-
+      print(response.body.toString());
       if (response.statusCode == 200) {
         return 1;
       } else {
         return 0;
       }
     }catch(e) {
+      print(e);
       return 0;
     }
   }
