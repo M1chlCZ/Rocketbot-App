@@ -1,5 +1,5 @@
 import 'coin.dart';
-import 'get_withdraws.dart';
+import 'fee_coin.dart';
 
 class TransactionData {
   TransactionData({

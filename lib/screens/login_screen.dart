@@ -138,8 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _nextPage() async {
-    // String? res = await _storage.read(key: "PIN");
-    String? res;
+    String? res = await _storage.read(key: "PIN");
+    // String? res;
     if(res == null) {
       Navigator.of(context).pushReplacement(
           PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
@@ -191,13 +191,13 @@ class _LoginScreenState extends State<LoginScreen> {
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
 
-    if (username.length < 4) {
+    if (username.length < 3) {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.username_invalid,
           AppLocalizations.of(context)!.username_invalid_message);
       return;
-    } else if (password.length < 4) {
+    } else if (password.length < 3) {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.password_invalid,
@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
           AppLocalizations.of(context)!.email_invalid,
           AppLocalizations.of(context)!.email_invalid_message);
       return;
-    } else if (realname.length < 6) {
+    } else if (realname.length < 3) {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.name_invalid,
@@ -778,7 +778,7 @@ class _LoginScreenState extends State<LoginScreen> {
               return Center(
                 child: SizedBox(
                     width: 300,
-                    height: MediaQuery.of(context).size.height * 0.22,
+                    height: MediaQuery.of(context).size.height * 0.24,
                     child: StatefulBuilder(
                         builder: (context, StateSetter setState) {
                           return Card(

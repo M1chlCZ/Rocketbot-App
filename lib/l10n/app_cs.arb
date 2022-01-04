@@ -87,14 +87,15 @@
   "about_licences" : "Zobrazit licence",
   "dp_error" : "Chyba: Vybírání je pozastaveno pro tuto minci",
   "error" : "Chyba",
-  "username_invalid" : "Neplatné uživatelské jméno",
-  "username_invalid_message" : "Uživatelské jméno musí mít alespoň 4 znaky",
+  "username_invalid" : "Neplatné příjmení",
+  "username_invalid_message" : "Příjmení musí mít alespoň 3 znaky",
   "password_invalid" : "Neplatné heslo",
-  "password_invalid_message" : "Heslo musí mít alespoň 4 znaky",
+  "password_invalid_message" : "Heslo musí mít alespoň 3 znaky",
   "email_invalid" : "Neplatný e-mail",
   "email_invalid_message" : "Prosím zadejte platný e-mail",
   "name_invalid" : "Neplatné jméno",
-  "name_invalid_message" : "Jméno musí mít alespoň 6 znaků",
+  "name_invalid_message" : "Jméno musí mít alespoň 3 znaků",
   "password_mismatch" : "Hesla se neshodují",
-  "password_mismatch_message" : "Zadejte do obou polí stejná hesla"
+  "password_mismatch_message" : "Zadejte do obou polí stejná hesla",
+  "coin_sent" : "Transaction úspěšně provedena"
 }

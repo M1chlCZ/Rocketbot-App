@@ -6,6 +6,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
@@ -13,8 +14,10 @@ import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/fees.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
+import 'package:rocketbot/models/withdraw_pwid.dart';
 import 'package:rocketbot/netinterface/app_exception.dart';
 import 'package:rocketbot/netinterface/interface.dart';
+import 'package:rocketbot/screens/auth_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/qr_code_scanner.dart';
 import 'package:share/share.dart';
@@ -36,6 +39,7 @@ class _SendPageState extends State<SendPage> {
   TextEditingController _addressController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   NetInterface _interface = NetInterface();
+  FlutterSecureStorage _storage = FlutterSecureStorage();
 
   Coin? _coinActive;
   bool _curtain = true;
@@ -64,6 +68,7 @@ class _SendPageState extends State<SendPage> {
       }
     });
     _curtain = false;
+
   }
 
   _getFees() async {
@@ -76,7 +81,6 @@ class _SendPageState extends State<SendPage> {
         _feeCrypto = d.data!.feeCrypto!.ticker!;
         _fee = d.data!.fee!;
         _min = d.data!.crypto!.minWithdraw!;
-        print(_min.toString());
       });
     } catch (e) {
       setState(() {
@@ -84,6 +88,31 @@ class _SendPageState extends State<SendPage> {
       });
       print(e);
     }
+  }
+
+  void _handlePIN() async {
+    var bl = false;
+    String? p = await _storage.read(key: "PIN");
+    if (p == null) {
+      _authCallback(true);
+      return;
+    }
+    Navigator.of(context)
+        .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+          return AuthScreen(
+            setupPIN: false,
+            type: 2,
+          );
+        }, transitionsBuilder:
+            (_, Animation<double> animation, __, Widget child) {
+          return FadeTransition(opacity: animation, child: child);
+        }))
+        .then((value) => _authCallback(value));
+  }
+
+  void _authCallback(bool? b) async {
+    if (b == null || b == false) return;
+    _createWithdrawal();
   }
 
   _createWithdrawal() async {
@@ -94,24 +123,37 @@ class _SendPageState extends State<SendPage> {
       "toAddress": _addressController.text
     };
     try {
-      final response = await _interface
-              .post("Transfers/CreateWithdraw", _query);
-      // print(response.toString());
+      final response =
+          await _interface.post("Transfers/CreateWithdraw", _query);
+      var pwid = WithdrawID.fromJson(response);
+      Map<String, dynamic> _queryID = {
+        "id": pwid.data!.pgwIdentifier!,
+      };
+      await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+      _addressController.clear();
+      _amountController.clear();
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,)),
+        duration: Duration(seconds: 3),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.fixed,
+        elevation: 5.0,
+      ));
     } on BadRequestException catch (r, e) {
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
-      var s = r.toString().substring(messageStart,messageEnd + 1);
+      var s = r.toString().substring(messageStart, messageEnd + 1);
       var js = json.decode(s);
       var wm = WithdrawalsModels.fromJson(js);
       // _showError(wm.error!);
 
       Dialogs.openAlertBox(context, wm.message!, wm.error!);
-
     } catch (e) {
-      print(e);
+      Dialogs.openAlertBox(
+          context, AppLocalizations.of(context)!.error, e.toString());
     }
   }
-
 
   _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
@@ -486,12 +528,14 @@ class _SendPageState extends State<SendPage> {
                   child: SizedBox(
                     width: double.infinity,
                     child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(AppLocalizations.of(context)!.min_withdraw + ':',
+                            Text(
+                                AppLocalizations.of(context)!.min_withdraw +
+                                    ':',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -499,7 +543,10 @@ class _SendPageState extends State<SendPage> {
                             const SizedBox(
                               width: 5.0,
                             ),
-                            Text(_min.toString() + ' ' +  widget.coinActive!.ticker!.toUpperCase(),
+                            Text(
+                                _min.toString() +
+                                    ' ' +
+                                    widget.coinActive!.ticker!.toUpperCase(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -543,10 +590,9 @@ class _SendPageState extends State<SendPage> {
                 _error
                     ? Text(
                         AppLocalizations.of(context)!.dp_error,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline4!
-                            .copyWith(fontWeight: FontWeight.bold, color: Colors.red.withOpacity(0.5)),
+                        style: Theme.of(context).textTheme.headline4!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.withOpacity(0.5)),
                       )
                     : NeuButton(
                         height: 30.0,
@@ -558,7 +604,9 @@ class _SendPageState extends State<SendPage> {
                               .headline4!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
-                  onTap: () {_createWithdrawal();},
+                        onTap: () {
+                          _handlePIN();
+                        },
                       ),
                 const SizedBox(
                   height: 40.0,

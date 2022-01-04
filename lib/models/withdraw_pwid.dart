@@ -5,40 +5,35 @@ import 'coin.dart';
 /// message : "string"
 /// hasError : true
 /// error : "string"
-/// data : [{"pgwIdentifier":"3fa85f64-5717-4562-b3fc-2c963f66afa6","userId":0,"coin":{"id":0,"rank":0,"name":"string","ticker":"string","coinGeckoId":"string","cryptoId":"string","isToken":true,"blockchain":0,"minWithdraw":0,"imageBig":"string","imageSmall":"string","isActive":true,"explorerUrl":"string","requiredConfirmations":0,"feePercent":0,"fullName":"string","tokenStandart":"string"},"amount":0,"feeCoin":{"id":0,"rank":0,"name":"string","ticker":"string","coinGeckoId":"string","cryptoId":"string","isToken":true,"blockchain":0,"minWithdraw":0,"imageBig":"string","imageSmall":"string","isActive":true,"explorerUrl":"string","requiredConfirmations":0,"feePercent":0,"fullName":"string","tokenStandart":"string"},"fee":0,"toAddress":"string","transactionId":"string","sent":true,"sentAt":"2021-12-09T21:57:50.701Z","chainConfirmed":true,"confirmedAt":"2021-12-09T21:57:50.701Z","failed":true,"createdAt":"2021-12-09T21:57:50.701Z","feePercent":0}]
+/// data : {"pgwIdentifier":"3fa85f64-5717-4562-b3fc-2c963f66afa6","userId":0,"coin":{"id":0,"rank":0,"name":"string","ticker":"string","coinGeckoId":"string","cryptoId":"string","isToken":true,"blockchain":0,"minWithdraw":0,"imageBig":"string","imageSmall":"string","isActive":true,"explorerUrl":"string","requiredConfirmations":0,"feePercent":0,"fullName":"string","tokenStandart":"string"},"amount":0,"feeCoin":{"id":0,"rank":0,"name":"string","ticker":"string","coinGeckoId":"string","cryptoId":"string","isToken":true,"blockchain":0,"minWithdraw":0,"imageBig":"string","imageSmall":"string","isActive":true,"explorerUrl":"string","requiredConfirmations":0,"feePercent":0,"fullName":"string","tokenStandart":"string"},"fee":0,"toAddress":"string","transactionId":"string","sent":true,"sentAt":"2022-01-04T18:43:40.912Z","chainConfirmed":true,"confirmedAt":"2022-01-04T18:43:40.912Z","failed":true,"createdAt":"2022-01-04T18:43:40.912Z","feePercent":0}
 
-class WithdrawalsModels {
-  WithdrawalsModels({
+class WithdrawID {
+  WithdrawID({
       String? message, 
       bool? hasError, 
       String? error, 
-      List<DataWithdrawals>? data,}){
+      Data? data,}){
     _message = message;
     _hasError = hasError;
     _error = error;
     _data = data;
 }
 
-  WithdrawalsModels.fromJson(dynamic json) {
+  WithdrawID.fromJson(dynamic json) {
     _message = json['message'];
     _hasError = json['hasError'];
     _error = json['error'];
-    if (json['data'] != null) {
-      _data = [];
-      json['data'].forEach((v) {
-        _data?.add(DataWithdrawals.fromJson(v));
-      });
-    }
+    _data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
   String? _message;
   bool? _hasError;
   String? _error;
-  List<DataWithdrawals>? _data;
+  Data? _data;
 
   String? get message => _message;
   bool? get hasError => _hasError;
   String? get error => _error;
-  List<DataWithdrawals>? get data => _data;
+  Data? get data => _data;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -46,7 +41,7 @@ class WithdrawalsModels {
     map['hasError'] = _hasError;
     map['error'] = _error;
     if (_data != null) {
-      map['data'] = _data?.map((v) => v.toJson()).toList();
+      map['data'] = _data?.toJson();
     }
     return map;
   }
@@ -62,20 +57,20 @@ class WithdrawalsModels {
 /// toAddress : "string"
 /// transactionId : "string"
 /// sent : true
-/// sentAt : "2021-12-09T21:57:50.701Z"
+/// sentAt : "2022-01-04T18:43:40.912Z"
 /// chainConfirmed : true
-/// confirmedAt : "2021-12-09T21:57:50.701Z"
+/// confirmedAt : "2022-01-04T18:43:40.912Z"
 /// failed : true
-/// createdAt : "2021-12-09T21:57:50.701Z"
+/// createdAt : "2022-01-04T18:43:40.912Z"
 /// feePercent : 0
 
-class DataWithdrawals {
-  DataWithdrawals({
+class Data {
+  Data({
       String? pgwIdentifier, 
       int? userId, 
       Coin? coin, 
       double? amount,
-      FeeCoin? feeCoin, 
+      FeeCoin? feeCoin,
       double? fee,
       String? toAddress, 
       String? transactionId, 
@@ -103,40 +98,7 @@ class DataWithdrawals {
     _feePercent = feePercent;
 }
 
-  DataWithdrawals.fromCustom({
-    String? pgwIdentifier,
-    int? userId,
-    Coin? coin,
-    double? amount,
-    FeeCoin? feeCoin,
-    double? fee,
-    String? toAddress,
-    String? transactionId,
-    bool? sent,
-    String? sentAt,
-    bool? chainConfirmed,
-    String? confirmedAt,
-    bool? failed,
-    String? createdAt,
-    double? feePercent,}){
-    _pgwIdentifier = pgwIdentifier;
-    _userId = userId;
-    _coin = coin;
-    _amount = amount;
-    _feeCoin = feeCoin;
-    _fee = fee;
-    _toAddress = toAddress;
-    _transactionId = transactionId;
-    _sent = sent;
-    _sentAt = sentAt;
-    _chainConfirmed = chainConfirmed;
-    _confirmedAt = confirmedAt;
-    _failed = failed;
-    _createdAt = createdAt;
-    _feePercent = feePercent;
-  }
-
-  DataWithdrawals.fromJson(dynamic json) {
+  Data.fromJson(dynamic json) {
     _pgwIdentifier = json['pgwIdentifier'];
     _userId = json['userId'];
     _coin = json['coin'] != null ? Coin.fromJson(json['coin']) : null;
@@ -210,6 +172,3 @@ class DataWithdrawals {
   }
 
 }
-
-
-
