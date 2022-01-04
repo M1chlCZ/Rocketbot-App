@@ -250,12 +250,18 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                               switch (snapshot.data!.status) {
                                 case Status.LOADING:
                                   _listCoins = null;
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 30.0),
-                                    child: SizedBox(
-                                      child: portCalc
-                                          ? Container()
-                                          : const CircularProgressIndicator(),
+                                  return Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 40.0),
+                                      child: HeartbeatProgressIndicator(
+                                        startScale: 0.01,
+                                        endScale: 0.2,
+                                        child: const Image(
+                                          image: AssetImage('images/rocketbot_logo.png'),
+                                          color: Colors.white30,
+                                        ),
+                                      ),
                                     ),
                                   );
                                 case Status.COMPLETED:
