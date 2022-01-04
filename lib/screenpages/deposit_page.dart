@@ -9,6 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:rocketbot/models/deposit_address.dart';
+import 'package:rocketbot/netinterface/interface.dart';
 import 'package:share/share.dart';
 import 'package:vibration/vibration.dart';
 
@@ -24,8 +26,27 @@ class DepositPage extends StatefulWidget {
 
 class _DepositPageState extends State<DepositPage> {
   TextEditingController _addressController = TextEditingController();
+  NetInterface _interface = NetInterface();
   var popMenu = false;
   String _qrText = '';
+  String? _depositAddr;
+
+  _getDepositAddr() async {
+    Map<String, dynamic> _request = {
+      "coinId": widget.coin!.id!,
+    };
+    try {
+      final response =
+          await _interface.post("Transfers/CreateDepositAddress", _request);
+      var d = DepositAddress.fromJson(response);
+      setState(() {
+        _depositAddr = d.data!.address!;
+        _addressController.text = _depositAddr!;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
@@ -36,9 +57,10 @@ class _DepositPageState extends State<DepositPage> {
         _qrText = _addressController.text;
       });
     });
+    _getDepositAddr();
   }
 
-   _getClipBoardData() async {
+  _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     print(data!.text!);
     setState(() {
@@ -55,7 +77,8 @@ class _DepositPageState extends State<DepositPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
+                padding:
+                    const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
                 child: Row(
                   children: [
                     SizedBox(
@@ -236,33 +259,29 @@ class _DepositPageState extends State<DepositPage> {
                 ),
                 child: Center(
                     child: TextField(
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'^[a-zA-Z0-9]+')),
-                      ],
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(
-                          color: Colors.white, fontSize: 12.0),
-                      autocorrect: false,
-                      controller: _addressController,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        isDense: false,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]+')),
+                  ],
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Colors.white, fontSize: 12.0),
+                  autocorrect: false,
+                  controller: _addressController,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    isDense: false,
                     hintStyle: Theme.of(context)
                         .textTheme
                         .subtitle2!
                         .copyWith(color: Colors.white54, fontSize: 12.0),
                     hintText: AppLocalizations.of(context)!.address,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.transparent),
-                        ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
                   ),
                 )),
               ),
@@ -324,7 +343,9 @@ class _DepositPageState extends State<DepositPage> {
                 height: 20.0,
               ),
               NeuButton(
-                onTap: () {_openQR(context, widget.coin!.fullName!);},
+                onTap: () {
+                  _openQR(context, widget.coin!.fullName!);
+                },
                 width: 200,
                 height: 200,
                 child: Image.asset("images/qr_code_scan.png"),
@@ -594,7 +615,7 @@ class _DepositPageState extends State<DepositPage> {
                           child: SizedBox(
                             width: 380,
                             child: AutoSizeText(
-                              "Send address",
+                              "Deposit address",
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               minFontSize: 8.0,
@@ -602,19 +623,19 @@ class _DepositPageState extends State<DepositPage> {
                                   .textTheme
                                   .headline5!
                                   .copyWith(
-                                  fontSize: 22.0, color: Colors.black87),
+                                      fontSize: 22.0, color: Colors.black87),
                             ),
                           ),
                         ),
                       ),
                       Center(
                           child: Text(
-                            '(tap to copy, long press to share)',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5!
-                                .copyWith(fontSize: 14.0, color: Colors.black54),
-                          )),
+                        '(tap to copy, long press to share)',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontSize: 14.0, color: Colors.black54),
+                      )),
                       SizedBox(
                         height: 5.0,
                       ),
@@ -646,7 +667,7 @@ class _DepositPageState extends State<DepositPage> {
                                 dataModuleShape: QrDataModuleShape.square),
                             eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
                             errorCorrectionLevel: QrErrorCorrectLevel.H,
-                            data: qr.toString(),
+                            data: _depositAddr!,
                             foregroundColor: Colors.black87,
                             version: QrVersions.auto,
                             // size: 250,

@@ -12,7 +12,7 @@ class NetInterface {
 
   Future<dynamic> get(String url) async {
     var _token = await const FlutterSecureStorage().read(key: token);
-    print(_token);
+    // print(_token);
 // print(_baseUrl + url);
     dynamic responseJson;
     try {
@@ -21,7 +21,25 @@ class NetInterface {
         "Authorization":" Bearer $_token",
       });
       responseJson = _returnResponse(response);
-      print(responseJson.toString());
+      // print(responseJson.toString());
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
+  }
+
+  Future<dynamic> post(String url, Map<String, dynamic> request) async {
+    var _token = await const FlutterSecureStorage().read(key: token);
+    dynamic responseJson;
+    var _query = json.encoder.convert(request);
+    try {
+      final response = await http.post(Uri.parse(_baseUrl + url),  headers: {
+        "Accept": "application/json",
+        "content-type":"application/json",
+        "Authorization":" Bearer $_token",
+      }, body: _query);
+      responseJson = _returnResponse(response);
+      // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
@@ -29,7 +47,7 @@ class NetInterface {
   }
 
   dynamic _returnResponse(http.Response response) {
-    print(response.statusCode);
+    // print(response.statusCode);
     // print(response.toString());
     switch (response.statusCode) {
       case 200:
