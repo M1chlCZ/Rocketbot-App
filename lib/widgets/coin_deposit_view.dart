@@ -85,7 +85,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                 ) : SizedBox(
                                   width: 130,
                                   child: AutoSizeText(
-                                    widget.data.confirmations!.toString() + AppLocalizations.of(context)!.confirmations,
+                                    widget.data.confirmations!.toString() + ' ' + AppLocalizations.of(context)!.confirmations,
                                     style: Theme.of(context).textTheme.headline4,
                                     maxLines: 1,
                                     minFontSize: 8,

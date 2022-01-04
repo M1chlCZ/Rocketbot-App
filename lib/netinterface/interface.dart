@@ -32,6 +32,7 @@ class NetInterface {
     var _token = await const FlutterSecureStorage().read(key: token);
     dynamic responseJson;
     var _query = json.encoder.convert(request);
+    // print(_query);
     try {
       final response = await http.post(Uri.parse(_baseUrl + url),  headers: {
         "Accept": "application/json",
@@ -192,7 +193,7 @@ class NetInterface {
     if(response.statusCode == 200) {
       return 0;
     }else {
-      // await const FlutterSecureStorage().delete(key: NetInterface.token);
+      await const FlutterSecureStorage().delete(key: NetInterface.token);
       return 1;
     }
   }

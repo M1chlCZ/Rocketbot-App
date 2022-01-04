@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screenpages/portfolio_page.dart';
+import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,8 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     // _curtain = false;
-    loginController.text = 'm1chlcz18@gmail.com';
-    passwordController.text = 'MvQ.u:3kML_WjGX';
+    // loginController.text = 'm1chlcz18@gmail.com';
+    // passwordController.text = 'MvQ.u:3kML_WjGX';
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();
       if (b) {
@@ -64,27 +65,38 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _goodCredentials() async {
-    _nextPage();
-    // int i = await NetInterface.checkToken();
-    // if (i == 0) {
-    //   _nextPage();
-    // } else {
-    //   setState(() {
-    //     _curtain = false;
-    //   });
-    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //     content: Text(
-    //       "Invalid credentials",
-    //       textAlign: TextAlign.center,
-    //     ),
-    //     backgroundColor: Colors.red,
-    //     behavior: SnackBarBehavior.fixed,
-    //     elevation: 5.0,
-    //   ));
-    // }
+    // _nextPage();
+    int i = await NetInterface.checkToken();
+    if (i == 0) {
+      _nextPage();
+    } else {
+      setState(() {
+        _curtain = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+          "Invalid credentials",
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.fixed,
+        elevation: 5.0,
+      ));
+    }
   }
 
   void _loginUser(String login, String pass) async {
+    var email = login;
+    bool emailValid = RegExp(
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
+    if (!emailValid) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.email_invalid,
+          AppLocalizations.of(context)!.email_invalid_message);
+      return;
+    }
     String? res = await NetInterface.getKey(login, pass);
     if (res != null) {
       _codeDialog(res);
@@ -169,13 +181,56 @@ class _LoginScreenState extends State<LoginScreen> {
   });
 
   void _registerUser() async {
+    var realname = firstNameController.text;
+    var username = secondNameController.text;
+    var password = passwordRegController.text;
+    var passwordConfirm =
+    passwordRegConfirmController.text;
+    var email = emailRegController.text;
+    bool emailValid = RegExp(
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
+
+    if (username.length < 4) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.username_invalid,
+          AppLocalizations.of(context)!.username_invalid_message);
+      return;
+    } else if (password.length < 4) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.password_invalid,
+          AppLocalizations.of(context)!.password_invalid_message);
+      return;
+    } else if (!emailValid) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.email_invalid,
+          AppLocalizations.of(context)!.email_invalid_message);
+      return;
+    } else if (realname.length < 6) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.name_invalid,
+          AppLocalizations.of(context)!.name_invalid_message);
+      return;
+    } else if (password !=
+        passwordConfirm) {
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.password_mismatch,
+          AppLocalizations.of(context)!.password_mismatch_message);
+      return;
+    }
     int res = await NetInterface.registerUser(
         agreed: _termsAgreed,
         passConf: passwordRegConfirmController.text,
         email: emailRegController.text,
         pass: passwordRegController.text,
         surname: secondNameController.text,
-        name: firstNameController.text);
+        name: firstNameController.text
+    );
     if(res == 1) {
       _registrationDialog(true);
     }else{
@@ -792,19 +847,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            _getToken(key, _codeControl.text);
-                                          },
-                                          child: SizedBox(
-                                            width: 90.0,
-                                            child: NeuButton(
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Text('OK',
-                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
-                                                  textAlign: TextAlign.start,
-                                                ),
+                                        SizedBox(
+                                          width: 90.0,
+                                          child: NeuButton(
+                                            onTap: () {
+                                              _getToken(key, _codeControl.text);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('OK',
+                                                style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                textAlign: TextAlign.start,
                                               ),
                                             ),
                                           ),
@@ -906,19 +959,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            _forgotPass(_forgotPassControl.text);
-                                          },
-                                          child: SizedBox(
-                                            width: 90.0,
-                                            child: NeuButton(
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Text('OK',
-                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
-                                                  textAlign: TextAlign.start,
-                                                ),
+                                        SizedBox(
+                                          width: 90.0,
+                                          child: NeuButton(
+                                            onTap: () {
+                                              _forgotPass(_forgotPassControl.text);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('OK',
+                                                style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                textAlign: TextAlign.start,
                                               ),
                                             ),
                                           ),
@@ -991,19 +1042,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: SizedBox(
-                                            width: 90.0,
-                                            child: NeuButton(
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Text('OK',
-                                                  style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
-                                                  textAlign: TextAlign.start,
-                                                ),
+                                        SizedBox(
+                                          width: 90.0,
+                                          child: NeuButton(
+                                            onTap: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text('OK',
+                                                style: Theme.of(context).textTheme.headline4!.copyWith(color: Colors.white),
+                                                textAlign: TextAlign.start,
                                               ),
                                             ),
                                           ),

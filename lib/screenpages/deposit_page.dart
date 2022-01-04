@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rocketbot/models/deposit_address.dart';
@@ -28,7 +27,6 @@ class _DepositPageState extends State<DepositPage> {
   TextEditingController _addressController = TextEditingController();
   NetInterface _interface = NetInterface();
   var popMenu = false;
-  String _qrText = '';
   String? _depositAddr;
 
   _getDepositAddr() async {
@@ -52,11 +50,6 @@ class _DepositPageState extends State<DepositPage> {
   void initState() {
     super.initState();
     _addressController.text = '';
-    _addressController.addListener(() {
-      setState(() {
-        _qrText = _addressController.text;
-      });
-    });
     _getDepositAddr();
   }
 
@@ -267,6 +260,7 @@ class _DepositPageState extends State<DepositPage> {
                       .bodyText1!
                       .copyWith(color: Colors.white, fontSize: 12.0),
                   autocorrect: false,
+                  readOnly: true,
                   controller: _addressController,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
