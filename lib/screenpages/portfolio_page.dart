@@ -505,7 +505,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       );
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
-    }));
+    })).then((value) => _refreshData());
   }
 
   String _formatPrice(double d) {
