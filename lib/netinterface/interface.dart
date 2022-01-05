@@ -105,18 +105,18 @@ class NetInterface {
             "accept": "application/json",
             "Content-Type": "application/json",
           });
-      print(response.body);
+      // print(response.body);
       // response.headers.keys.forEach((element) {
       //  print(element.toString());
       // });
 
       if (response.statusCode == 200) {
         String? token;
-        response.headers.entries.forEach((element) {
+        for (var element in response.headers.entries) {
           if (element.key == 'token') {
             token = element.value;
           }
-        });
+        }
         return token;
       } else {
         await const FlutterSecureStorage().delete(key: NetInterface.token);
@@ -144,7 +144,7 @@ class NetInterface {
         "agreeToConditions": agreed
       };
       var _query = json.encoder.convert(_request);
-      print(_query);
+      // print(_query);
       final response = await http.post(
           Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
           body: _query,
@@ -153,15 +153,15 @@ class NetInterface {
             "Content-Type": "application/json",
           });
 
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 200) {
         String? token;
-        response.headers.entries.forEach((element) {
+        for (var element in response.headers.entries) {
           if (element.key == 'token') {
             token = element.value;
-            print(token);
+            // print(token);
           }
-        });
+        }
 
         await const FlutterSecureStorage()
             .write(key: NetInterface.token, value: token);
@@ -169,7 +169,7 @@ class NetInterface {
 
       return response.body;
     } catch (e) {
-      print(e);
+      // print(e);
       return e.toString();
     }
   }

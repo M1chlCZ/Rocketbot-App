@@ -25,6 +25,7 @@ class CoinScreen extends StatefulWidget {
   final List<CoinBalance>? allCoins;
   final Function(Coin? c) setActiveCoin;
   final Function(bool touch) blockTouch;
+  final Function(double free) changeFree;
 
   const CoinScreen(
       {Key? key,
@@ -32,7 +33,8 @@ class CoinScreen extends StatefulWidget {
         this.allCoins,
         required this.goBack,
         required this.setActiveCoin,
-        required this.blockTouch})
+        required this.blockTouch,
+        required this.changeFree})
       : super(key: key);
 
   @override
@@ -41,7 +43,7 @@ class CoinScreen extends StatefulWidget {
 
 class _CoinScreenState extends State<CoinScreen> {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
-  NetInterface _interface = NetInterface();
+  final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
   late Coin _coinActive;
   double _percentage = 0.0;
@@ -298,7 +300,7 @@ class _CoinScreenState extends State<CoinScreen> {
             ],
           ),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border:
               Border(top: BorderSide(color: Colors.white30, width: 0.5)),
             ),
@@ -409,6 +411,8 @@ class _CoinScreenState extends State<CoinScreen> {
     }
 
     double? _freeCoins = preFree;
+    widget.changeFree(preFree);
+
     for (var element in _listCoins) {
       if (element.coin == _coinActive) {
         double? _priceUSD = element.priceData!.prices!.usd;

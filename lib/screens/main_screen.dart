@@ -64,6 +64,10 @@ class _MainScreenState extends State<MainScreen> {
     _lc = lc;
   }
 
+  void _changeFree(double free) {
+    _free = free;
+  }
+
   void changeCoinName(Coin? s) {
     _lc = _portfolioKey.currentState!.getList();
     setState(() {
@@ -77,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: SafeArea(
         child: PageView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
@@ -95,6 +99,7 @@ class _MainScreenState extends State<MainScreen> {
                   child: child,
                 ),
                 child: CoinScreen(
+                  changeFree: _changeFree,
                   setActiveCoin: _setActiveCoin,
                         activeCoin: _coinActive,
                         allCoins: _lc,
@@ -106,7 +111,7 @@ class _MainScreenState extends State<MainScreen> {
             ]),
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
         ),
         child: Theme(
@@ -148,7 +153,7 @@ class _MainScreenState extends State<MainScreen> {
                     padding: const EdgeInsets.only(bottom: 3.0),
                     child: Image.asset(
                       "images/receive_nav_icon.png",
-                      color: Color(0xFF15D37A),
+                      color: const Color(0xFF15D37A),
                       width: 25,
                       fit: BoxFit.fitWidth,
                     ),
@@ -219,7 +224,7 @@ class _MainScreenState extends State<MainScreen> {
                     padding: const EdgeInsets.only(bottom: 3.0),
                     child: Image.asset(
                       "images/send_nav_icon.png",
-                      color: Color(0xFFEB3A13),
+                      color: const Color(0xFFEB3A13),
                       width: 25,
                       fit: BoxFit.fitWidth,
                     ),
@@ -244,7 +249,7 @@ class _MainScreenState extends State<MainScreen> {
       _selectedPageIndex = value;
     });
     _pageController.animateToPage(value,
-    duration: Duration(milliseconds: 300), curve: Curves.easeInOutCirc);
+    duration: const Duration(milliseconds: 300), curve: Curves.easeInOutCirc);
     // _pageController.jumpToPage(value);
   }
 }

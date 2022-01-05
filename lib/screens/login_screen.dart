@@ -28,7 +28,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   PackageInfo? _packageInfo;
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -46,11 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _curtain = false;
-    if (kDebugMode) {
-      loginController.text = 'm1chlcz18@gmail.com';
-      passwordController.text = 'MvQ.u:3kML_WjGX';
-    }
+    // _curtain = false;
+    // if (kDebugMode) {
+    //   loginController.text = 'm1chlcz18@gmail.com';
+    //   passwordController.text = 'MvQ.u:3kML_WjGX';
+    // }
 
     Future.delayed(const Duration(milliseconds: 50), () async {
       // var pinCheck = await _storage.read(key: "PIN");
@@ -818,7 +818,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       width: 25,
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.05),
-                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                                       ),
                                       child: Checkbox(
                                           checkColor: Colors.lightGreen,
@@ -852,7 +852,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             .copyWith(
                                                 fontSize: 22.0,
                                                 color: Colors.white),
-                                      )) : Center(child: const CircularProgressIndicator(strokeWidth: 2.0, color: const Color(0xFFAA3B63),))
+                                      )) : const Center(child: CircularProgressIndicator(strokeWidth: 2.0, color: Color(0xFFAA3B63),))
                                 ),
                               ]),
                         )),
@@ -927,11 +927,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0)),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(5.0)),
                                       child: Container(
                                         color: Colors.black38,
-                                        padding: EdgeInsets.all(5.0),
+                                        padding: const EdgeInsets.all(5.0),
                                         child: TextField(
                                             controller: _forgotPassControl,
                                             style: Theme.of(context)

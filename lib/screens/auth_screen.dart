@@ -60,8 +60,8 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<Null> biometrics() async {
-    final LocalAuthentication auth = new LocalAuthentication();
+  Future<void> biometrics() async {
+    final LocalAuthentication auth = LocalAuthentication();
     bool authenticated = false;
 
     try {
@@ -134,7 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       if (widget.type == 0) {
                         Navigator.of(context).push(PageRouteBuilder(pageBuilder:
                             (BuildContext context, _, __) {
-                          return PortfolioScreen();
+                          return const PortfolioScreen();
                         }, transitionsBuilder:
                             (_, Animation<double> animation, __, Widget child) {
                           return FadeTransition(

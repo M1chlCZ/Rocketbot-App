@@ -142,7 +142,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -154,7 +154,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             _launchURL("https://rocketbot.pro/terms");
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -215,7 +215,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -227,7 +227,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             _launchURL("https://rocketbot.pro/privacy");
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -288,7 +288,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -300,7 +300,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             _launchURL("https://rocketbot.pro/");
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -361,7 +361,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -373,7 +373,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             _launchURL("https://projectmerge.org/");
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -508,7 +508,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -520,7 +520,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             _launchURL("https://mergebcdg.com/");
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -581,7 +581,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                               fontSize: 14.0,
                                               color: Colors.white)),
                                     ),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -593,7 +593,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                           onTap: () async {
                                             showLicense(context);
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
