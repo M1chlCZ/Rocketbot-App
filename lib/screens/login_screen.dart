@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,7 +8,8 @@ import 'package:package_info/package_info.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
-import 'package:rocketbot/models/registration_error.dart';
+import 'package:rocketbot/models/registration_errors.dart';
+import 'package:rocketbot/models/registration_succ.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screenpages/portfolio_page.dart';
 import 'package:rocketbot/support/dialogs.dart';
@@ -38,14 +40,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _curtain = true;
   bool _termsAgreed = false;
+  bool _registerButton = true;
   var _page = 0;
 
   @override
   void initState() {
     super.initState();
-    // _curtain = false;
-    // loginController.text = 'm1chlcz18@gmail.com';
-    // passwordController.text = 'MvQ.u:3kML_WjGX';
+    _curtain = false;
+    if (kDebugMode) {
+      loginController.text = 'm1chlcz18@gmail.com';
+      passwordController.text = 'MvQ.u:3kML_WjGX';
+    }
 
     Future.delayed(const Duration(milliseconds: 50), () async {
       // var pinCheck = await _storage.read(key: "PIN");
@@ -109,7 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     String? res = await NetInterface.getKey(login, pass);
     if (res != null) {
-      _codeDialog(res);
+      Dialogs.open2FAbox(context, res, _getToken);
+      // _codeDialog(res);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
@@ -197,13 +203,13 @@ class _LoginScreenState extends State<LoginScreen> {
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
 
-    if (username.length < 3) {
+    if (username.isEmpty || username.length > 64) {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.username_invalid,
           AppLocalizations.of(context)!.username_invalid_message);
       return;
-    } else if (password.length < 3) {
+    } else if (password.length < 8 || password.length > 64) {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.password_invalid,
@@ -213,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.email_invalid,
           AppLocalizations.of(context)!.email_invalid_message);
       return;
-    } else if (realname.length < 3) {
+    } else if (realname.isEmpty || realname.length > 64) {
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.name_invalid,
           AppLocalizations.of(context)!.name_invalid_message);
       return;
@@ -230,6 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
           AppLocalizations.of(context)!.terms_agree);
       return;
     }
+    setState(() {
+      _registerButton = false;
+    });
     String? res = await NetInterface.registerUser(
         agreed: _termsAgreed,
         passConf: passwordRegConfirmController.text,
@@ -238,24 +247,27 @@ class _LoginScreenState extends State<LoginScreen> {
         surname: secondNameController.text,
         name: firstNameController.text);
     var error = json.decode(res);
-    var m = RegistrationError.fromJson(error);
-    print(m.error);
-    print(m.hasError);
-    print(m.message);
-    if (m.hasError != true) {
-      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.alert,
-          AppLocalizations.of(context)!.reg_succ);
-      loginController.text = '';
-      firstNameController.text = '';
-      secondNameController.text = '';
-      passwordController.text = '';
-      emailRegController.text = '';
-      passwordRegController.text = '';
-      passwordRegConfirmController.text = '';
-      setState(() {});
+    var succ = RegistrationSucc.fromJson(error);
+    if (succ.hasError != null && succ.hasError != true) {
+      Future.delayed(const Duration(milliseconds: 5), () async {
+        bool b = await _loggedIN();
+        if (b) {
+          _goodCredentials();
+        } else {
+          setState(() {
+            _curtain = false;
+          });
+        }
+      });
     } else {
-      Dialogs.openAlertBox(context, m.message!, m.error!);
+      var m = RegistrationErrors.fromJson(error);
+      print(m.status);
+      Dialogs.openAlertBox(context, m.title!, m.errors.toString());
+      setState(() {
+        _registerButton = true;
+      });
     }
+
   }
 
   void _forgotPass(String email) async {
@@ -290,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                     padding: const EdgeInsets.only(right: 15.0, top: 17.0),
                     child: Text(
-                      'v ' + _packageInfo!.version,
+                      'v 1.0',
                       style: Theme.of(context)
                           .textTheme
                           .headline4!
@@ -822,7 +834,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 SizedBox(
                                   width: 250,
                                   height: 50,
-                                  child: NeuButton(
+                                  child: _registerButton ? NeuButton(
                                       onTap: () {
                                         _registerUser();
                                       },
@@ -840,7 +852,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             .copyWith(
                                                 fontSize: 22.0,
                                                 color: Colors.white),
-                                      )),
+                                      )) : Center(child: const CircularProgressIndicator(strokeWidth: 2.0, color: const Color(0xFFAA3B63),))
                                 ),
                               ]),
                         )),
@@ -870,137 +882,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
-  }
-
-  void _codeDialog(String key) async {
-    await showGeneralDialog(
-        context: context,
-        pageBuilder: (BuildContext buildContext, Animation<double> animation,
-            Animation<double> secondaryAnimation) {
-          return SafeArea(
-            child: Builder(builder: (context) {
-              final TextEditingController _codeControl =
-                  TextEditingController();
-              return Center(
-                child: SizedBox(
-                    width: 300,
-                    height: MediaQuery.of(context).size.height * 0.24,
-                    child: StatefulBuilder(
-                        builder: (context, StateSetter setState) {
-                      return Card(
-                        color: const Color(0xFF1B1B1B),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                height: 15.0,
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  AppLocalizations.of(context)!.enter_code,
-                                  style: Theme.of(context).textTheme.headline4,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 15.0,
-                              ),
-                              Stack(
-                                children: [
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0)),
-                                      child: Container(
-                                        color: Colors.black38,
-                                        padding: EdgeInsets.all(5.0),
-                                        child: TextField(
-                                            controller: _codeControl,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1!
-                                                .copyWith(
-                                                    color: Colors.white,
-                                                    fontSize: 18.0),
-                                            autocorrect: false,
-                                            textAlign: TextAlign.center,
-                                            decoration: InputDecoration(
-                                              isDense: false,
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      left: 10.0, bottom: 5.0),
-                                              hintStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1!
-                                                  .copyWith(
-                                                      color: Colors.white54,
-                                                      fontSize: 14.0),
-                                              hintText:
-                                                  AppLocalizations.of(context)!
-                                                      .enter_code_hint,
-                                              enabledBorder:
-                                                  const UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.transparent),
-                                              ),
-                                              focusedBorder:
-                                                  const UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.transparent),
-                                              ),
-                                            )),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    15.0, 22.0, 15.0, 0.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 90.0,
-                                      child: NeuButton(
-                                        onTap: () {
-                                          _getToken(key, _codeControl.text);
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'OK',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline4!
-                                                .copyWith(color: Colors.white),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    })),
-              );
-            }),
-          );
-        },
-        barrierDismissible: true,
-        barrierLabel:
-            MaterialLocalizations.of(context).modalBarrierDismissLabel,
-        transitionDuration: const Duration(milliseconds: 150));
   }
 
   void _forgotDialog() async {

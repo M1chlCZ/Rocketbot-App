@@ -10,6 +10,7 @@ class DialogBody extends StatefulWidget {
   final String buttonCancelLabel;
   final Widget child;
   final bool oneButton;
+  final bool noButtons;
 
   const DialogBody({
     Key? key,
@@ -18,7 +19,7 @@ class DialogBody extends StatefulWidget {
     required this.child,
     required this.buttonLabel,
     this.oneButton = false,
-    this.buttonCancelLabel = 'Cancel',
+    this.buttonCancelLabel = 'Cancel', this.noButtons = false,
   }) : super(key: key);
 
   @override
@@ -42,7 +43,10 @@ class _DialogBodyState extends State<DialogBody> {
         contentPadding: const EdgeInsets.only(top: 0.01),
         content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
-            child: Wrap(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Container(
                     padding: const EdgeInsets.only(
@@ -54,7 +58,7 @@ class _DialogBodyState extends State<DialogBody> {
                             topRight: Radius.circular(15.0))),
                     child: Center(
                       child: SizedBox(
-                        width: 300,
+                        width: 380,
                         child: AutoSizeText(
                           widget.header,
                           textAlign: TextAlign.center,
@@ -74,10 +78,11 @@ class _DialogBodyState extends State<DialogBody> {
                     height: 2.0,
                   ),
                   widget.child,
+                  !widget.noButtons ?
                   widget.oneButton
                       ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           NeuButton(
@@ -100,55 +105,51 @@ class _DialogBodyState extends State<DialogBody> {
                             ),
                           ),
                         ]),
-                      )
+                  )
                       : Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                NeuButton(
-                                  width: 100,
-                                  height: 40,
-                                  onTap: () {
-                                    widget.onTap!();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'OK',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline4!
-                                          .copyWith(color: Colors.white),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ),
-                                NeuButton(
-                                  width: 100,
-                                  height: 40,
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      AppLocalizations.of(context)!.cancel,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline4!
-                                          .copyWith(color: Colors.white),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                        ),
-
-                ]
-            )
-        )
-    );
+                    padding:
+                    const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          NeuButton(
+                            width: 100,
+                            height: 40,
+                            onTap: () {
+                              widget.onTap!();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'OK',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4!
+                                    .copyWith(color: Colors.white),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                          NeuButton(
+                            width: 100,
+                            height: 40,
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                AppLocalizations.of(context)!.cancel,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4!
+                                    .copyWith(color: Colors.white),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        ]),
+                  ) : Container(),
+                ])));
   }
 }

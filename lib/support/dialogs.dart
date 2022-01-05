@@ -51,53 +51,65 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           final TextEditingController _codeControl = TextEditingController();
-          return DialogBody(
-            header: AppLocalizations.of(context)!.enter_code,
-            buttonLabel: 'OK',
-            oneButton: false,
-            onTap: () {
-              getToken(key, _codeControl.text);
-              Navigator.of(context).pop(true);
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  top: 25, bottom: 25, left: 15.0, right: 15.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  child: Container(
-                    color: Colors.black38,
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                        controller: _codeControl,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(color: Colors.white, fontSize: 18.0),
-                        autocorrect: false,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          isDense: false,
-                          contentPadding:
-                              const EdgeInsets.only(left: 10.0, bottom: 5.0),
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .subtitle1!
-                              .copyWith(color: Colors.white54, fontSize: 14.0),
-                          hintText:
-                              AppLocalizations.of(context)!.enter_code_hint,
-                          enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter sState) {
+                _codeControl.addListener(() {
+                  if(_codeControl.text.length == 6) {
+                    getToken(key, _codeControl.text) ;
+                    Navigator.of(context).pop(true);
+                  }
+                });
+                return DialogBody(
+                  header: AppLocalizations.of(context)!.enter_code,
+                  buttonLabel: 'OK',
+                  oneButton: false,
+                  noButtons: true,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 15, bottom: 15, left: 15.0, right: 15.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                        child: Container(
+                          color: Colors.black38,
+                          padding: const EdgeInsets.all(15.0),
+                          child:  TextField(
+                            autofocus: true,
+                            controller: _codeControl,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              isDense: false,
+                              contentPadding:
+                              const EdgeInsets.only(bottom: 0.0),
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1!
+                                  .copyWith(
+                                  color: Colors.white54,
+                                  fontSize: 20.0),
+                              hintText: AppLocalizations.of(context)!
+                                  .enter_code_hint,
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide:
+                                BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide:
+                                BorderSide(color: Colors.transparent),
+                              ),
+                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6!
+                                .copyWith(fontSize: 24.0, color: Colors.white70),
                           ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
-                          ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
+                ); }
           );
         });
   }
