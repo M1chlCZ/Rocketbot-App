@@ -28,11 +28,11 @@ class CoinScreen extends StatefulWidget {
 
   const CoinScreen(
       {Key? key,
-      required this.activeCoin,
-      this.allCoins,
-      required this.goBack,
-      required this.setActiveCoin,
-      required this.blockTouch})
+        required this.activeCoin,
+        this.allCoins,
+        required this.goBack,
+        required this.setActiveCoin,
+        required this.blockTouch})
       : super(key: key);
 
   @override
@@ -114,33 +114,33 @@ class _CoinScreenState extends State<CoinScreen> {
                     height: 30,
                     child: NeuContainer(
                         child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Center(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<Coin>(
-                            value: _coinActive,
-                            isDense: true,
-                            onChanged: (Coin? coin) {
-                              setState(() {
-                                widget.setActiveCoin(coin);
-                                _coinActive = coin!;
-                                _priceBlock!.changeCoin(coin.coinGeckoId!);
-                                _coinNameOpacity = 0.0;
-                                _txBloc!.changeCoin(coin);
-                              });
-                              _calculatePortfolio();
-                            },
-                            items: _listCoins
-                                .map((e) => DropdownMenuItem(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Center(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<Coin>(
+                                value: _coinActive,
+                                isDense: true,
+                                onChanged: (Coin? coin) {
+                                  setState(() {
+                                    widget.setActiveCoin(coin);
+                                    _coinActive = coin!;
+                                    _priceBlock!.changeCoin(coin.coinGeckoId!);
+                                    _coinNameOpacity = 0.0;
+                                    _txBloc!.changeCoin(coin);
+                                  });
+                                  _calculatePortfolio();
+                                },
+                                items: _listCoins
+                                    .map((e) => DropdownMenuItem(
                                     value: e.coin!,
                                     child: SizedBox(
                                         width: 50,
                                         child: Text(e.coin!.cryptoId!))))
-                                .toList(),
+                                    .toList(),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    )),
+                        )),
                   )
                 else
                   Container(),
@@ -186,12 +186,11 @@ class _CoinScreenState extends State<CoinScreen> {
                         switch (snapshot.data!.status) {
                           case Status.COMPLETED:
                             Future.delayed(const Duration(milliseconds: 50),
-                                () {
-                              setState(() {
-                                _coinNameOpacity = 1.0;
-                                portCalc = true;
-                              });
-                            });
+                                    () {
+                                  setState(() {
+                                    portCalc = true;
+                                  });
+                                });
                             return GestureDetector(
                               behavior: HitTestBehavior.deferToChild,
                               onTap: () {
@@ -205,7 +204,7 @@ class _CoinScreenState extends State<CoinScreen> {
                               ),
                             );
                           case Status.LOADING:
-                            // return Center(child: Text("loading data"));
+                          // return Center(child: Text("loading data"));
                             return HeartbeatProgressIndicator(
                               startScale: 0.01,
                               endScale: 0.4,
@@ -224,7 +223,7 @@ class _CoinScreenState extends State<CoinScreen> {
                   )),
               AnimatedOpacity(
                 opacity: _coinNameOpacity,
-                duration: const Duration(milliseconds: 1000),
+                duration: const Duration(milliseconds: 100),
                 child: Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
@@ -264,7 +263,7 @@ class _CoinScreenState extends State<CoinScreen> {
               ),
               AnimatedOpacity(
                   opacity: _coinNameOpacity,
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 100),
                   child: SizedBox(
                       width: double.infinity,
                       height: 250,
@@ -301,7 +300,7 @@ class _CoinScreenState extends State<CoinScreen> {
           Container(
             decoration: BoxDecoration(
               border:
-                  Border(top: BorderSide(color: Colors.white30, width: 0.5)),
+              Border(top: BorderSide(color: Colors.white30, width: 0.5)),
             ),
           ),
           Expanded(
@@ -319,21 +318,21 @@ class _CoinScreenState extends State<CoinScreen> {
                             child: portCalc
                                 ? Container()
                                 : const Center(
-                                    child: CircularProgressIndicator(
-                                    strokeWidth: 2.0,
-                                  )),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                )),
                           ),
                         );
                       case Status.COMPLETED:
                         if (snapshot.data!.data!.isEmpty) {
                           return Center(
                               child: Text(
-                            AppLocalizations.of(context)!.no_tx,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline2!
-                                .copyWith(color: Colors.white12),
-                          ));
+                                AppLocalizations.of(context)!.no_tx,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline2!
+                                    .copyWith(color: Colors.white12),
+                              ));
                         } else {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
@@ -350,18 +349,18 @@ class _CoinScreenState extends State<CoinScreen> {
                                 }
                               });
                         }
-                      // break;
+                    // break;
                       case Status.ERROR:
                         return Center(
                             child: Text(
-                          'There has been an error communicating with the server',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline2!
-                              .copyWith(color: Colors.white12),
-                        ));
-                      // print(snapshot.error);
-                      // break;
+                              'There has been an error communicating with the server',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline2!
+                                  .copyWith(color: Colors.white12),
+                            ));
+                    // print(snapshot.error);
+                    // break;
                     }
                   }
                   return Container();
@@ -402,12 +401,13 @@ class _CoinScreenState extends State<CoinScreen> {
     var preFree = 0.0;
     try {
       var res =
-          await _interface.get('User/GetBalance?coinId=${_coinActive.id}');
+      await _interface.get('User/GetBalance?coinId=${_coinActive.id}');
       var response = BalancePortfolio.fromJson(res);
       preFree = response.data!.free!;
     } catch (e) {
       print(e);
     }
+
     double? _freeCoins = preFree;
     for (var element in _listCoins) {
       if (element.coin == _coinActive) {
@@ -420,5 +420,7 @@ class _CoinScreenState extends State<CoinScreen> {
         totalUSD = _freeCoins * _priceUSD!;
       }
     }
+    setState(() {_coinNameOpacity = 1.0;});
   }
+
 }

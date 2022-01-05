@@ -428,9 +428,10 @@ class _SendPageState extends State<SendPage> {
                   height: 10.0,
                 ),
                 NeuContainer(
-                  height: 30.0,
+                  height: 40.0,
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: Stack(
+                      alignment: AlignmentDirectional.center,
                     children: [
                       TextField(
                           inputFormatters: <TextInputFormatter>[
@@ -446,7 +447,7 @@ class _SendPageState extends State<SendPage> {
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             isDense: false,
-                            contentPadding: const EdgeInsets.only(bottom: 16.0),
+                            contentPadding: const EdgeInsets.only(bottom: 8.0),
                             hintStyle: Theme.of(context)
                                 .textTheme
                                 .subtitle2!
@@ -486,7 +487,7 @@ class _SendPageState extends State<SendPage> {
                   height: 30.0,
                 ),
                 NeuContainer(
-                  height: 30.0,
+                  height: 40.0,
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: TextField(
                       keyboardType: Platform.isIOS
@@ -505,7 +506,7 @@ class _SendPageState extends State<SendPage> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         isDense: false,
-                        contentPadding: const EdgeInsets.only(bottom: 16.0),
+                        contentPadding: const EdgeInsets.only(bottom: 8.0),
                         hintStyle: Theme.of(context)
                             .textTheme
                             .subtitle2!
@@ -595,10 +596,11 @@ class _SendPageState extends State<SendPage> {
                             color: Colors.red.withOpacity(0.5)),
                       )
                     : NeuButton(
-                        height: 30.0,
-                        width: MediaQuery.of(context).size.width * 0.95,
+                        height: 40.0,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        color: Colors.green.withOpacity(0.4),
                         child: Text(
-                          AppLocalizations.of(context)!.send,
+                          AppLocalizations.of(context)!.send.toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
                               .headline4!
@@ -609,7 +611,7 @@ class _SendPageState extends State<SendPage> {
                         },
                       ),
                 const SizedBox(
-                  height: 40.0,
+                  height: 20.0,
                 ),
                 Container(
                   height: 0.5,
@@ -660,101 +662,6 @@ class _SendPageState extends State<SendPage> {
     );
   }
 
-  _openQR(context, String qr) async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return BackdropFilter(
-            filter: new ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
-            child: Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(0xFF9F9FA4)),
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              child: Wrap(children: [
-                Container(
-                  width: 400.0,
-                  padding: EdgeInsets.all(5.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: 10.0, left: 10.0, right: 10.0, bottom: 2.0),
-                          child: SizedBox(
-                            width: 380,
-                            child: AutoSizeText(
-                              "Send address",
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              minFontSize: 8.0,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline5!
-                                  .copyWith(
-                                      fontSize: 22.0, color: Colors.black87),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Center(
-                          child: Text(
-                        '(tap to copy, long press to share)',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5!
-                            .copyWith(fontSize: 14.0, color: Colors.black54),
-                      )),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Divider(
-                        color: Colors.grey,
-                        height: 4.0,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Clipboard.setData(new ClipboardData(text: qr));
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("QR code copied to clipboard"),
-                              duration: Duration(seconds: 3),
-                              backgroundColor: Colors.green,
-                              behavior: SnackBarBehavior.fixed,
-                              elevation: 5.0,
-                            ));
-                            Navigator.pop(context);
-                          },
-                          onLongPress: () {
-                            Vibration.vibrate(duration: 200);
-                            Share.share(qr);
-                            Navigator.pop(context);
-                          },
-                          child: QrImage(
-                            dataModuleStyle: QrDataModuleStyle(
-                                dataModuleShape: QrDataModuleShape.square),
-                            eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square),
-                            errorCorrectionLevel: QrErrorCorrectLevel.H,
-                            data: qr.toString(),
-                            foregroundColor: Colors.black87,
-                            version: QrVersions.auto,
-                            // size: 250,
-                            gapless: false,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ]),
-            ),
-          );
-        });
-  }
 
   void _openQRScanner() async {
     FocusScope.of(context).unfocus();
