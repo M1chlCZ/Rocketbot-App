@@ -30,8 +30,8 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
-  final _storage = FlutterSecureStorage();
-  ScrollController _scrollController = ScrollController();
+  final _storage = const FlutterSecureStorage();
+  final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
 
@@ -91,11 +91,11 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
               onRefresh: _refreshData,
               child: SingleChildScrollView(
                 controller: _scrollController,
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: _listHeight == 0.0 ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 0.3 + _listHeight,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
@@ -268,7 +268,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                 case Status.COMPLETED:
                                   if (_listCoins == null) {
                                     _listCoins = snapshot.data!.data!;
-                                    _listHeight =_listCoins!.length * 70.0;
+                                    _listHeight =_listCoins!.length * 75.0;
                                     // widget.passBalances(listCoins);
                                     _calculatePortfolio();
                                   }

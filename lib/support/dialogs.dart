@@ -5,13 +5,13 @@ import 'package:rocketbot/support/dialog_body.dart';
 
 class Dialogs {
   static Future<void> openAlertBox(
-      context, String header, String message) async {
+      context, String? header, String message) async {
     return showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return DialogBody(
-              header: AppLocalizations.of(context)!.error,
+              header: header ?? AppLocalizations.of(context)!.error,
               buttonLabel: 'OK',
               oneButton: true,
               onTap: () {
@@ -23,10 +23,10 @@ class Dialogs {
                   child: SizedBox(
                     width: double.infinity,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                       child: Container(
                         color: Colors.black38,
-                        padding: EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: AutoSizeText(
                           message,
                           textAlign: TextAlign.center,
@@ -134,10 +134,10 @@ class Dialogs {
               child: SizedBox(
                 width: double.infinity,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                   child: Container(
                     color: Colors.black38,
-                    padding: EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: AutoSizeText(
                       AppLocalizations.of(context)!.dl_log_out,
                       textAlign: TextAlign.center,

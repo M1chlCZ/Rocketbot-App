@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:rocketbot/models/registration_succ.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screenpages/portfolio_page.dart';
 import 'package:rocketbot/support/dialogs.dart';
+import 'package:rocketbot/support/firebase_service.dart';
 import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -229,10 +231,8 @@ class _LoginScreenState extends State<LoginScreen> {
           AppLocalizations.of(context)!.password_mismatch,
           AppLocalizations.of(context)!.password_mismatch_message);
       return;
-    }else if(!_termsAgreed) {
-      Dialogs.openAlertBox(
-          context,
-          AppLocalizations.of(context)!.alert,
+    } else if (!_termsAgreed) {
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.alert,
           AppLocalizations.of(context)!.terms_agree);
       return;
     }
@@ -267,7 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
         _registerButton = true;
       });
     }
-
   }
 
   void _forgotPass(String email) async {
@@ -516,10 +515,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: 250,
                                   height: 50,
                                   child: NeuButton(
-                                      onTap: () {
-                                        // _loginUser(
-                                        //     loginController.text, passwordController.text
-                                        // );
+                                      onTap: () async {
+                                        FirebaseService service =
+                                            FirebaseService();
+                                        try {
+                                          String? tokenID = await service.signInwithGoogle();
+                                          if(tokenID != null) {
+                                            Dialogs.openAlertBox(context, "Google Sign-in result", tokenID);
+                                          }
+                                          // Navigator.pushNamedAndRemoveUntil(context, Constants.homeNavigate, (route) => false);
+                                        } catch (e) {
+                                          print("======HOVNO=======");
+                                          print(e);
+                                          if (e is FirebaseAuthException) {
+                                            print(e.message!);
+                                          }
+                                        }
+                                        setState(() {
+                                          // isLoading = false;
+                                        });
                                       },
                                       splashColor: Colors.purple,
                                       child: Wrap(
@@ -818,7 +832,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       width: 25,
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.05),
-                                        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(5.0)),
                                       ),
                                       child: Checkbox(
                                           checkColor: Colors.lightGreen,
@@ -832,28 +847,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 45,
                                 ),
                                 SizedBox(
-                                  width: 250,
-                                  height: 50,
-                                  child: _registerButton ? NeuButton(
-                                      onTap: () {
-                                        _registerUser();
-                                      },
-                                      splashColor: Colors.purple,
-                                      child: GradientText(
-                                        AppLocalizations.of(context)!
-                                            .register_button,
-                                        gradient: const LinearGradient(colors: [
-                                          Color(0xFFF05523),
-                                          Color(0xFF812D88),
-                                        ]),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1!
-                                            .copyWith(
-                                                fontSize: 22.0,
-                                                color: Colors.white),
-                                      )) : const Center(child: CircularProgressIndicator(strokeWidth: 2.0, color: Color(0xFFAA3B63),))
-                                ),
+                                    width: 250,
+                                    height: 50,
+                                    child: _registerButton
+                                        ? NeuButton(
+                                            onTap: () {
+                                              _registerUser();
+                                            },
+                                            splashColor: Colors.purple,
+                                            child: GradientText(
+                                              AppLocalizations.of(context)!
+                                                  .register_button,
+                                              gradient:
+                                                  const LinearGradient(colors: [
+                                                Color(0xFFF05523),
+                                                Color(0xFF812D88),
+                                              ]),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1!
+                                                  .copyWith(
+                                                      fontSize: 22.0,
+                                                      color: Colors.white),
+                                            ))
+                                        : const Center(
+                                            child: CircularProgressIndicator(
+                                            strokeWidth: 2.0,
+                                            color: Color(0xFFAA3B63),
+                                          ))),
                               ]),
                         )),
                   ),
@@ -928,7 +949,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     width: double.infinity,
                                     child: ClipRRect(
                                       borderRadius: const BorderRadius.all(
-                                          const Radius.circular(5.0)),
+                                          Radius.circular(5.0)),
                                       child: Container(
                                         color: Colors.black38,
                                         padding: const EdgeInsets.all(5.0),

@@ -134,7 +134,7 @@ class _SendPageState extends State<SendPage> {
       _amountController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: SizedBox( height: 80,child: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,))),
+        content: SizedBox( height: 50,child: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,))),
         duration: const Duration(seconds: 3),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.fixed,
