@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -22,23 +24,34 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.307873550141-fc0qml0m8k895iess2t6l10tnuaok8q4</string>
+            </array>
+        </dict>
+    </array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSFaceIDUsageDescription</key>
-    <string>User should be able to set security lock for the app and unlocking it by biometric data</string>
+	<string>User should be able to set security lock for the app and unlocking it by biometric data</string>
 	<key>NSCameraUsageDescription</key>
-    <string>Camera is used for scanning QR code</string>
-    <key>NSDownloadsFolderUsageDescription</key>
-    <string>User is allowed to download a csv file of theirs transactions.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>User is allowed to import picture from the library for their avatar</string>
+	<string>Camera is used for scanning QR code</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>User is allowed to download a csv file of theirs transactions.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>User is allowed to import picture from the library for their avatar</string>
 	<key>LSApplicationQueriesSchemes</key>
-    <array>
-      <string>https</string>
-      <string>http</string>
-    </array>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

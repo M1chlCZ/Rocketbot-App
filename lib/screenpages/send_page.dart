@@ -36,10 +36,10 @@ class SendPage extends StatefulWidget {
 }
 
 class _SendPageState extends State<SendPage> {
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  NetInterface _interface = NetInterface();
-  FlutterSecureStorage _storage = FlutterSecureStorage();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final NetInterface _interface = NetInterface();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Coin? _coinActive;
   bool _curtain = true;
@@ -57,7 +57,7 @@ class _SendPageState extends State<SendPage> {
     _getFees();
     _addressController.text = '';
     _addressController.addListener(() {
-      if (_addressController.text.length == 0) {
+      if (_addressController.text.isEmpty) {
         setState(() {
           _copyIconVisible = true;
         });
@@ -99,7 +99,7 @@ class _SendPageState extends State<SendPage> {
     }
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-          return AuthScreen(
+          return const AuthScreen(
             setupPIN: false,
             type: 2,
           );
@@ -134,8 +134,8 @@ class _SendPageState extends State<SendPage> {
       _amountController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,)),
-        duration: Duration(seconds: 3),
+        content: SizedBox( height: 80,child: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,))),
+        duration: const Duration(seconds: 3),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.fixed,
         elevation: 5.0,
@@ -329,7 +329,7 @@ class _SendPageState extends State<SendPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _coinActive == null
-                          ? Icon(
+                          ? const Icon(
                               Icons.monetization_on,
                               size: 50.0,
                               color: Colors.white,
@@ -343,7 +343,7 @@ class _SendPageState extends State<SendPage> {
                                 // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                 //     CircularProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                                    const Icon(Icons.error),
                                 fit: BoxFit.fitWidth,
                               ),
                             ),
@@ -491,7 +491,7 @@ class _SendPageState extends State<SendPage> {
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: TextField(
                       keyboardType: Platform.isIOS
-                          ? TextInputType.numberWithOptions(signed: true)
+                          ? const TextInputType.numberWithOptions(signed: true)
                           : TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(
@@ -525,7 +525,7 @@ class _SendPageState extends State<SendPage> {
                 ),
                 AnimatedOpacity(
                   opacity: _feeCrypto.isNotEmpty ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   child: SizedBox(
                     width: double.infinity,
                     child: Column(
@@ -616,7 +616,7 @@ class _SendPageState extends State<SendPage> {
                 Container(
                   height: 0.5,
                   width: double.infinity,
-                  margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                  margin: const EdgeInsets.only(left: 10.0, right: 10.0),
                   color: Colors.white30,
                 ),
                 const SizedBox(
@@ -643,7 +643,7 @@ class _SendPageState extends State<SendPage> {
           Visibility(
             visible: _curtain,
             child: Container(
-              margin: EdgeInsets.only(top: 50),
+              margin: const EdgeInsets.only(top: 50),
               color: const Color(0xFF1B1B1B),
               child: Center(
                 child: HeartbeatProgressIndicator(
@@ -674,7 +674,7 @@ class _SendPageState extends State<SendPage> {
       } else if (status.isDenied) {
         var r = await Permission.camera.request();
         if (r.isGranted) {
-          Navigator.of(context).push(new PageRouteBuilder(
+          Navigator.of(context).push(PageRouteBuilder(
               pageBuilder: (BuildContext context, _, __) {
             return QScanWidget(
               scanResult: (String s) {
@@ -683,11 +683,11 @@ class _SendPageState extends State<SendPage> {
             );
           }, transitionsBuilder:
                   (_, Animation<double> animation, __, Widget child) {
-            return new FadeTransition(opacity: animation, child: child);
+            return FadeTransition(opacity: animation, child: child);
           }));
         }
       } else {
-        Navigator.of(context).push(new PageRouteBuilder(
+        Navigator.of(context).push(PageRouteBuilder(
             pageBuilder: (BuildContext context, _, __) {
           return QScanWidget(
             scanResult: (String s) {
@@ -696,7 +696,7 @@ class _SendPageState extends State<SendPage> {
           );
         }, transitionsBuilder:
                 (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(opacity: animation, child: child);
+          return FadeTransition(opacity: animation, child: child);
         }));
       }
     });
