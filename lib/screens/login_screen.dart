@@ -44,7 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
     // passwordController.text = 'MvQ.u:3kML_WjGX';
 
     Future.delayed(const Duration(milliseconds: 50), () async {
-      // await  _storage.delete(key: "PIN");
+      var pinCheck = await _storage.read(key: "PIN");
+      if(pinCheck!.length != 6) {await  _storage.delete(key: "PIN");}
       bool b = await _loggedIN();
       if (b) {
         _goodCredentials();
