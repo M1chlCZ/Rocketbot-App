@@ -97,5 +97,7 @@
   "name_invalid_message" : "Jméno musí mít alespoň 3 znaků",
   "password_mismatch" : "Hesla se neshodují",
   "password_mismatch_message" : "Zadejte do obou polí stejná hesla",
-  "coin_sent" : "Transaction úspěšně provedena"
+  "coin_sent" : "Transaction úspěšně provedena",
+  "reg_succ" : "Prosím zkontrolujte e-mailovou schránku pro potvrzení registrace",
+  "terms" : "Prosím odsouhlaste podmínky použití"
 }
