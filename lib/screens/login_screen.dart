@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:package_info/package_info.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
@@ -24,6 +25,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  PackageInfo? _packageInfo;
   final _storage = FlutterSecureStorage();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -57,6 +59,11 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     });
+    _initPackageInfo();
+  }
+
+  void _initPackageInfo() async {
+    _packageInfo = await PackageInfo.fromPlatform();
   }
 
   _loggedIN() async {
@@ -220,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Dialogs.openAlertBox(
           context,
           AppLocalizations.of(context)!.alert,
-          AppLocalizations.of(context)!.terms);
+          AppLocalizations.of(context)!.terms_agree);
       return;
     }
     String? res = await NetInterface.registerUser(
@@ -283,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                     padding: const EdgeInsets.only(right: 15.0, top: 17.0),
                     child: Text(
-                      'v 1.0',
+                      'v ' + _packageInfo!.version,
                       style: Theme.of(context)
                           .textTheme
                           .headline4!
@@ -795,25 +802,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 5.0,
                                     ),
                                     Container(
-                                      height: 30,
-                                      width: 30,
+                                      height: 25,
+                                      width: 25,
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.1),
+                                        color: Colors.white.withOpacity(0.05),
                                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Checkbox(
-                                            checkColor: Colors.lightGreen,
-                                            activeColor: Colors.white12,
-                                            value: _termsAgreed,
-                                            onChanged: _onTermsChanged),
-                                      ),
+                                      child: Checkbox(
+                                          checkColor: Colors.lightGreen,
+                                          activeColor: Colors.white12,
+                                          value: _termsAgreed,
+                                          onChanged: _onTermsChanged),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(
-                                  height: 15,
+                                  height: 45,
                                 ),
                                 SizedBox(
                                   width: 250,

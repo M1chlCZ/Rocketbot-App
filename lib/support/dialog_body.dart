@@ -42,11 +42,7 @@ class _DialogBodyState extends State<DialogBody> {
         contentPadding: const EdgeInsets.only(top: 0.01),
         content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.24,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
+            child: Wrap(
                 children: <Widget>[
                   Container(
                     padding: const EdgeInsets.only(
@@ -58,12 +54,13 @@ class _DialogBodyState extends State<DialogBody> {
                             topRight: Radius.circular(15.0))),
                     child: Center(
                       child: SizedBox(
-                        width: 380,
+                        width: 300,
                         child: AutoSizeText(
                           widget.header,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           minFontSize: 8.0,
+                          maxLines: 1,
                           style: Theme.of(context)
                               .textTheme
                               .headline6!
@@ -78,29 +75,32 @@ class _DialogBodyState extends State<DialogBody> {
                   ),
                   widget.child,
                   widget.oneButton
-                      ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        NeuButton(
-                          width: 100,
-                          height: 40,
-                          onTap: () {
-                            // widget.onTap!();
-                            Navigator.of(context).pop();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'OK',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .copyWith(color: Colors.white),
-                              textAlign: TextAlign.start,
+                      ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          NeuButton(
+                            width: 100,
+                            height: 40,
+                            onTap: () {
+                              // widget.onTap!();
+                              Navigator.of(context).pop();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'OK',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4!
+                                    .copyWith(color: Colors.white),
+                                textAlign: TextAlign.start,
+                              ),
                             ),
                           ),
-                        ),
-                      ])
+                        ]),
+                      )
                       : Padding(
                           padding:
                               const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -145,6 +145,10 @@ class _DialogBodyState extends State<DialogBody> {
                                 ),
                               ]),
                         ),
-                ])));
+
+                ]
+            )
+        )
+    );
   }
 }

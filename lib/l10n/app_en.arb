@@ -77,6 +77,7 @@
   "as_wrong_pin" : "Wrong PIN, please try again",
   "as_enter_desired_pin" : "Please enter desired PIN",
   "as_enter_desired_confirm_pin" : "Please confirm desired PIN",
+  "dl_log_out":  "Do you really want to log out of the app?",
   "about_rocket" : "RocketBot Wallet App, uses cryptocurrencies for micropayments on social media platforms(Twitter, Telegram & Discord).",
   "about_terms" :"Terms of Use",
   "about_policy" :"Privacy Policy",
@@ -86,6 +87,7 @@
   "about_develop" : "Development site",
   "about_licences" : "View licences",
   "dp_error" : "Error: Withdrawal Disabled",
+  "log_out" : "Log out",
   "error" : "Error",
   "username_invalid" : "Invalid surname name",
   "username_invalid_message" : "The surname should be at least 4 characters long",
@@ -99,5 +101,5 @@
   "password_mismatch_message" : "Please enter same password to password and password confirmation box",
   "coin_sent" : "Transaction executed successfully",
   "reg_succ" : "Please check your email inbox, for register confirmation",
-  "terms" : "You need to agree with terms and conditions"
+  "terms_agree" : "You need to agree with terms and conditions"
 }

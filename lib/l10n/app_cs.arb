@@ -77,6 +77,7 @@
   "as_wrong_pin" : "Nespravný PIN, prosím zkuste to znovu",
   "as_enter_desired_pin" : "Zadejte požadovaný PIN",
   "as_enter_desired_confirm_pin" : "Prosím potvrďte požadovaný PIN",
+  "dl_log_out":  "Opravdu se chcete odhlásit z aplikace?",
   "about_rocket" : "RocketBot Wallet App, používá kryptoměnu na sociálních sítích (Twitter, Telegram & Discord).",
   "about_terms" :"Zásadý používání",
   "about_policy" :"Zásady soukromí",
@@ -86,6 +87,7 @@
   "about_develop" : "Stránka vývoje",
   "about_licences" : "Zobrazit licence",
   "dp_error" : "Chyba: Vybírání je pozastaveno pro tuto minci",
+  "log_out" : "Log out",
   "error" : "Chyba",
   "username_invalid" : "Neplatné příjmení",
   "username_invalid_message" : "Příjmení musí mít alespoň 3 znaky",
@@ -99,5 +101,5 @@
   "password_mismatch_message" : "Zadejte do obou polí stejná hesla",
   "coin_sent" : "Transaction úspěšně provedena",
   "reg_succ" : "Prosím zkontrolujte e-mailovou schránku pro potvrzení registrace",
-  "terms" : "Prosím odsouhlaste podmínky použití"
+  "terms_agree" : "Prosím odsouhlaste podmínky použití"
 }

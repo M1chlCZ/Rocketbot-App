@@ -5,7 +5,9 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/screens/auth_screen.dart';
+import 'package:rocketbot/screens/login_screen.dart';
 import 'package:rocketbot/screens/security_screen.dart';
+import 'package:rocketbot/support/dialogs.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -175,10 +177,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(AppLocalizations.of(context)!.sc_security,
+                                    Text(
+                                        AppLocalizations.of(context)!
+                                            .sc_security,
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline4!
@@ -204,6 +209,101 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             )),
                       ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      SizedBox(
+                        height: 50.0,
+                        child: Card(
+                            elevation: 0,
+                            color: Theme.of(context).canvasColor,
+                            margin: EdgeInsets.zero,
+                            clipBehavior: Clip.antiAlias,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0.0),
+                            ),
+                            child: InkWell(
+                              splashColor: Colors.black54,
+                              highlightColor: Colors.black54,
+                              onTap: () async {
+                                Dialogs.openLogOutBox(context, () async {
+                                  await _storage.deleteAll();
+                                  Navigator.of(context)
+                                      .pushReplacement(
+                                      PageRouteBuilder(
+                                          pageBuilder:
+                                              (BuildContext
+                                          context,
+                                              _,
+                                              __) {
+                                            return LoginScreen();
+                                          }, transitionsBuilder: (_,
+                                          Animation<double>
+                                          animation,
+                                          __,
+                                          Widget child) {
+                                        return FadeTransition(
+                                            opacity: animation,
+                                            child: child);
+                                      }));
+                                });
+                              },
+                              // widget.coinSwitch(widget.coin);
+                              // widget.activeCoin(widget.coin.coin!);
+
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(AppLocalizations.of(context)!.log_out,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline4!
+                                            .copyWith(
+                                                fontSize: 14.0,
+                                                color: Colors.white)),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    NeuButton(
+                                        height: 25,
+                                        width: 20,
+                                        onTap: () async {
+                                          Dialogs.openLogOutBox(context, () async {
+                                            await _storage.deleteAll();
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                                    PageRouteBuilder(
+                                                        pageBuilder:
+                                                            (BuildContext
+                                                                    context,
+                                                                _,
+                                                                __) {
+                                              return LoginScreen();
+                                            }, transitionsBuilder: (_,
+                                                            Animation<double>
+                                                                animation,
+                                                            __,
+                                                            Widget child) {
+                                              return FadeTransition(
+                                                  opacity: animation,
+                                                  child: child);
+                                            }));
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_forward_ios_sharp,
+                                          color: Colors.white,
+                                          size: 22.0,
+                                        ))
+                                  ],
+                                ),
+                              ),
+                            )),
+                      ),
                     ],
                   ),
                 )
@@ -217,41 +317,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _handlePIN() async {
     var bl = false;
-    String? p =
-    await _storage.read(key: "PIN");
+    String? p = await _storage.read(key: "PIN");
     if (p == null) {
       bl = true;
     }
     Navigator.of(context)
-        .push(PageRouteBuilder(pageBuilder:
-        (BuildContext context, _, __) {
-      return AuthScreen(setupPIN: bl, type: 1,);
-    }, transitionsBuilder: (_,
-        Animation<double> animation,
-        __,
-        Widget child) {
-      return FadeTransition(
-          opacity: animation,
-          child: child);
-    }))
-        .then(
-            (value) => _authCallback(value));
+        .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+          return AuthScreen(
+            setupPIN: bl,
+            type: 1,
+          );
+        }, transitionsBuilder:
+            (_, Animation<double> animation, __, Widget child) {
+          return FadeTransition(opacity: animation, child: child);
+        }))
+        .then((value) => _authCallback(value));
   }
 
-  void _authCallback(bool? b)  async{
-    if(b == null || b == false) return;
-      Navigator.of(context)
-          .push(PageRouteBuilder(pageBuilder:
-          (BuildContext context, _, __) {
-        return SecurityScreen();
-      }, transitionsBuilder: (_,
-          Animation<double> animation,
-          __,
-          Widget child) {
-        return FadeTransition(
-            opacity: animation,
-            child: child);
-      }));
+  void _authCallback(bool? b) async {
+    if (b == null || b == false) return;
+    Navigator.of(context)
+        .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+      return SecurityScreen();
+    }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+      return FadeTransition(opacity: animation, child: child);
+    }));
   }
-
 }

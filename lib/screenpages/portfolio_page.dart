@@ -10,6 +10,7 @@ import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
+import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
