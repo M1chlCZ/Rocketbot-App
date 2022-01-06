@@ -306,7 +306,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                       });
                     },
                     child: Container(
-                      margin: EdgeInsets.only(top: 50.0),
+                      margin: const EdgeInsets.only(top: 50.0),
                       color: Colors.transparent,
                       width: double.infinity,
                       height: double.infinity,
@@ -316,16 +316,16 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                 right: 4.0,
                 child: AnimatedOpacity(
                   opacity: popMenu ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.decelerate,
                   child: Card(
                     elevation: 10.0,
                     color: Colors.transparent,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                       child: Container(
                         width: 120,
-                        color: Color(0xFF1B1B1B),
+                        color: const Color(0xFF1B1B1B),
                         child: Column(
                           children: [
                             // SizedBox(
@@ -399,7 +399,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                                     borderRadius:
                                                     BorderRadius.circular(
                                                         0.0),
-                                                    side: BorderSide(
+                                                    side: const BorderSide(
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
@@ -451,7 +451,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                                     borderRadius:
                                                     BorderRadius.circular(
                                                         0.0),
-                                                    side: BorderSide(
+                                                    side: const BorderSide(
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
@@ -477,7 +477,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
             Visibility(
               visible: !portCalc,
               child: Container(
-                margin: EdgeInsets.only(top: 50),
+                margin: const EdgeInsets.only(top: 50),
                 color: const Color(0xFF1B1B1B),
                 child: Center(
                   child: HeartbeatProgressIndicator(
@@ -555,7 +555,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     if (states.any(interactiveStates.contains)) {
       return Colors.white30;
     }
-    return Color(0xFF1B1B1A);
+    return const Color(0xFF1B1B1A);
   }
 
   Future _getPinFuture() async {
