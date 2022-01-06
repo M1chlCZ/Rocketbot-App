@@ -192,7 +192,9 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                           height: 25,
                           width: 20,
                           child: NeuButton(
-                            onTap: () {},
+                            onTap: () {
+                              _showDetails(widget.data);
+                            },
                             icon: const Icon(Icons.arrow_right, color: Colors.white70,),
                     ),
                         ),

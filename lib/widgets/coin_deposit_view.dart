@@ -200,7 +200,9 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                           height: 25,
                           width: 20,
                           child: NeuButton(
-                            onTap: () {},
+                            onTap: () {
+                              _showDetails(widget.data);
+                            },
                             icon: const Icon(Icons.arrow_right, color: Colors.white70,),
                     ),
                         ),
@@ -283,7 +285,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                                   onTap: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  icon: Icon(Icons.clear, color: Colors.white, size: 20.0,),)),
+                                                  icon: const Icon(Icons.clear, color: Colors.white, size: 20.0,),)),
                                           ],
                                         )
                                       ],
@@ -311,10 +313,10 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                             });
                                           },
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                            borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                                             child: Container(
                                               color: Colors.black38,
-                                              padding: EdgeInsets.all(5.0),
+                                              padding: const EdgeInsets.all(5.0),
                                               child: Text(td.transactionId!,
                                                 style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 12.0),
                                               ),
@@ -324,16 +326,16 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                       ),
                                       IgnorePointer(
                                         child: AnimatedOpacity(
-                                          duration:Duration(milliseconds: 300) ,
+                                          duration:const Duration(milliseconds: 300) ,
                                           opacity: _copied ? 1.0 : 0.0,
                                           child: SizedBox(
                                             width: double.infinity,
                                             child:
                                             ClipRRect(
-                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                                               child: Container(
                                                 color: Colors.green,
-                                                padding: EdgeInsets.all(5.0),
+                                                padding: const EdgeInsets.all(5.0),
                                                 child: Text(AppLocalizations.of(context)!.txcopy + "\n",
                                                   textAlign: TextAlign.center,
                                                   style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 12.0),

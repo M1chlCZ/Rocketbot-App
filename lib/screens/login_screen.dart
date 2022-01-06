@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info/package_info.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
@@ -43,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _curtain = true;
   bool _termsAgreed = false;
   bool _registerButton = true;
+  String _appVersion = "1.0";
   var _page = 0;
 
   @override
@@ -53,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //   loginController.text = 'm1chlcz18@gmail.com';
     //   passwordController.text = 'MvQ.u:3kML_WjGX';
     // }
-
+    _initPackageInfo();
     Future.delayed(const Duration(milliseconds: 50), () async {
       // var pinCheck = await _storage.read(key: "PIN");
       // if(pinCheck!.length != 6) {await  _storage.delete(key: "PIN");}
@@ -66,11 +68,14 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     });
-    _initPackageInfo();
+
   }
 
   void _initPackageInfo() async {
     _packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = _packageInfo!.version;
+    });
   }
 
   _loggedIN() async {
@@ -105,6 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginUser(String login, String pass) async {
+    setState(() {
+      _curtain = true;
+    });
     var email = login;
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -132,6 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _getToken(String key, String code) async {
+
     String? res = await NetInterface.getToken(key, code);
     if (res != null) {
       _storage.write(key: NetInterface.token, value: res);
@@ -301,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                     padding: const EdgeInsets.only(right: 15.0, top: 17.0),
                     child: Text(
-                      'v 1.0',
+                      'v ' + _appVersion,
                       style: Theme.of(context)
                           .textTheme
                           .headline4!
@@ -523,7 +532,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           if(tokenID != null) {
                                             Dialogs.openAlertBox(context, "Google Sign-in result", tokenID);
                                           }
-                                          // Navigator.pushNamedAndRemoveUntil(context, Constants.homeNavigate, (route) => false);
                                         } catch (e) {
                                           print("======HOVNO=======");
                                           print(e);
@@ -899,7 +907,19 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                   width: double.infinity,
                   height: double.maxFinite,
-                  color: const Color(0xFF1B1B1B))),
+                  color: const Color(0xFF1B1B1B),
+                child: Center(
+                  child: HeartbeatProgressIndicator(
+                    startScale: 0.01,
+                    endScale: 0.2,
+                    child: const Image(
+                      image: AssetImage('images/rocketbot_logo.png'),
+                      color: Colors.white30,
+                    ),
+                  ),
+                ),
+              )
+          ),
         ],
       ),
     );
