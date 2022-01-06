@@ -56,7 +56,7 @@ class Dialogs {
                 _codeControl.addListener(() {
                   if(_codeControl.text.length == 6) {
                     getToken(key, _codeControl.text) ;
-                    Navigator.of(context).pop(true);
+
                   }
                 });
                 return DialogBody(

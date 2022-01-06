@@ -85,7 +85,7 @@ class NetInterface {
         var js = json.decode(response.body);
         return js['data'];
       } else {
-        await const FlutterSecureStorage().delete(key: NetInterface.token);
+        // await const FlutterSecureStorage().delete(key: NetInterface.token);
         return null;
       }
     } catch (e) {
@@ -115,11 +115,12 @@ class NetInterface {
         for (var element in response.headers.entries) {
           if (element.key == 'token') {
             token = element.value;
+            break;
           }
         }
         return token;
       } else {
-        await const FlutterSecureStorage().delete(key: NetInterface.token);
+        // await const FlutterSecureStorage().delete(key: NetInterface.token);
         return null;
       }
     } catch (e) {
@@ -208,6 +209,8 @@ class NetInterface {
           "accept": "application/json",
           "Authorization": " Bearer $encoded",
         });
+    // print(response.body);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       return 0;
     } else {

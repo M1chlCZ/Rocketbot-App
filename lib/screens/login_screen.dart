@@ -55,8 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // }
 
     Future.delayed(const Duration(milliseconds: 50), () async {
-      // var pinCheck = await _storage.read(key: "PIN");
-      // if(pinCheck!.length != 6) {await  _storage.delete(key: "PIN");}
       bool b = await _loggedIN();
       if (b) {
         _goodCredentials();
@@ -73,8 +71,14 @@ class _LoginScreenState extends State<LoginScreen> {
     _packageInfo = await PackageInfo.fromPlatform();
   }
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   _loggedIN() async {
-    // await _storage.delete(key: NetInterface.token);
     String? lg = await _storage.read(key: NetInterface.token);
     if (lg != null && lg.isNotEmpty) {
       return true;
@@ -133,26 +137,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _getToken(String key, String code) async {
     String? res = await NetInterface.getToken(key, code);
-    if (res != null) {
-      _storage.write(key: NetInterface.token, value: res);
-      Navigator.of(context).pushReplacement(PageRouteBuilder(
-          pageBuilder: (BuildContext context, _, __) {
-        return const PortfolioScreen();
-      }, transitionsBuilder:
-              (_, Animation<double> animation, __, Widget child) {
-        return FadeTransition(opacity: animation, child: child);
-      }));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-          "Credentials doesn't match any user!",
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.fixed,
-        elevation: 5.0,
-      ));
-    }
+      if (res != null) {
+        await _storage.write(key: NetInterface.token, value: res);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+              "Credentials doesn't match any user!",
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.fixed,
+            elevation: 5.0,
+          ));
+        }
+      }
+      String? wer = await _storage.read(key: NetInterface.token);
+      if(wer != null) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const PortfolioScreen()));
+      }
   }
 
   _nextPage() async {
@@ -261,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     } else {
       var m = RegistrationErrors.fromJson(error);
-      print(m.status);
+      // print(m.status);
       Dialogs.openAlertBox(context, m.title!, m.errors.toString());
       setState(() {
         _registerButton = true;
@@ -519,9 +523,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                         FirebaseService service =
                                             FirebaseService();
                                         try {
-                                          String? tokenID = await service.signInwithGoogle();
-                                          if(tokenID != null) {
-                                            Dialogs.openAlertBox(context, "Google Sign-in result", tokenID);
+                                          String? tokenID =
+                                              await service.signInwithGoogle();
+                                          if (tokenID != null) {
+                                            Dialogs.openAlertBox(
+                                                context,
+                                                "Google Sign-in result",
+                                                tokenID);
                                           }
                                           // Navigator.pushNamedAndRemoveUntil(context, Constants.homeNavigate, (route) => false);
                                         } catch (e) {
