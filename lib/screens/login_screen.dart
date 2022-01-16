@@ -938,16 +938,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: double.maxFinite,
                   color: const Color(0xFF1B1B1B),
-                child: Center(
-                  child: HeartbeatProgressIndicator(
-                    startScale: 0.01,
-                    endScale: 0.2,
-                    child: const Image(
-                      image: AssetImage('images/rocketbot_logo.png'),
-                      color: Colors.white30,
-                    ),
-                  ),
-                ),
+                // child: Center(
+                //   child: HeartbeatProgressIndicator(
+                //     startScale: 0.01,
+                //     endScale: 0.2,
+                //     child: const Image(
+                //       image: AssetImage('images/rocketbot_logo.png'),
+                //       color: Colors.white30,
+                //     ),
+                //   ),
+                // ),
               )
           ),
         ],

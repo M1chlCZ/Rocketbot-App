@@ -124,8 +124,8 @@ class NetInterface {
             "accept": "application/json",
             "Content-Type": "application/json",
           });
-      print(response.body);
-      print(response.headers.toString());
+      // print(response.body);
+      // print(response.headers.toString());
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
         return true;
@@ -146,7 +146,7 @@ class NetInterface {
         "key": key,
         "emailCode": code,
       };
-      print(jsonEncode(_request).toString());
+      // print(jsonEncode(_request).toString());
       var _query = json.encoder.convert(_request);
       // print(_query);
       final response = await http.post(
@@ -157,8 +157,8 @@ class NetInterface {
             'User-Agent': _userAgent.toLowerCase(),
             "Content-Type": "application/json",
           });
-      print(response.body.toString());
-      print(response.statusCode);
+      // print(response.body.toString());
+      // print(response.statusCode);
 
       // response.headers.keys.forEach((element) {
       //  print(element.toString());
@@ -194,8 +194,8 @@ class NetInterface {
             'User-Agent': _userAgent.toLowerCase(),
             "Content-Type": "application/json",
           });
-      print(response.body.toString());
-      print(response.statusCode);
+      // print(response.body.toString());
+      // print(response.statusCode);
 
       // response.headers.keys.forEach((element) {
       //  print(element.toString());
@@ -308,12 +308,11 @@ class NetInterface {
           Uri.parse(
               "https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"),
           headers: {
-            "accept": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
             "Authorization": " Bearer $encoded",
           });
-      print(response.body);
-      print(response.statusCode);
+      // print(response.body);
+      // print(response.statusCode);
       // debugPrint(_userAgent.toLowerCase());
       if (response.statusCode == 200) {
         return 0;
@@ -332,8 +331,8 @@ class NetInterface {
               "accept": "application/json",
               "Content-Type": "application/json",
             });
-        print(resp.body);
-        print(resp.statusCode);
+        // print(resp.body);
+        // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
           await const FlutterSecureStorage()
