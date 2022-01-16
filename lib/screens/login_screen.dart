@@ -141,6 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
           behavior: SnackBarBehavior.fixed,
           elevation: 5.0,
         ));
+        setState(() {
+          _curtain = false;
+        });
       }
       // _codeDialog(res);
     } else {
