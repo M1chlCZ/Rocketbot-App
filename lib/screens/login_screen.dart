@@ -50,22 +50,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // _curtain = false;
-    // if (kDebugMode) {
-    //   loginController.text = 'm1chlcz18@gmail.com';
-    //   passwordController.text = 'MvQ.u:3kML_WjGX';
-    // }
+    _curtain = false;
+    if (kDebugMode) {
+      loginController.text = 'm1chlcz18@gmail.com';
+      passwordController.text = 'MvQ.u:3kML_WjGX';
+    }
     _initPackageInfo();
-    Future.delayed(const Duration(milliseconds: 50), () async {
-      bool b = await _loggedIN();
-      if (b) {
-        _goodCredentials();
-      } else {
-        setState(() {
-          _curtain = false;
-        });
-      }
-    });
+    // Future.delayed(const Duration(milliseconds: 50), () async {
+    //   bool b = await _loggedIN();
+    //   if (b) {
+    //     _goodCredentials();
+    //   } else {
+    //     setState(() {
+    //       _curtain = false;
+    //     });
+    //   }
+    // });
 
   }
 
@@ -128,7 +128,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     String? res = await NetInterface.getKey(login, pass);
     if (res != null) {
-      Dialogs.open2FAbox(context, res, _getToken);
+      bool code = await NetInterface.getEmailCode(res);
+      if(code) {
+        Dialogs.open2FAbox(context, res, _getToken);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            "Problem getting your email code, try again later",
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.fixed,
+          elevation: 5.0,
+        ));
+      }
       // _codeDialog(res);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -144,15 +157,20 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _getToken(String key, String code) async {
-
+    Navigator.of(context).pop();
     String? res = await NetInterface.getToken(key, code);
       if (res != null) {
         await _storage.write(key: NetInterface.token, value: res);
+        String? wer = await _storage.read(key: NetInterface.token);
+        if(wer != null) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const PortfolioScreen()));
+        }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
-              "Credentials doesn't match any user!",
+              "Bad code entered!",
               textAlign: TextAlign.center,
             ),
             backgroundColor: Colors.red,
@@ -160,11 +178,9 @@ class _LoginScreenState extends State<LoginScreen> {
             elevation: 5.0,
           ));
         }
-      }
-      String? wer = await _storage.read(key: NetInterface.token);
-      if(wer != null) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const PortfolioScreen()));
+        setState(() {
+          _curtain = false;
+        });
       }
   }
 
@@ -535,17 +551,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                           String? tokenID =
                                               await service.signInwithGoogle();
                                           if (tokenID != null) {
-                                            Dialogs.openAlertBox(
-                                                context,
-                                                "Google Sign-in result",
-                                                tokenID);
+                                            var asdf = await NetInterface.getTokenGoogle(tokenID);
+                                            if(asdf != null) {
+                                              _nextPage();
+                                            }else{
+                                              Dialogs.openAlertBox(context, "Error", "Error Sign in with Google");
+                                            }
                                           }
                                         } catch (e) {
-                                          print("======HOVNO=======");
-                                          print(e);
-                                          if (e is FirebaseAuthException) {
-                                            print(e.message!);
-                                          }
+                                          // print("======HOVNO=======");
+                                          // print(e);
+                                          // if (e is FirebaseAuthException) {
+                                          //   print(e.message!);
+                                          // }
+                                          Dialogs.openAlertBox(context, "Error", "Error Sign in with Google");
                                         }
                                         setState(() {
                                           // isLoading = false;

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
@@ -16,12 +15,12 @@ class SecurityScreen extends StatefulWidget {
 }
 
 class _SecurityScreenState extends State<SecurityScreen> {
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
   var firstValue = false;
   var secondValue = true;
 
   String _dropValue = 'PIN';
-  List<String> _dropValues = [
+  final List<String> _dropValues = [
     'PIN',
     Platform.isAndroid ? 'Fingerprint' : 'FaceID',
     'PIN + ' + (Platform.isAndroid ? 'Fingerprint' : 'FaceID')
@@ -215,7 +214,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                             .copyWith(
                                                 fontSize: 14.0,
                                                 color: Colors.white)),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -227,7 +226,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                           onTap: () async {
                                             _removePIN();
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -273,7 +272,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                             .copyWith(
                                                 fontSize: 14.0,
                                                 color: Colors.white)),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     Padding(
@@ -285,7 +284,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                           onTap: () async {
                                             _removePIN();
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             color: Colors.white,
                                             size: 22.0,
@@ -308,7 +307,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
   void _removePIN() {
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-          return AuthScreen(
+          return const AuthScreen(
             type: 2,
           );
         }, transitionsBuilder:
@@ -349,7 +348,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
   void _changePIN() {
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-          return AuthScreen(
+          return const AuthScreen(
             type: 2,
           );
         }, transitionsBuilder:
@@ -363,7 +362,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
     if (b == null || b == false) return;
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-          return AuthScreen(setupPIN: true);
+          return const AuthScreen(setupPIN: true);
         }, transitionsBuilder:
             (_, Animation<double> animation, __, Widget child) {
           return FadeTransition(opacity: animation, child: child);

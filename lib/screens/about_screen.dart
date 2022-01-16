@@ -431,18 +431,11 @@ class _AboutScreenState extends State<AboutScreen> {
                       const SizedBox(
                         height: 20.0,
                       ),
-                      RichText(
-                        text: TextSpan(
-                          text: "APP dev: \n\n",
-                          style: Theme.of(context).textTheme.headline4,
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: '      Michal Žídek',
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
+                      const SizedBox(
+                        height: 20.0,
                       ),
+                      Text("APP dev:", style: Theme.of(context).textTheme.headline4,),
+                      const SizedBox(height: 10.0,),
                       const SizedBox(
                         height: 20.0,
                       ),

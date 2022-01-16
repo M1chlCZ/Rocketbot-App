@@ -5,7 +5,6 @@ import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/screenPages/coin_page.dart';
 import 'package:rocketbot/screenpages/deposit_page.dart';
 import 'package:rocketbot/screenpages/send_page.dart';
-import 'package:rocketbot/support/custom_swipe_scroll.dart';
 
 import '../component_widgets/button_neu.dart';
 import '../screenPages/portfolio_page.dart';
