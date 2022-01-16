@@ -50,22 +50,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _curtain = false;
-    if (kDebugMode) {
-      loginController.text = 'm1chlcz18@gmail.com';
-      passwordController.text = 'MvQ.u:3kML_WjGX';
-    }
+    // _curtain = false;
+    // if (kDebugMode) {
+    //   loginController.text = 'm1chlcz18@gmail.com';
+    //   passwordController.text = 'MvQ.u:3kML_WjGX';
+    // }
     _initPackageInfo();
-    // Future.delayed(const Duration(milliseconds: 50), () async {
-    //   bool b = await _loggedIN();
-    //   if (b) {
-    //     _goodCredentials();
-    //   } else {
-    //     setState(() {
-    //       _curtain = false;
-    //     });
-    //   }
-    // });
+    Future.delayed(const Duration(milliseconds: 50), () async {
+      bool b = await _loggedIN();
+      if (b) {
+        _goodCredentials();
+      } else {
+        setState(() {
+          _curtain = false;
+        });
+      }
+    });
 
   }
 
