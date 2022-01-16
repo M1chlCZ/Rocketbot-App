@@ -17,7 +17,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
   var firstValue = false;
   var secondValue = true;
 
@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             .copyWith(
                                                 fontSize: 14.0,
                                                 color: Colors.white)),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     NeuButton(
@@ -199,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         onTap: () async {
                                           _handlePIN();
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.arrow_forward_ios_sharp,
                                           color: Colors.white,
                                           size: 22.0,
@@ -236,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           context,
                                               _,
                                               __) {
-                                            return LoginScreen();
+                                            return const LoginScreen();
                                           }, transitionsBuilder: (_,
                                           Animation<double>
                                           animation,
@@ -265,7 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             .copyWith(
                                                 fontSize: 14.0,
                                                 color: Colors.white)),
-                                    Expanded(
+                                    const Expanded(
                                       child: SizedBox(),
                                     ),
                                     NeuButton(
@@ -282,7 +282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                                     context,
                                                                 _,
                                                                 __) {
-                                              return LoginScreen();
+                                              return const LoginScreen();
                                             }, transitionsBuilder: (_,
                                                             Animation<double>
                                                                 animation,
@@ -294,7 +294,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             }));
                                           });
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.arrow_forward_ios_sharp,
                                           color: Colors.white,
                                           size: 22.0,
@@ -338,7 +338,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (b == null || b == false) return;
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-      return SecurityScreen();
+      return const SecurityScreen();
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
     }));
