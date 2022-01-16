@@ -553,12 +553,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                         try {
                                           String? tokenID =
                                               await service.signInwithGoogle();
+                                          setState(() {
+                                            _curtain = true;
+                                          });
                                           if (tokenID != null) {
                                             var asdf = await NetInterface.getTokenGoogle(tokenID);
                                             if(asdf != null) {
                                               _nextPage();
                                             }else{
                                               Dialogs.openAlertBox(context, "Error", "Error Sign in with Google");
+                                              setState(() {
+                                                _curtain = false;
+                                              });
                                             }
                                           }
                                         } catch (e) {

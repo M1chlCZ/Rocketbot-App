@@ -93,10 +93,10 @@ class NetInterface {
           headers: {
             'User-Agent': _userAgent.toLowerCase(),
             "accept": "application/json",
-            "Content-Type": "application/json",
+            "content-type" : "application/json"
           });
-      // print(response.body);
-      // print(response.headers.toString());
+      print(response.body.toString());
+      print(response.headers.toString());
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
         return js.data!.key!;
@@ -122,7 +122,7 @@ class NetInterface {
           headers: {
             'User-Agent': _userAgent.toLowerCase(),
             "accept": "application/json",
-            "Content-Type": "application/json",
+            "content-type" : "application/json"
           });
       // print(response.body);
       // print(response.headers.toString());
@@ -155,7 +155,7 @@ class NetInterface {
           headers: {
             "accept": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
-            "Content-Type": "application/json",
+            "content-type" : "application/json"
           });
       // print(response.body.toString());
       // print(response.statusCode);
@@ -192,7 +192,7 @@ class NetInterface {
           headers: {
             "accept": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
-            "Content-Type": "application/json",
+            "content-type" : "application/json"
           });
       // print(response.body.toString());
       // print(response.statusCode);
@@ -246,8 +246,7 @@ class NetInterface {
           body: _query,
           headers: {
             'User-Agent': _userAgent.toLowerCase(),
-            "accept": "application/json",
-            "Content-Type": "application/json",
+            "accept": "application/json"
           });
 
       // print(response.body);
@@ -285,7 +284,6 @@ class NetInterface {
           headers: {
             "accept": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
-            "Content-Type": "application/json",
           });
 
       if (response.statusCode == 200) {
@@ -329,7 +327,7 @@ class NetInterface {
             headers: {
               'User-Agent': _userAgent.toLowerCase(),
               "accept": "application/json",
-              "Content-Type": "application/json",
+              "content-type" : "application/json"
             });
         // print(resp.body);
         // print(resp.statusCode);
