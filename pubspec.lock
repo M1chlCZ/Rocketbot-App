@@ -310,6 +310,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_user_agent:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "3bdde26954e09f8c07c6b4d20b710c7521c039ec"
+      url: "https://github.com/M1chlCZ/flutter_user_agent.git"
+    source: git
+    version: "2.0.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -588,6 +597,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.4"
+  sign_in_with_apple:
+    dependency: "direct main"
+    description:
+      name: sign_in_with_apple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.3.0"
+  sign_in_with_apple_platform_interface:
+    dependency: transitive
+    description:
+      name: sign_in_with_apple_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  sign_in_with_apple_web:
+    dependency: transitive
+    description:
+      name: sign_in_with_apple_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   sky_engine:
     dependency: transitive
     description: flutter

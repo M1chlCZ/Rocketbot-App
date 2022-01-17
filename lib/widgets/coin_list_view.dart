@@ -166,7 +166,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   padding: const EdgeInsets.only(top: 2.0),
                                   child: Text(
                                     // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                    widget.coin.free!.toStringAsFixed(3),
+                                   "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!) ,
                                     style: Theme.of(context).textTheme.headline3,
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
@@ -211,5 +211,16 @@ class _CoinListViewState extends State<CoinListView> {
       ],
 
     );
+  }
+
+  String _formatPrice(double d) {
+    var _split = d.toString().split('.');
+    var _decimal = _split[1];
+    if (_decimal.length >= 2) {
+      var _sub = _decimal.substring(0, 2);
+      return _split[0] + "." + _sub;
+    } else {
+      return d.toString();
+    }
   }
 }

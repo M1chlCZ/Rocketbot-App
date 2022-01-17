@@ -323,11 +323,11 @@ class NetInterface {
         };
         final resp = await http.post(
             Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
-            body: _request,
+            body: json.encode(_request),
             headers: {
               'User-Agent': _userAgent.toLowerCase(),
               "accept": "application/json",
-              "content-type" : "application/json"
+              "content-type": "application/json",
             });
         // print(resp.body);
         // print(resp.statusCode);
