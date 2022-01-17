@@ -20,7 +20,7 @@ class NetInterface {
   Future<dynamic> get(String url) async {
     String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
     var _token = await const FlutterSecureStorage().read(key: token);
-    // print(_token);
+//     print(_token);
 // print(_baseUrl + url);
     dynamic responseJson;
     try {
@@ -29,6 +29,7 @@ class NetInterface {
         'User-Agent': _userAgent.toLowerCase(),
         "Authorization": " Bearer $_token",
       });
+      // print(response.body.toString());
       if(response.statusCode == 403){
         await refreshToken();
         final res = await http.get(Uri.parse(_baseUrl + url), headers: {
@@ -122,8 +123,8 @@ class NetInterface {
             "accept": "application/json",
             "content-type" : "application/json"
           });
-      print(response.body.toString());
-      print(response.headers.toString());
+      // print(response.body.toString());
+      // print(response.headers.toString());
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
         return js.data!.key!;
