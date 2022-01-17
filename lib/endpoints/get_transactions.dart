@@ -22,7 +22,7 @@ class TransactionList {
       try {
         var it = (item as DataDeposits);
         if(priceValue == null) {
-          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.coinGeckoId!);
+          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
           priceValue = cg.data!.prices!.usd;
         }
         TransactionData d = TransactionData.fromCustom(
@@ -44,7 +44,7 @@ class TransactionList {
       try {
         var it = (item as DataWithdrawals);
         if(priceValue == null) {
-          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.coinGeckoId!);
+          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
           priceValue = cg.data!.prices!.usd;
         }
         TransactionData d = TransactionData.fromCustom(

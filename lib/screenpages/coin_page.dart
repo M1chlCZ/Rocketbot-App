@@ -65,7 +65,7 @@ class _CoinScreenState extends State<CoinScreen> {
     _coinActive = widget.activeCoin;
     _listCoins = widget.allCoins!;
     _calculatePortfolio();
-    _priceBlock = CoinPriceBloc(widget.activeCoin.coinGeckoId!);
+    _priceBlock = CoinPriceBloc(widget.activeCoin.cryptoId!);
     _txBloc = TransactionBloc(widget.activeCoin);
   }
 
@@ -126,7 +126,7 @@ class _CoinScreenState extends State<CoinScreen> {
                                   setState(() {
                                     widget.setActiveCoin(coin);
                                     _coinActive = coin!;
-                                    _priceBlock!.changeCoin(coin.coinGeckoId!);
+                                    _priceBlock!.changeCoin(coin.cryptoId!);
                                     _coinNameOpacity = 0.0;
                                     _txBloc!.changeCoin(coin);
                                   });

@@ -15,7 +15,7 @@ class CoinBalances {
       try {
         var coinBal = (item as CoinBalance);
         var coin = coinBal.coin;
-        String? coinID = coin!.coinGeckoId;
+        String? coinID = coin!.cryptoId;
         final price = priceData['data'][coinID!];
         PriceData? p = PriceData.fromJson(price);
         coinBal.setPriceData(p);
