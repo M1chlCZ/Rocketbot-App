@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +29,17 @@ class NetInterface {
         'User-Agent': _userAgent.toLowerCase(),
         "Authorization": " Bearer $_token",
       });
-      responseJson = _returnResponse(response);
+      if(response.statusCode == 403){
+        await refreshToken();
+        final res = await http.get(Uri.parse(_baseUrl + url), headers: {
+          "accept": "application/json",
+          'User-Agent': _userAgent.toLowerCase(),
+          "Authorization": " Bearer $_token",
+        });
+        responseJson = _returnResponse(res);
+      }else{
+        responseJson = _returnResponse(response);
+      }
       // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -53,7 +64,20 @@ class NetInterface {
             "Authorization": " Bearer $_token",
           },
           body: _query);
-      responseJson = _returnResponse(response);
+      if(response.statusCode == 403){
+        await refreshToken();
+        final res = await http.post(Uri.parse(_baseUrl + url),
+            headers: {
+              "Accept": "application/json",
+              "content-type": "application/json",
+              'User-Agent': _userAgent.toLowerCase(),
+              "Authorization": " Bearer $_token",
+            },
+            body: _query);
+        responseJson = _returnResponse(res);
+      }else{
+        responseJson = _returnResponse(response);
+      }
       // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -63,7 +87,7 @@ class NetInterface {
     return responseJson;
   }
 
-  dynamic _returnResponse(http.Response response) {
+  dynamic _returnResponse(http.Response response)async  {
     // print(response.statusCode);
     // print(response.toString());
     switch (response.statusCode) {
@@ -73,8 +97,11 @@ class NetInterface {
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:
-      case 403:
         throw UnauthorisedException(response.body.toString());
+      case 403:
+        await refreshToken();
+        break;
+        // throw UnauthorisedException(response.body.toString());
       case 500:
       default:
         throw FetchDataException(
@@ -345,6 +372,36 @@ class NetInterface {
     } catch (e) {
       debugPrint(e.toString());
       return 1;
+    }
+  }
+
+  static Future<bool> refreshToken() async {
+    String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+    await const FlutterSecureStorage().delete(key: NetInterface.token);
+    String? enc = await const FlutterSecureStorage()
+        .read(key: NetInterface.tokenRefresh);
+    Map _request = {
+      "token": enc,
+    };
+    final resp = await http.post(
+        Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
+        body: json.encode(_request),
+        headers: {
+          'User-Agent': _userAgent.toLowerCase(),
+          "accept": "application/json",
+          "content-type": "application/json",
+        });
+    // print(resp.body);
+    // print(resp.statusCode);
+    TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
+    if (res.data!.token != null) {
+      await const FlutterSecureStorage()
+          .write(key: NetInterface.token, value: res.data!.token);
+      await const FlutterSecureStorage().write(
+          key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+      return true;
+    } else{
+      return false;
     }
   }
 }
