@@ -5,7 +5,7 @@ class CoinPrices {
   final NetInterface _helper = NetInterface();
 
   Future<PriceData?> fetchCoinPrice(String coin, int coinID) async {
-    final response = await _helper.get("Coin/GetPriceData?CoinGeckoId=$coin&IncludeHistoryPrices=true&IncludeChange=true");
+    final response = await _helper.get("Coin/GetPriceData?coinID=$coinID&IncludeHistoryPrices=true&IncludeChange=true");
     return CoinGraph.fromJson(response,coinID.toString()).data;
   }
 }
