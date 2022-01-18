@@ -15,7 +15,7 @@ class CoinGraph {
     _message = json['message'];
     _hasError = json['hasError'];
     _error = json['error'];
-    _data = json['data'] != null ? PriceData.fromJson(json['data'][coin]) : null;
+    _data = json['data'] != null ? PriceData.fromJson(json['data'][coin.toString()]) : null;
   }
   String? _message;
   bool? _hasError;

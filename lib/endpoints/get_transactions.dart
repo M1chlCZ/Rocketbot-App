@@ -1,4 +1,5 @@
 import 'package:rocketbot/NetInterface/interface.dart';
+import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/get_deposits.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -8,9 +9,9 @@ class TransactionList {
   final NetInterface _helper = NetInterface();
 
   Future<List<TransactionData>?> fetchTransactions(int coinID) async {
-    final _deposits = await _helper.get("Transfers/GetDeposits?page=1&pageSize=10&coinId=$coinID");
-    final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=10&coinId=$coinID");
-    final price = await _helper.get("Coin/GetPriceData?coin=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
+    final _deposits = await _helper.get("Transfers/GetDeposits?page=1&pageSize=50&coinId=$coinID");
+    final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=50&coinId=$coinID");
+    final price = await _helper.get("Coin/GetPriceData?coinId=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
 
     List<DataWithdrawals>? _with = WithdrawalsModels.fromJson(_withdrawals).data;
     List<DataDeposits>? _dep = DepositsModel.fromJson(_deposits).data;
@@ -22,7 +23,7 @@ class TransactionList {
       try {
         var it = (item as DataDeposits);
         if(priceValue == null) {
-          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
+          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.id!.toString());
           priceValue = cg.data!.prices!.usd;
         }
         TransactionData d = TransactionData.fromCustom(

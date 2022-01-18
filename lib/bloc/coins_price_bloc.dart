@@ -15,25 +15,28 @@ class CoinPriceBloc {
   Stream<ApiResponse<PriceData>> get coinsListStream =>
       _coinListController!.stream;
 
-  CoinPriceBloc(String coin) {
+  CoinPriceBloc(String coin, int coinID) {
     _coinListController = StreamController<ApiResponse<PriceData>>();
-    _fetchCoinPriceData(coin);
+    _fetchCoinPriceData(coin, coinID);
   }
 
-  changeCoin (String coin) {
-    _fetchCoinPriceData(coin);
+  changeCoin (String coin, int coinID) {
+    _fetchCoinPriceData(coin, coinID);
   }
 
-  _fetchCoinPriceData(String coin) async {
-    if (!_coinListController!.isClosed)
-    coinsListSink.add(ApiResponse.loading('Fetching Coin balances'));
+  _fetchCoinPriceData(String coin, int coinID) async {
+    if (!_coinListController!.isClosed) {
+      coinsListSink.add(ApiResponse.loading('Fetching Coin balances'));
+    }
     try {
-      PriceData? _coins = await _balanceList.fetchCoinPrice(coin);
-      if (!_coinListController!.isClosed)
-      coinsListSink.add(ApiResponse.completed(_coins));
+      PriceData? _coins = await _balanceList.fetchCoinPrice(coin, coinID);
+      if (!_coinListController!.isClosed) {
+        coinsListSink.add(ApiResponse.completed(_coins));
+      }
     } catch (e) {
-      if (!_coinListController!.isClosed)
-      coinsListSink.add(ApiResponse.error(e.toString()));
+      if (!_coinListController!.isClosed) {
+        coinsListSink.add(ApiResponse.error(e.toString()));
+      }
       // print(e);
     }
   }
