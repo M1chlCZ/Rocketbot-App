@@ -40,6 +40,7 @@ dependencies:
   flutter_lock_screen: ^2.0.1
   google_sign_in: ^5.2.3
   sign_in_with_apple: ^3.3.0
+  flutter_displaymode: ^0.3.2
   flutter_user_agent:
     git:
       url: https://github.com/M1chlCZ/flutter_user_agent.git

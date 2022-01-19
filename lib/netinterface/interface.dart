@@ -25,15 +25,16 @@ class NetInterface {
     dynamic responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
-        "accept": "application/json",
         'User-Agent': _userAgent.toLowerCase(),
         "Authorization": " Bearer $_token",
       });
-      // print(response.body.toString());
-      if(response.statusCode == 403){
-        await refreshToken();
+
+      print(response.statusCode);
+      print(response.body.toString());
+      if(response.statusCode == 403 || response.statusCode == 401){
+        await checkToken();
+        var _token = await const FlutterSecureStorage().read(key: token);
         final res = await http.get(Uri.parse(_baseUrl + url), headers: {
-          "accept": "application/json",
           'User-Agent': _userAgent.toLowerCase(),
           "Authorization": " Bearer $_token",
         });
@@ -41,10 +42,12 @@ class NetInterface {
       }else{
         responseJson = _returnResponse(response);
       }
-      // print(responseJson.toString());
+      print(responseJson.toString());
     } on SocketException {
+      print("shit");
       throw FetchDataException('No Internet connection');
     } catch (e) {
+      print("shit");
       debugPrint(e.toString());
     }
     return responseJson;
@@ -59,17 +62,16 @@ class NetInterface {
     try {
       final response = await http.post(Uri.parse(_baseUrl + url),
           headers: {
-            "Accept": "application/json",
             "content-type": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
             "Authorization": " Bearer $_token",
           },
           body: _query);
-      if(response.statusCode == 403){
-        await refreshToken();
+      if(response.statusCode == 403 || response.statusCode == 401){
+        await checkToken();
+        var _token = await const FlutterSecureStorage().read(key: token);
         final res = await http.post(Uri.parse(_baseUrl + url),
             headers: {
-              "Accept": "application/json",
               "content-type": "application/json",
               'User-Agent': _userAgent.toLowerCase(),
               "Authorization": " Bearer $_token",
@@ -100,7 +102,7 @@ class NetInterface {
       case 401:
         throw UnauthorisedException(response.body.toString());
       case 403:
-        await refreshToken();
+        await checkToken();
         break;
         // throw UnauthorisedException(response.body.toString());
       case 500:
@@ -377,31 +379,36 @@ class NetInterface {
   }
 
   static Future<bool> refreshToken() async {
-    String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-    await const FlutterSecureStorage().delete(key: NetInterface.token);
-    String? enc = await const FlutterSecureStorage()
-        .read(key: NetInterface.tokenRefresh);
-    Map _request = {
-      "token": enc,
-    };
-    final resp = await http.post(
-        Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
-        body: json.encode(_request),
-        headers: {
-          'User-Agent': _userAgent.toLowerCase(),
-          "accept": "application/json",
-          "content-type": "application/json",
-        });
-    // print(resp.body);
-    // print(resp.statusCode);
-    TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
-    if (res.data!.token != null) {
-      await const FlutterSecureStorage()
-          .write(key: NetInterface.token, value: res.data!.token);
-      await const FlutterSecureStorage().write(
-          key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
-      return true;
-    } else{
+    try {
+      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      await const FlutterSecureStorage().delete(key: NetInterface.token);
+      String? enc = await const FlutterSecureStorage()
+          .read(key: NetInterface.tokenRefresh);
+      Map _request = {
+        "token": enc,
+      };
+      final resp = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
+          body: json.encode(_request),
+          headers: {
+            'User-Agent': _userAgent.toLowerCase(),
+            "accept": "application/json",
+            "content-type": "application/json",
+          });
+      print(resp.body);
+      print(resp.statusCode);
+      TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
+      if (res.data!.token != null) {
+        await const FlutterSecureStorage()
+            .write(key: NetInterface.token, value: res.data!.token);
+        await const FlutterSecureStorage().write(
+            key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
       return false;
     }
   }

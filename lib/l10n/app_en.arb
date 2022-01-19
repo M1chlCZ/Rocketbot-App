@@ -101,5 +101,6 @@
   "password_mismatch_message" : "Please enter same password to password and password confirmation box",
   "coin_sent" : "Transaction executed successfully",
   "reg_succ" : "Please check your email inbox, for register confirmation",
-  "terms_agree" : "You need to agree with terms and conditions"
+  "terms_agree" : "You need to agree with terms and conditions",
+  "language" : "Language"
 }

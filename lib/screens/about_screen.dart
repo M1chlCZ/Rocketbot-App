@@ -418,23 +418,79 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       RichText(
                         text: TextSpan(
-                          text: "Project lead: \n\n",
+                          text: "Project lead: \n",
                           style: Theme.of(context).textTheme.headline4,
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: '      John DFWplay',
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
                         ),
                       ),
+                      Row(children: [
+                        const SizedBox(width: 20.0,),
+                        Text("Jon DFWplay", style: Theme.of(context).textTheme.headline4,),
+                        const Expanded(child: SizedBox()),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Image.asset("images/twitter.png", color: Colors.white70),
+                          ),
+                          onTap: () {
+                            _launchURL("https://twitter.com/https://twitter.com/DfWplay");
+                          },
+                        ),
+                      ],),
                       const SizedBox(
                         height: 20.0,
                       ),
-                      const SizedBox(
-                        height: 20.0,
+                      RichText(
+                        text: TextSpan(
+                          text: "APP dev: \n",
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
                       ),
-                      Text("APP dev:", style: Theme.of(context).textTheme.headline4,),
+                      Row(children: [
+                        const SizedBox(width: 20.0,),
+                        Text("Michal Žídek", style: Theme.of(context).textTheme.headline4,),
+                        const Expanded(child: SizedBox()),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Image.asset("images/telegram.png", color: Colors.white70),
+                          ),
+                          onTap: () {
+                            _launchURL("https://t.me/m1chlcz");
+                          },
+                        ),
+                        const SizedBox(
+                          width: 20.0,
+                        ),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Image.asset("images/twitter.png", color: Colors.white70),
+                          ),
+                          onTap: () {
+                            _launchURL("https://twitter.com/m1chl");
+                          },
+                        ),
+                        const SizedBox(
+                          width: 20.0,
+                        ),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Image.asset("images/email.png", color: Colors.white70,),
+                          ),
+                          onTap: () {
+                            _launchURL("mailto:m1chl@centrum.cz");
+                          },
+                        ),
+                      ],),
                       const SizedBox(height: 10.0,),
                       const SizedBox(
                         height: 20.0,

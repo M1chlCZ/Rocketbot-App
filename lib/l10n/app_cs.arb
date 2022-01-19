@@ -101,5 +101,6 @@
   "password_mismatch_message" : "Zadejte do obou polí stejná hesla",
   "coin_sent" : "Transaction úspěšně provedena",
   "reg_succ" : "Prosím zkontrolujte e-mailovou schránku pro potvrzení registrace",
-  "terms_agree" : "Prosím odsouhlaste podmínky použití"
+  "terms_agree" : "Prosím odsouhlaste podmínky použití",
+  "language" : "Jazyk"
 }

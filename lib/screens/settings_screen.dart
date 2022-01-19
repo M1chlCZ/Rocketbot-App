@@ -4,10 +4,12 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
+import 'package:rocketbot/main.dart';
 import 'package:rocketbot/screens/auth_screen.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'package:rocketbot/screens/security_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
+import 'package:rocketbot/support/globals.dart' as globals;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -18,12 +20,29 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _storage = const FlutterSecureStorage();
+  var dropLanguageValue = globals.LANGUAGES[0];
   var firstValue = false;
   var secondValue = true;
 
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero).then((_) async {
+      if (mounted) {
+        final Locale appLocale = Localizations.localeOf(context);
+        var i = globals.LANGUAGES_CODES
+            .indexWhere((element) => element.contains(appLocale.toString()));
+        if (i != -1) {
+          setState(() {
+            dropLanguageValue = globals.LANGUAGES[i];
+          });
+        } else {
+          setState(() {
+            dropLanguageValue = globals.LANGUAGES[0];
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -89,17 +108,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         height: 20.0,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const SizedBox(
+                            width: 7,
+                          ),
                           Text('Lorem Ipsum',
                               style: Theme.of(context)
                                   .textTheme
                                   .headline4!
                                   .copyWith(
                                       fontSize: 14.0, color: Colors.white)),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.4,
+                          const Expanded(
+                            child: SizedBox(
+                            ),
                           ),
                           NeuContainer(
                             width: 60,
@@ -131,7 +154,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 });
                               },
                             ),
-                          )
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            width: 7,
+                          ),
+                          Text(AppLocalizations.of(context)!.language,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline4!
+                                  .copyWith(
+                                  fontSize: 14.0, color: Colors.white)),
+                          // SizedBox(
+                          //   width: MediaQuery.of(context).size.width * 0.4,
+                          // ),
+                          const SizedBox(
+                            width: 120,
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 30,
+                              child: NeuContainer(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: dropLanguageValue,
+                                      isDense: true,
+                                      onChanged: (String? val) {
+                                        // print(val!);
+                                        dropLanguageValue = val!;
+                                        setState(() {
+                                          Locale l;
+                                          int index =  globals.LANGUAGES.indexWhere((values) => values.contains(val));
+                                          // print(index);
+                                          var ls = globals.LANGUAGES_CODES[index].split('_');
+                                          if(ls.length == 1) {
+                                            l = Locale(ls[0], '');
+                                          }else if(ls.length == 2) {
+                                            l = Locale(ls[0], ls[1]);
+                                          }else{
+                                            l = Locale.fromSubtags(countryCode: ls[2], scriptCode: ls[1], languageCode: ls[0]);
+                                          }
+                                          MyApp.of(context)?.setLocale(l);
+                                          _storage.write(key: globals.LOCALE_APP, value: globals.LANGUAGES_CODES[index]);
+                                        });
+                                      },
+                                      items: globals.LANGUAGES
+                                          .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: SizedBox(
+                                              width: 70,
+                                              child: Text(e))))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
                         ],
                       ),
                       const SizedBox(
