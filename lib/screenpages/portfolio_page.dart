@@ -53,8 +53,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    _firebaseMessaging.setNotifications();
     _initializeLocalNotifications();
+    _firebaseMessaging.setNotifications();
     _bloc = BalancesBloc(null);
     _scrollController.addListener(() {
       if(popMenu) {
