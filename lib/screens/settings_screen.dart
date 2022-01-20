@@ -104,62 +104,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         height: 0.5,
                         color: Colors.white12,
                       ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            width: 7,
-                          ),
-                          Text('Lorem Ipsum',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .copyWith(
-                                      fontSize: 14.0, color: Colors.white)),
-                          const Expanded(
-                            child: SizedBox(
-                            ),
-                          ),
-                          NeuContainer(
-                            width: 60,
-                            height: 25,
-                            child: FlutterSwitch(
-                              activeSwitchBorder: Border.all(
-                                color: Colors.green,
-                                width: 2.0,
-                              ),
-                              inactiveSwitchBorder: Border.all(
-                                color: Colors.red,
-                                width: 2.0,
-                              ),
-                              inactiveToggleColor: Colors.red,
-                              activeToggleColor: Colors.green,
-                              activeColor: Colors.transparent,
-                              inactiveColor: Colors.transparent,
-                              width: 40.0,
-                              height: 15.0,
-                              valueFontSize: 5.0,
-                              toggleSize: 10.0,
-                              value: firstValue,
-                              borderRadius: 14.0,
-                              padding: 1.0,
-                              showOnOff: false,
-                              onToggle: (val) {
-                                setState(() {
-                                  firstValue = val;
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                        ],
-                      ),
+                      // const SizedBox(
+                      //   height: 20.0,
+                      // ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.start,
+                      //   crossAxisAlignment: CrossAxisAlignment.center,
+                      //   children: [
+                      //     const SizedBox(
+                      //       width: 7,
+                      //     ),
+                      //     Text('Lorem Ipsum',
+                      //         style: Theme.of(context)
+                      //             .textTheme
+                      //             .headline4!
+                      //             .copyWith(
+                      //                 fontSize: 14.0, color: Colors.white)),
+                      //     const Expanded(
+                      //       child: SizedBox(
+                      //       ),
+                      //     ),
+                      //     NeuContainer(
+                      //       width: 60,
+                      //       height: 25,
+                      //       child: FlutterSwitch(
+                      //         activeSwitchBorder: Border.all(
+                      //           color: Colors.green,
+                      //           width: 2.0,
+                      //         ),
+                      //         inactiveSwitchBorder: Border.all(
+                      //           color: Colors.red,
+                      //           width: 2.0,
+                      //         ),
+                      //         inactiveToggleColor: Colors.red,
+                      //         activeToggleColor: Colors.green,
+                      //         activeColor: Colors.transparent,
+                      //         inactiveColor: Colors.transparent,
+                      //         width: 40.0,
+                      //         height: 15.0,
+                      //         valueFontSize: 5.0,
+                      //         toggleSize: 10.0,
+                      //         value: firstValue,
+                      //         borderRadius: 14.0,
+                      //         padding: 1.0,
+                      //         showOnOff: false,
+                      //         onToggle: (val) {
+                      //           setState(() {
+                      //             firstValue = val;
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      //     const SizedBox(
+                      //       width: 12,
+                      //     ),
+                      //   ],
+                      // ),
                       const SizedBox(
                         height: 30.0,
                       ),

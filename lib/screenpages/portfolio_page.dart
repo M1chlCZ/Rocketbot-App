@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -12,17 +16,17 @@ import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
+import '../support/notification_helper.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 class PortfolioScreen extends StatefulWidget {
-  // final Function(Coin? coin) coinSwitch;
-  // final List<CoinBalance>? listBalances;
-  // final Function(List<CoinBalance>? lc) passBalances;
+
 
   const PortfolioScreen({
     Key? key,
-    // required this.coinSwitch, this.listBalances, required this.passBalances
   }) : super(key: key);
 
   @override
@@ -34,6 +38,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
+  final _firebaseMessaging = FCM();
 
   double totalUSD = 0.0;
   double totalBTC = 0.0;
@@ -48,10 +53,13 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
+    _firebaseMessaging.setNotifications();
+    _initializeLocalNotifications();
     _bloc = BalancesBloc(null);
     _scrollController.addListener(() {
-      if(popMenu)
-      setState(() {popMenu = false;});
+      if(popMenu) {
+        setState(() {popMenu = false;});
+      }
     });
     // portCalc = widget.listBalances != null ? true : false;
   }
@@ -80,6 +88,41 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   List<CoinBalance> getList() {
     return _listCoins!;
   }
+
+  void _initializeLocalNotifications() async {
+    if (Platform.isAndroid) {
+      AndroidNotificationChannel channel = const AndroidNotificationChannel(
+        'rocket1', // id
+        'Rocket 1 stuff', // title
+        description: 'This channel is used for transaction notifications.',
+        // description
+        importance: Importance.max,
+        enableVibration: true,
+        enableLights: true,
+        ledColor: Colors.white,
+      );
+
+      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel);
+
+      AndroidNotificationChannel channel2 = const AndroidNotificationChannel(
+        'rocket2', // id
+        'Rocket 2 stuff', // title
+        description: 'This channel is used for message notifications.',
+        // description
+        importance: Importance.max,
+        enableVibration: true,
+        enableLights: true,
+        ledColor: Colors.white,
+      );
+
+      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel2);
+    }
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('ic_notification');
+    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -561,6 +604,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   Future _getPinFuture() async {
     var s = _storage.read(key: "PIN");
     return s;
+  }
+
+  void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
+    Dialogs.openAlertBox(context, "Alert", payload!);
+  }
+
+  void _onSelectNotification(String? payload) {
+    Dialogs.openAlertBox(context, "Alert", payload!);
   }
 
   Future <void> _getPin() async {

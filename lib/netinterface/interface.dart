@@ -16,12 +16,13 @@ class NetInterface {
   final String _baseUrl = "https://app.rocketbot.pro/api/mobile/";
   static const String token = "token";
   static const String tokenRefresh = "refreshToken";
+  static bool _refreshingToken = false;
 
   Future<dynamic> get(String url) async {
     String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
     var _token = await const FlutterSecureStorage().read(key: token);
-//     print(_token);
-// print(_baseUrl + url);
+//     // // print(_token);
+// // print(_baseUrl + url);
     dynamic responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
@@ -29,10 +30,10 @@ class NetInterface {
         "Authorization": " Bearer $_token",
       });
 
-      print(response.statusCode);
-      print(response.body.toString());
+      // print(response.statusCode);
+      // print(response.body.toString());
       if(response.statusCode == 403 || response.statusCode == 401){
-        await checkToken();
+        await refreshToken();
         var _token = await const FlutterSecureStorage().read(key: token);
         final res = await http.get(Uri.parse(_baseUrl + url), headers: {
           'User-Agent': _userAgent.toLowerCase(),
@@ -42,13 +43,10 @@ class NetInterface {
       }else{
         responseJson = _returnResponse(response);
       }
-      print(responseJson.toString());
+      // print(responseJson.toString());
     } on SocketException {
-      print("shit");
+      // print("shit");
       throw FetchDataException('No Internet connection');
-    } catch (e) {
-      print("shit");
-      debugPrint(e.toString());
     }
     return responseJson;
   }
@@ -68,7 +66,7 @@ class NetInterface {
           },
           body: _query);
       if(response.statusCode == 403 || response.statusCode == 401){
-        await checkToken();
+        await refreshToken();
         var _token = await const FlutterSecureStorage().read(key: token);
         final res = await http.post(Uri.parse(_baseUrl + url),
             headers: {
@@ -81,18 +79,16 @@ class NetInterface {
       }else{
         responseJson = _returnResponse(response);
       }
-      // print(responseJson.toString());
+      // // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
-    } catch (e) {
-      debugPrint(e.toString());
     }
     return responseJson;
   }
 
   dynamic _returnResponse(http.Response response)async  {
-    // print(response.statusCode);
-    // print(response.toString());
+    // // print(response.statusCode);
+    // print(response.body.toString());
     switch (response.statusCode) {
       case 200:
         var responseJson = json.decode(response.body.toString());
@@ -125,8 +121,8 @@ class NetInterface {
             "accept": "application/json",
             "content-type" : "application/json"
           });
-      // print(response.body.toString());
-      // print(response.headers.toString());
+      // // print(response.body.toString());
+      // // print(response.headers.toString());
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
         return js.data!.key!;
@@ -154,8 +150,8 @@ class NetInterface {
             "accept": "application/json",
             "content-type" : "application/json"
           });
-      // print(response.body);
-      // print(response.headers.toString());
+      // // print(response.body);
+      // // print(response.headers.toString());
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
         return true;
@@ -176,9 +172,9 @@ class NetInterface {
         "key": key,
         "emailCode": code,
       };
-      // print(jsonEncode(_request).toString());
+      // // print(jsonEncode(_request).toString());
       var _query = json.encoder.convert(_request);
-      // print(_query);
+      // // print(_query);
       final response = await http.post(
           Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ConfirmSignin"),
           body: _query,
@@ -187,11 +183,11 @@ class NetInterface {
             'User-Agent': _userAgent.toLowerCase(),
             "content-type" : "application/json"
           });
-      // print(response.body.toString());
-      // print(response.statusCode);
+      // // print(response.body.toString());
+      // // print(response.statusCode);
 
       // response.headers.keys.forEach((element) {
-      //  print(element.toString());
+      //  // print(element.toString());
       // });
 
       if (response.statusCode == 200) {
@@ -213,9 +209,9 @@ class NetInterface {
       Map _request = {
         "token": tokenID,
       };
-      // print(jsonEncode(_request).toString());
+      // // print(jsonEncode(_request).toString());
       var _query = json.encoder.convert(_request);
-      // print(_query);
+      // // print(_query);
       final response = await http.post(
           Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithGoogle"),
           body: _query,
@@ -224,11 +220,11 @@ class NetInterface {
             'User-Agent': _userAgent.toLowerCase(),
             "content-type" : "application/json"
           });
-      // print(response.body.toString());
-      // print(response.statusCode);
+      // // print(response.body.toString());
+      // // print(response.statusCode);
 
       // response.headers.keys.forEach((element) {
-      //  print(element.toString());
+      //  // print(element.toString());
       // });
 
       if (response.statusCode == 200) {
@@ -270,7 +266,7 @@ class NetInterface {
         "agreeToConditions": agreed
       };
       var _query = json.encoder.convert(_request);
-      // print(_query);
+      // // print(_query);
       final response = await http.post(
           Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
           body: _query,
@@ -279,13 +275,13 @@ class NetInterface {
             "accept": "application/json"
           });
 
-      // print(response.body);
+      // // print(response.body);
       if (response.statusCode == 200) {
         String? token;
         for (var element in response.headers.entries) {
           if (element.key == 'token') {
             token = element.value;
-            // print(token);
+            // // print(token);
           }
         }
 
@@ -296,7 +292,7 @@ class NetInterface {
       return response.body;
     } catch (e) {
       debugPrint(e.toString());
-      // print(e);
+      // // print(e);
       return e.toString();
     }
   }
@@ -329,6 +325,7 @@ class NetInterface {
 
   static Future<int> checkToken() async {
     try {
+      print("check token////");
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       String? encoded =
           await const FlutterSecureStorage().read(key: NetInterface.token);
@@ -339,8 +336,8 @@ class NetInterface {
             'User-Agent': _userAgent.toLowerCase(),
             "Authorization": " Bearer $encoded",
           });
-      // print(response.body);
-      // print(response.statusCode);
+      // // print(response.body);
+      // // print(response.statusCode);
       // debugPrint(_userAgent.toLowerCase());
       if (response.statusCode == 200) {
         return 0;
@@ -359,8 +356,8 @@ class NetInterface {
               "accept": "application/json",
               "content-type": "application/json",
             });
-        // print(resp.body);
-        // print(resp.statusCode);
+        // // print(resp.body);
+        // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
           await const FlutterSecureStorage()
@@ -378,8 +375,11 @@ class NetInterface {
     }
   }
 
-  static Future<bool> refreshToken() async {
+  static Future<void> refreshToken() async {
     try {
+      if(_refreshingToken) {return;}
+      _refreshingToken = true;
+      print("refresh token////");
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       await const FlutterSecureStorage().delete(key: NetInterface.token);
       String? enc = await const FlutterSecureStorage()
@@ -403,13 +403,12 @@ class NetInterface {
             .write(key: NetInterface.token, value: res.data!.token);
         await const FlutterSecureStorage().write(
             key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
-        return true;
-      } else {
-        return false;
+        _refreshingToken = false;
       }
+      _refreshingToken = false;
     } catch (e) {
-      print(e);
-      return false;
+      _refreshingToken = false;
+      debugPrint(e.toString());
     }
   }
 }

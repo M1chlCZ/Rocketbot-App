@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'Support/material_color_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,6 +105,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -169,4 +177,6 @@ class _MyAppState extends State<MyApp> {
       home: const LoginScreen(),
     );
   }
+
+
 }
