@@ -26,7 +26,7 @@ class TransactionBloc {
     fetchTransactionData(coin);
   }
 
-  fetchTransactionData(Coin coin) async {
+  Future <void> fetchTransactionData(Coin coin) async {
     if (!_coinListController!.isClosed) {
       coinsListSink.add(ApiResponse.loading('Fetching Transactions'));
     }

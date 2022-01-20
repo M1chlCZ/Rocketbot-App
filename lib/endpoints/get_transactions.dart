@@ -68,7 +68,6 @@ class TransactionList {
       var B = DateTime.parse(b.receivedAt!);
       return B.compareTo(A);
     });
-
     return _finalList;
   }
 }

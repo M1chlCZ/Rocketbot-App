@@ -364,8 +364,9 @@ class _CoinScreenState extends State<CoinScreen> {
                     // print(snapshot.error);
                     // break;
                     }
+                  }else {
+                    return Container();
                   }
-                  return Container();
                 },
               ),
             ),
