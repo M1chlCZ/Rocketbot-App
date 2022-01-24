@@ -147,7 +147,7 @@ class _CoinScreenState extends State<CoinScreen> {
                 else
                   Container(),
                 const SizedBox(
-                  width: 12,
+                  width: 30,
                 ),
                 SizedBox(
                     height: 30,

@@ -13,7 +13,7 @@ import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/registration_errors.dart';
 import 'package:rocketbot/models/registration_succ.dart';
 import 'package:rocketbot/netinterface/interface.dart';
-import 'package:rocketbot/screenpages/portfolio_page.dart';
+import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/firebase_service.dart';
 import 'package:rocketbot/support/gradient_text.dart';
@@ -110,9 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginUser(String login, String pass) async {
-    setState(() {
-      _curtain = true;
-    });
     var email = login;
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -122,6 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
           AppLocalizations.of(context)!.email_invalid_message);
       return;
     }
+    setState(() {
+      _curtain = true;
+    });
     String? res = await NetInterface.getKey(login, pass);
     if (res != null) {
       bool code = await NetInterface.getEmailCode(res);
@@ -152,6 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
         behavior: SnackBarBehavior.fixed,
         elevation: 5.0,
       ));
+      setState(() {
+        _curtain = false;
+      });
     }
   }
 
@@ -307,37 +310,37 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: SafeArea(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 60,
-                        ),
-                        LoginRegisterSwitcher(changeType: _switchPage),
-                      ],
-                    ),
+          Stack(
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      LoginRegisterSwitcher(changeType: _switchPage),
+                    ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: SafeArea(
-                      child: Padding(
-                    padding: const EdgeInsets.only(right: 15.0, top: 17.0),
-                    child: Text(
-                      'v ' + _appVersion,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4!
-                          .copyWith(color: Colors.white70, fontSize: 12.0),
-                    ),
-                  )),
-                ),
-                IgnorePointer(
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: SafeArea(
+                    child: Padding(
+                  padding: const EdgeInsets.only(right: 15.0, top: 17.0),
+                  child: Text(
+                    'v ' + _appVersion,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4!
+                        .copyWith(color: Colors.white70, fontSize: 12.0),
+                  ),
+                )),
+              ),
+              SingleChildScrollView(
+                child: IgnorePointer(
                   ignoring: _page == 1 ? true : false,
                   child: AnimatedOpacity(
                     opacity: _page == 0 ? 1.0 : 0.0,
@@ -604,7 +607,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   ),
                 ),
-                IgnorePointer(
+              ),
+              SingleChildScrollView(
+                child: IgnorePointer(
                   ignoring: _page == 0 ? true : false,
                   child: AnimatedOpacity(
                     opacity: _page == 1 ? 1.0 : 0.0,
@@ -919,20 +924,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: Image.asset("images/logo_big.png")),
-                    ),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: SizedBox(
+                        width: 100,
+                        height: 50,
+                        child: Image.asset("images/logo_big.png")),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Visibility(
               visible: _curtain,
@@ -940,16 +945,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: double.maxFinite,
                   color: const Color(0xFF1B1B1B),
-                // child: Center(
-                //   child: HeartbeatProgressIndicator(
-                //     startScale: 0.01,
-                //     endScale: 0.2,
-                //     child: const Image(
-                //       image: AssetImage('images/rocketbot_logo.png'),
-                //       color: Colors.white30,
-                //     ),
-                //   ),
-                // ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Image.asset('images/logo_big.png'),
+                  ),
+                ),
               )
           ),
         ],

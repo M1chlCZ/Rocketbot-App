@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:rocketbot/screenpages/portfolio_page.dart';
+import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/screens/security_screen.dart';
 import 'package:rocketbot/widgets/screen_lock.dart';
 

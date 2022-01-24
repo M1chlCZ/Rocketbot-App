@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/coin.dart';
@@ -20,8 +19,6 @@ import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/auth_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/qr_code_scanner.dart';
-import 'package:share/share.dart';
-import 'package:vibration/vibration.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -633,8 +630,8 @@ class _SendPageState extends State<SendPage> {
                   onTap: () {
                     _openQRScanner();
                   },
-                  width: 200,
-                  height: 200,
+                  width: 140,
+                  height: 140,
                   child: Image.asset("images/qr_code_scan.png"),
                 ),
               ],

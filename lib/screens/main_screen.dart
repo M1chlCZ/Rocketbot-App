@@ -8,7 +8,7 @@ import 'package:rocketbot/screenpages/send_page.dart';
 import 'package:rocketbot/support/notification_helper.dart';
 
 import '../component_widgets/button_neu.dart';
-import '../screenPages/portfolio_page.dart';
+import '../screens/portfolio_page.dart';
 
 class MainScreen extends StatefulWidget {
   final CoinBalance coinBalance;

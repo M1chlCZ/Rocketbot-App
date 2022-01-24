@@ -23,8 +23,8 @@ const String DB_NAME = "databazia";
 
 const String APP_NOT = 'showMessages';
 
-const List<String> LANGUAGES = ['English','Czech'];
-const List<String> LANGUAGES_CODES = ['en', 'cs_CZ'];
+const List<String> LANGUAGES = ['English','Finnish','Czech'];
+const List<String> LANGUAGES_CODES = ['en', 'fi_FI', 'cs_CZ'];
 
 // ['English', 'Bosnian', 'Croatian', 'Czech', 'Finnish', 'German', 'Hindi', 'Japanese', 'Russian', 'Serbian Latin', 'Serbian Цyриллиц', 'Spanish', 'Panjabi'];
 // ['en', 'bs_BA', 'hr_HR', 'cs_CZ', 'fi_FI', 'de_DE', 'hi_IN', 'ja_JP', 'ru_RU', 'sr_Latn_RS', 'sr_Cyrl_RS', 'es_ES' 'pa_IN'];

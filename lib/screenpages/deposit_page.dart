@@ -56,9 +56,9 @@ class _DepositPageState extends State<DepositPage> {
 
   _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
-    print(data!.text!);
+    // print(data!.text!);
     setState(() {
-      if (data.text != null) _addressController.text = data.text!;
+      if (data! != null) _addressController.text = data.text!;
     });
   }
 
@@ -67,211 +67,209 @@ class _DepositPageState extends State<DepositPage> {
     return Material(
       child: Stack(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 30,
-                      width: 25,
-                      child: NeuButton(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new,
-                          size: 20.0,
-                          color: Colors.white70,
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 30,
+                        width: 25,
+                        child: NeuButton(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new,
+                            size: 20.0,
+                            color: Colors.white70,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 20.0,
-                    ),
-                    Text(AppLocalizations.of(context)!.receive,
-                        style: Theme.of(context).textTheme.headline4),
-                    const SizedBox(
-                      width: 50,
-                    ),
-                    // SizedBox(
-                    //     height: 30,
-                    //     child: TimeRangeSwitcher(
-                    //       changeTime: _changeTime,
-                    //     )),
-                    // Expanded(
-                    //   child: Align(
-                    //     alignment: Alignment.centerRight,
-                    //     child: Padding(
-                    //       padding: const EdgeInsets.only(right: 8.0),
-                    //       child: SizedBox(
-                    //         height: 30,
-                    //         width: 25,
-                    //         child: NeuButton(
-                    //           onTap: () async {
-                    //             // await const FlutterSecureStorage().delete(key: "token");
-                    //             // Navigator.of(context).pushReplacement(
-                    //             //     PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-                    //             //       return const LoginScreen();
-                    //             //     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                    //             //       return FadeTransition(opacity: animation, child: child);
-                    //             //     }));
-                    //           },
-                    //           icon: const Icon(
-                    //             Icons.more_vert,
-                    //             color: Colors.white70,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // )
-                  ],
+                      const SizedBox(
+                        width: 20.0,
+                      ),
+                      Text(AppLocalizations.of(context)!.receive,
+                          style: Theme.of(context).textTheme.headline4),
+                      const SizedBox(
+                        width: 50,
+                      ),
+                      // SizedBox(
+                      //     height: 30,
+                      //     child: TimeRangeSwitcher(
+                      //       changeTime: _changeTime,
+                      //     )),
+                      // Expanded(
+                      //   child: Align(
+                      //     alignment: Alignment.centerRight,
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.only(right: 8.0),
+                      //       child: SizedBox(
+                      //         height: 30,
+                      //         width: 25,
+                      //         child: NeuButton(
+                      //           onTap: () async {
+                      //             // await const FlutterSecureStorage().delete(key: "token");
+                      //             // Navigator.of(context).pushReplacement(
+                      //             //     PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+                      //             //       return const LoginScreen();
+                      //             //     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+                      //             //       return FadeTransition(opacity: animation, child: child);
+                      //             //     }));
+                      //           },
+                      //           icon: const Icon(
+                      //             Icons.more_vert,
+                      //             color: Colors.white70,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 100.0,
-                child: Center(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    widget.coin == null
-                        ? const Icon(
-                            Icons.monetization_on,
-                            size: 50.0,
-                            color: Colors.white,
-                          )
-                        : SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: CachedNetworkImage(
-                              imageUrl: 'https://app.rocketbot.pro/coins/' +
-                                  widget.coin!.imageSmall!,
-                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                              //     CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                              fit: BoxFit.fitWidth,
+                const SizedBox(
+                  height: 20.0,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 100.0,
+                  child: Center(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      widget.coin == null
+                          ? const Icon(
+                              Icons.monetization_on,
+                              size: 50.0,
+                              color: Colors.white,
+                            )
+                          : SizedBox(
+                              width: 50.0,
+                              height: 50.0,
+                              child: CachedNetworkImage(
+                                imageUrl: 'https://app.rocketbot.pro/coins/' +
+                                    widget.coin!.imageSmall!,
+                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                //     CircularProgressIndicator(value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                                fit: BoxFit.fitWidth,
+                              ),
                             ),
-                          ),
-                    const SizedBox(
-                      width: 10.0,
-                    ),
-                    SizedBox(
-                      height: 65.0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: Text(
-                                  widget.coin == null
-                                      ? AppLocalizations.of(context)!
-                                          .choose_coin
-                                      : widget.coin!.ticker!,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline3!
-                                      .copyWith(fontSize: 18.0),
-                                  maxLines: 1,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 4.0,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2.0),
-                                child: SizedBox(
-                                  width: 70,
-                                  child: AutoSizeText(
+                      const SizedBox(
+                        width: 10.0,
+                      ),
+                      SizedBox(
+                        height: 65.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: Text(
                                     widget.coin == null
-                                        ? 'Token'
-                                        : widget.coin!.name!,
+                                        ? AppLocalizations.of(context)!
+                                            .choose_coin
+                                        : widget.coin!.ticker!,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .subtitle2!
-                                        .copyWith(
-                                            fontStyle: FontStyle.normal,
-                                            fontSize: 12.0),
-                                    minFontSize: 8,
+                                        .headline3!
+                                        .copyWith(fontSize: 18.0),
+                                    maxLines: 1,
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 4.0,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 2.0),
+                                  child: SizedBox(
+                                    width: 70,
+                                    child: AutoSizeText(
+                                      widget.coin == null
+                                          ? 'Token'
+                                          : widget.coin!.name!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle2!
+                                          .copyWith(
+                                              fontStyle: FontStyle.normal,
+                                              fontSize: 12.0),
+                                      minFontSize: 8,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 0.0),
+                                  child: Text(
+                                    widget.free == null
+                                        ? (0.0).toString()
+                                        : widget.free!.toString(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline3!
+                                        .copyWith(fontSize: 18.0),
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 0.0),
-                                child: Text(
-                                  widget.free == null
-                                      ? (0.0).toString()
-                                      : widget.free!.toString(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline3!
-                                      .copyWith(fontSize: 18.0),
-                                  maxLines: 1,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
-                width: double.infinity,
-                height: 30.0,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                  color: Color(0xFF252525),
+                          ],
+                        ),
+                      )
+                    ],
+                  )),
                 ),
-                child: Center(
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
+                  width: double.infinity,
+                  height: 40.0,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    color: Color(0xFF252525),
+                  ),
+                  child: Center(
                     child: AutoSizeTextField(
                       maxLines: 1,
-                  minFontSize: 8.0,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]+')),
-                  ],
-                  style: Theme.of(context)
+                      minFontSize: 6.0,
+                      style: Theme.of(context)
                       .textTheme
                       .bodyText1!
-                      .copyWith(color: Colors.white, fontSize: 12.0),
-                  autocorrect: false,
-                  readOnly: true,
-                  controller: _addressController,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    isDense: false,
+                      .copyWith(color: Colors.white, fontSize: 14.0),
+                      autocorrect: false,
+                      readOnly: true,
+                      controller: _addressController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                    isDense: true,
                     hintStyle: Theme.of(context)
                         .textTheme
                         .subtitle2!
-                        .copyWith(color: Colors.white54, fontSize: 12.0),
+                        .copyWith(color: Colors.white54, fontSize: 14.0),
                     hintText: AppLocalizations.of(context)!.address,
                     enabledBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.transparent),
@@ -279,75 +277,77 @@ class _DepositPageState extends State<DepositPage> {
                     focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.transparent),
                     ),
+                      ),
+                    ),
                   ),
-                )),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    NeuButton(
-                      height: 40.0,
-                      width: 40.0,
-                      onTap: () {
-                        _getClipBoardData();
-                      },
-                      child: SizedBox(
-                          width: 20.0, child: Image.asset('images/copy.png')),
-                    ),
-                    const SizedBox(
-                      width: 30.0,
-                    ),
-                    NeuButton(
-                      height: 40.0,
-                      width: 40.0,
-                      onTap: () {
-                        setState(() {
-                          if (popMenu) {
-                            popMenu = false;
-                          } else {
-                            popMenu = true;
-                          }
-                        });
-                      },
-                      child: SizedBox(
-                          width: 20.0, child: Image.asset('images/share.png')),
-                    )
-                  ],
                 ),
-              ),
-              const SizedBox(
-                height: 60.0,
-              ),
-              Container(
-                height: 0.5,
-                width: double.infinity,
-                margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-                color: Colors.white30,
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              Text(
-                AppLocalizations.of(context)!.or_scan_qr,
-                style: Theme.of(context).textTheme.headline3,
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              NeuButton(
-                onTap: () {
-                  _openQR(context, widget.coin!.fullName!);
-                },
-                width: 200,
-                height: 200,
-                child: Image.asset("images/qr_code_scan.png"),
-              ),
-            ],
+                const SizedBox(
+                  height: 20.0,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      NeuButton(
+                        height: 40.0,
+                        width: 40.0,
+                        onTap: () {
+                          _getClipBoardData();
+                        },
+                        child: SizedBox(
+                            width: 20.0, child: Image.asset('images/copy.png')),
+                      ),
+                      const SizedBox(
+                        width: 30.0,
+                      ),
+                      NeuButton(
+                        height: 40.0,
+                        width: 40.0,
+                        onTap: () {
+                          setState(() {
+                            if (popMenu) {
+                              popMenu = false;
+                            } else {
+                              popMenu = true;
+                            }
+                          });
+                        },
+                        child: SizedBox(
+                            width: 20.0, child: Image.asset('images/share.png')),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Container(
+                  height: 0.5,
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  color: Colors.white30,
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  AppLocalizations.of(context)!.or_scan_qr,
+                  style: Theme.of(context).textTheme.headline3,
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                NeuButton(
+                  onTap: () {
+                    _openQR(context, widget.coin!.fullName!);
+                  },
+                  width: 140,
+                  height: 140,
+                  child: Image.asset("images/qr_code_scan.png"),
+                ),
+              ],
+            ),
           ),
           Visibility(
             visible: popMenu ? true : false,

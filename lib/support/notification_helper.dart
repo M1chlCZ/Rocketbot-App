@@ -49,6 +49,21 @@ class FCM {
     _firebaseMessaging.getToken().then((value) => _tokenUpload(value));
   }
 
+  onNotificationRegister() {
+    FirebaseMessaging.onMessage.listen(
+          (message) async {
+        if (message.data.containsKey('data')) {
+          streamCtlr.sink.add(message.data['data']);
+        }
+        if (message.data.containsKey('notification')) {
+          streamCtlr.sink.add(message.data['notification']);
+        }
+        titleCtlr.sink.add(message.notification!.title!);
+        bodyCtlr.sink.add(message.notification!.body!);
+      },
+    );
+  }
+
   void _tokenUpload(String? token) {
     // print(token);
     Map <String, dynamic> _req = {
