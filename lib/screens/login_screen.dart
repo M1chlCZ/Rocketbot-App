@@ -308,39 +308,39 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          Stack(
-            children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      LoginRegisterSwitcher(changeType: _switchPage),
-                    ],
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        LoginRegisterSwitcher(changeType: _switchPage),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: SafeArea(
-                    child: Padding(
-                  padding: const EdgeInsets.only(right: 15.0, top: 17.0),
-                  child: Text(
-                    'v ' + _appVersion,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4!
-                        .copyWith(color: Colors.white70, fontSize: 12.0),
-                  ),
-                )),
-              ),
-              SingleChildScrollView(
-                child: IgnorePointer(
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SafeArea(
+                      child: Padding(
+                    padding: const EdgeInsets.only(right: 15.0, top: 17.0),
+                    child: Text(
+                      'v ' + _appVersion,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4!
+                          .copyWith(color: Colors.white70, fontSize: 12.0),
+                    ),
+                  )),
+                ),
+                IgnorePointer(
                   ignoring: _page == 1 ? true : false,
                   child: AnimatedOpacity(
                     opacity: _page == 0 ? 1.0 : 0.0,
@@ -607,9 +607,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   ),
                 ),
-              ),
-              SingleChildScrollView(
-                child: IgnorePointer(
+                IgnorePointer(
                   ignoring: _page == 0 ? true : false,
                   child: AnimatedOpacity(
                     opacity: _page == 1 ? 1.0 : 0.0,
@@ -924,36 +922,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: SizedBox(
-                        width: 100,
-                        height: 50,
-                        child: Image.asset("images/logo_big.png")),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: SizedBox(
+                          width: 100,
+                          height: 50,
+                          child: Image.asset("images/logo_big.png")),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Visibility(
-              visible: _curtain,
-              child: Container(
-                  width: double.infinity,
-                  height: double.maxFinite,
-                  color: const Color(0xFF1B1B1B),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Image.asset('images/logo_big.png'),
+              ],
+            ),
+            Visibility(
+                visible: _curtain,
+                child: Container(
+                    width: double.infinity,
+                    height: double.maxFinite,
+                    color: const Color(0xFF1B1B1B),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset('images/logo_big.png'),
+                    ),
                   ),
-                ),
-              )
-          ),
-        ],
+                )
+            ),
+          ],
+        ),
       ),
     );
   }
