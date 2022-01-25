@@ -99,7 +99,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         importance: Importance.max,
         enableVibration: true,
         enableLights: true,
-        ledColor: Colors.white,
+        ledColor: Colors.red,
       );
 
       await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel);
@@ -112,12 +112,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         importance: Importance.max,
         enableVibration: true,
         enableLights: true,
-        ledColor: Colors.white,
+        ledColor: Colors.red,
       );
 
       await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel2);
     }
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('ic_notification');
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
     final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
