@@ -192,6 +192,10 @@ class NetInterface {
 
       if (response.statusCode == 200) {
         SignCode? res = SignCode.fromJson(json.decode(response.body));
+        await const FlutterSecureStorage()
+            .write(key: NetInterface.token, value: res.data!.token);
+        await const FlutterSecureStorage().write(
+            key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
         return res.data!.token!;
       } else {
         // await const FlutterSecureStorage().delete(key: NetInterface.token);

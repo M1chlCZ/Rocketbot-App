@@ -47,6 +47,7 @@ class FCM {
     );
     final token =
     _firebaseMessaging.getToken().then((value) => _tokenUpload(value));
+
   }
 
   onNotificationRegister() {
@@ -65,7 +66,7 @@ class FCM {
   }
 
   void _tokenUpload(String? token) {
-    // print(token);
+    print(token);
     Map <String, dynamic> _req = {
       "token" : token,
     };
