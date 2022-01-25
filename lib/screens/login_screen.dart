@@ -48,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // _curtain = false;
     _initPackageInfo();
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();
@@ -305,47 +304,32 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: SafeArea(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 60,
-                        ),
-                        LoginRegisterSwitcher(changeType: _switchPage),
-                      ],
-                    ),
+      body:Stack(
+            children: [
+
+              Align(
+                alignment: Alignment.topRight,
+                child: SafeArea(
+                    child: Padding(
+                  padding: const EdgeInsets.only(right: 15.0, top: 17.0),
+                  child: Text(
+                    'v ' + _appVersion,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4!
+                        .copyWith(color: Colors.white70, fontSize: 12.0),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: SafeArea(
-                      child: Padding(
-                    padding: const EdgeInsets.only(right: 15.0, top: 17.0),
-                    child: Text(
-                      'v ' + _appVersion,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4!
-                          .copyWith(color: Colors.white70, fontSize: 12.0),
-                    ),
-                  )),
-                ),
-                IgnorePointer(
-                  ignoring: _page == 1 ? true : false,
-                  child: AnimatedOpacity(
-                    opacity: _page == 0 ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Align(
-                        alignment: Alignment.topCenter,
-                        child: SafeArea(
+                )),
+              ),
+              IgnorePointer(
+                ignoring: _page == 1 ? true : false,
+                child: AnimatedOpacity(
+                  opacity: _page == 0 ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Align(
+                      alignment: Alignment.topCenter,
+                      child: SafeArea(
+                        child: SingleChildScrollView(
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -602,17 +586,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                       )),
                                 ),
                               ]),
-                        )),
-                  ),
+                        ),
+                      )),
                 ),
-                IgnorePointer(
-                  ignoring: _page == 0 ? true : false,
-                  child: AnimatedOpacity(
-                    opacity: _page == 1 ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Align(
-                        alignment: Alignment.topCenter,
-                        child: SafeArea(
+              ),
+              IgnorePointer(
+                ignoring: _page == 0 ? true : false,
+                child: AnimatedOpacity(
+                  opacity: _page == 1 ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Align(
+                      alignment: Alignment.topCenter,
+                      child: SafeArea(
+                        child: SingleChildScrollView(
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -917,40 +903,56 @@ class _LoginScreenState extends State<LoginScreen> {
                                             color: Color(0xFFAA3B63),
                                           ))),
                               ]),
-                        )),
+                        ),
+                      )),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: SizedBox(
+                        width: 100,
+                        height: 50,
+                        child: Image.asset("images/logo_big.png")),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: Image.asset("images/logo_big.png")),
-                    ),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      LoginRegisterSwitcher(changeType: _switchPage),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            Visibility(
-                visible: _curtain,
-                child: Container(
-                    width: double.infinity,
-                    height: double.maxFinite,
-                    color: const Color(0xFF1B1B1B),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: Image.asset('images/logo_big.png'),
-                    ),
-                  ),
-                )
-            ),
-          ],
-        ),
-      ),
+              ),
+              IgnorePointer(
+                ignoring: true,
+                child: Visibility(
+                    visible: _curtain,
+                    child: Container(
+                      width: double.infinity,
+                      height: double.maxFinite,
+                      color: const Color(0xFF1B1B1B),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Image.asset('images/logo_big.png', width: 128.0,),
+                        ),
+                      ),
+                    )
+                ),
+              ),
+            ],
+          ),
+
+
     );
   }
 

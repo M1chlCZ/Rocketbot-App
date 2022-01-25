@@ -30,7 +30,7 @@
    <application
         android:label="RocketBot"
         android:icon="@mipmap/ic_launcher">
-       <!-- Add custom icon to the notifications -->
+
        <meta-data
            android:name="com.google.firebase.messaging.default_notification_icon"
            android:resource="@drawable/ic_notification" />
