@@ -52,11 +52,15 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.6)
     - nanopb (~> 2.30908.0)
   - Flutter (1.0.0)
+  - flutter_biometrics (0.0.1):
+    - Flutter
   - flutter_local_notifications (0.0.1):
     - Flutter
   - flutter_secure_storage (3.3.1):
     - Flutter
   - flutter_user_agent (1.2.4):
+    - Flutter
+  - flutter_web_auth (0.4.0):
     - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
@@ -130,9 +134,11 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
+  - flutter_biometrics (from `.symlinks/plugins/flutter_biometrics/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_user_agent (from `.symlinks/plugins/flutter_user_agent/ios`)
+  - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
@@ -174,12 +180,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
+  flutter_biometrics:
+    :path: ".symlinks/plugins/flutter_biometrics/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_user_agent:
     :path: ".symlinks/plugins/flutter_user_agent/ios"
+  flutter_web_auth:
+    :path: ".symlinks/plugins/flutter_web_auth/ios"
   google_sign_in:
     :path: ".symlinks/plugins/google_sign_in/ios"
   local_auth:
@@ -217,9 +227,11 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 830327b45345ffc859eaa9c17bcd5ae893fd5425
   FirebaseMessaging: 82c4a48638f53f7b184f3cc9f6cd2cbe533ab316
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_biometrics: 9eac93b2f20887ddff75c253fcd1eae37f338a71
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
   flutter_user_agent: a2bd08a251e6ea57147aa7e32f896260f0488dd1
+  flutter_web_auth: fd071763f61703882adbb2524f5cd5251883118c
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   google_sign_in: c5cecea71f3be43282263550556e311c4cc03582
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940

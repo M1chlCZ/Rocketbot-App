@@ -19,7 +19,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   List<int> _tempPIN = [];
   List<int> _tempPIN2 = [];
@@ -146,7 +146,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         Navigator.of(context).pop();
                         Navigator.of(context).push(PageRouteBuilder(pageBuilder:
                             (BuildContext context, _, __) {
-                          return SecurityScreen();
+                          return const SecurityScreen();
                         }, transitionsBuilder:
                             (_, Animation<double> animation, __, Widget child) {
                           return FadeTransition(

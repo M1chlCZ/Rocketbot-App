@@ -55,7 +55,8 @@ class LockScreen extends StatefulWidget {
   final PassCodeVerify passCodeVerify;
 
   /// Lock Screen constructer
-  LockScreen({
+  const LockScreen({
+    Key? key,
     required this.onSuccess,
     required this.title,
     this.borderColor,
@@ -75,7 +76,8 @@ class LockScreen extends StatefulWidget {
   })  : assert(passLength <= 8),
         assert(bgImage != null),
         assert(borderColor != null),
-        assert(foregroundColor != null);
+        assert(foregroundColor != null),
+  super(key: key);
 
   @override
   _LockScreenState createState() => _LockScreenState();
@@ -103,7 +105,7 @@ class _LockScreenState extends State<LockScreen> {
             widget.onSuccess();
           } else {
             _currentState = 2;
-            new Timer(new Duration(milliseconds: 1000), () {
+            Timer(const Duration(milliseconds: 1000), () {
               setState(() {
                 _currentState = 0;
                 _currentCodeLength = 0;
@@ -119,18 +121,18 @@ class _LockScreenState extends State<LockScreen> {
                       child: AlertDialog(
                         title: Text(
                           widget.wrongPassTitle!,
-                          style: TextStyle(fontFamily: "Open Sans"),
+                          style: const TextStyle(fontFamily: "Open Sans"),
                         ),
                         content: Text(
                           widget.wrongPassContent!,
-                          style: TextStyle(fontFamily: "Open Sans"),
+                          style: const TextStyle(fontFamily: "Open Sans"),
                         ),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
                             child: Text(
                               widget.wrongPassCancelButtonText!,
-                              style: TextStyle(color: Colors.blue),
+                              style: const TextStyle(color: Colors.blue),
                             ),
                           )
                         ],
@@ -172,7 +174,7 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       _fingerPrint();
     });
     return Scaffold(
@@ -208,18 +210,18 @@ class _LockScreenState extends State<LockScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             SizedBox(
-                              height: Platform.isIOS ? 130 : 100,
+                              height: Platform.isIOS ? 100 : 100,
                             ),
                             Text(
                               widget.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: "Montserrat"),
                             ),
                             SizedBox(
-                              height: Platform.isIOS ? 50 : 30,
+                              height: Platform.isIOS ? 20 : 30,
                             ),
                             CodePanel(
                               codeLength: widget.passLength,
@@ -251,9 +253,9 @@ class _LockScreenState extends State<LockScreen> {
                   ),
                 ),
                 Expanded(
-                  flex: Platform.isIOS ? 7 : 8,
+                  flex: Platform.isIOS ? 10 : 8,
                   child: Container(
-                    padding: EdgeInsets.only(left: 0, top: 0),
+                    padding: const EdgeInsets.only(left: 0, top: 0),
                     child:
                         NotificationListener<OverscrollIndicatorNotification>(
                       onNotification: (overscroll) {
@@ -261,10 +263,11 @@ class _LockScreenState extends State<LockScreen> {
                         return true;
                       },
                       child: GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
                         crossAxisCount: 3,
                         childAspectRatio: 1.0,
                         mainAxisSpacing: 0,
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         children: <Widget>[
                           buildContainerCircle(1),
                           buildContainerCircle(2),
@@ -294,7 +297,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget buildContainerCircle(int number) {
     return Align(
       child: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+        decoration: const BoxDecoration(shape: BoxShape.circle, boxShadow: [
           BoxShadow(
             offset: Offset(-1, -1),
             blurRadius: 4.0,
@@ -337,7 +340,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget buildRemoveIcon(IconData icon) {
     return Align(
       child: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+        decoration: const BoxDecoration(shape: BoxShape.circle, boxShadow: [
           BoxShadow(
             offset: Offset(-1, -1),
             blurRadius: 4.0,
@@ -380,7 +383,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget buildContainerIcon(IconData icon) {
     return Align(
       child: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+        decoration: const BoxDecoration(shape: BoxShape.circle, boxShadow: [
           BoxShadow(
             offset: Offset(-1, -1),
             blurRadius: 4.0,
@@ -405,7 +408,7 @@ class _LockScreenState extends State<LockScreen> {
                     setState(() {
                       circleColor = Colors.grey.shade300;
                     });
-                    Future.delayed(Duration(milliseconds: 200)).then((func) {
+                    Future.delayed(const Duration(milliseconds: 200)).then((func) {
                       setState(() {
                         circleColor = Colors.white;
                       });
@@ -435,13 +438,14 @@ class CodePanel extends StatelessWidget {
   final borderColor;
   final bool? fingerVerify;
   final foregroundColor;
-  final H = 30.0;
-  final W = 30.0;
+  final H = 25.0;
+  final W = 25.0;
   final DeleteCode? deleteCode;
   final int? status;
 
-  CodePanel(
-      {this.codeLength,
+  const CodePanel(
+      {Key? key,
+        this.codeLength,
       this.currentLength,
       this.borderColor,
       this.foregroundColor,
@@ -452,7 +456,8 @@ class CodePanel extends StatelessWidget {
         assert(currentLength >= 0),
         assert(currentLength <= codeLength),
         assert(deleteCode != null),
-        assert(status == 0 || status == 1 || status == 2);
+        assert(status == 0 || status == 1 || status == 2),
+  super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -466,10 +471,10 @@ class CodePanel extends StatelessWidget {
           SizedBox(
             width: W,
             height: H,
-            child: new Container(
-              decoration: new BoxDecoration(
+            child: Container(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: new Border.all(color: color, width: 1.0),
+                border: Border.all(color: color, width: 1.0),
                 color: Colors.green.shade500,
               ),
             ),
@@ -490,19 +495,19 @@ class CodePanel extends StatelessWidget {
               width: W,
               height: H,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: new Border.all(color: color, width: 2.0),
+                    border: Border.all(color: color, width: 2.0),
                     color: foregroundColor),
               )));
         } else {
-          circles.add(new SizedBox(
+          circles.add(SizedBox(
               width: W,
               height: H,
-              child: new Container(
-                decoration: new BoxDecoration(
+              child: Container(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: new Border.all(color: color, width: 1.0),
+                  border: Border.all(color: color, width: 1.0),
                   color: color,
                 ),
               )));
@@ -510,14 +515,14 @@ class CodePanel extends StatelessWidget {
       }
     }
 
-    return new SizedBox.fromSize(
-      size: new Size(MediaQuery.of(context).size.width, 30.0),
-      child: new Row(
+    return SizedBox.fromSize(
+      size: Size(MediaQuery.of(context).size.width, 30.0),
+      child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox.fromSize(
-                size: new Size(40.0 * codeLength, H),
-                child: new Row(
+                size: Size(40.0 * codeLength, H),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: circles,
                 )),

@@ -6,6 +6,7 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/screens/auth_screen.dart';
+import 'package:flutter_biometrics/flutter_biometrics.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({Key? key}) : super(key: key);
@@ -16,29 +17,56 @@ class SecurityScreen extends StatefulWidget {
 
 class _SecurityScreenState extends State<SecurityScreen> {
   final _storage = const FlutterSecureStorage();
+  String? _biometrics;
   var firstValue = false;
   var secondValue = true;
 
   String _dropValue = 'PIN';
-  final List<String> _dropValues = [
-    'PIN',
-    Platform.isAndroid ? 'Fingerprint' : 'FaceID',
-    'PIN + ' + (Platform.isAndroid ? 'Fingerprint' : 'FaceID')
-  ];
+  final List<String> _dropValues = ['PIN'];
 
   @override
   void initState() {
     super.initState();
-    _getAuthType();
+    _initBio();
   }
 
-  void _getAuthType() async {
+  _initBio() async {
+    await _getBiometrics();
+    await _getAuthType();
+  }
+
+  _getBiometrics() async {
+    try {
+      if (Platform.isIOS) {
+        _biometrics = await FlutterBiometrics.availableBiometrics;
+        _dropValues.clear();
+        if (_biometrics != null && _biometrics != "nothing") {
+          _dropValues.add('PIN');
+          _dropValues.add(_biometrics!);
+          _dropValues.add("PIN + " + _biometrics!);
+        } else {
+          _dropValues.add('PIN');
+        }
+      } else {
+        _dropValues.add('PIN');
+        _dropValues.add("Fingerprint");
+        _dropValues.add("PIN + Fingerprint");
+      }
+      setState(() {});
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  _getAuthType() async {
     String? auth = await _storage.read(key: "AUTH_TYPE");
-    Future.delayed(Duration.zero, () {
-      setState(() {
-        _dropValue = _dropValues[int.parse(auth!)];
+    if (auth != null) {
+      Future.delayed(Duration.zero, () {
+        setState(() {
+          _dropValue = _dropValues[int.parse(auth)];
+        });
       });
-    });
+    }
   }
 
   @override
@@ -133,8 +161,12 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                             setState(() {
                                               _dropValue = val!;
                                             });
-                                           int index = _dropValues.indexWhere((values) => values.contains(val!));
-                                            _storage.write(key: "AUTH_TYPE", value: index.toString());
+                                            int index = _dropValues.indexWhere(
+                                                (values) =>
+                                                    values.contains(val!));
+                                            _storage.write(
+                                                key: "AUTH_TYPE",
+                                                value: index.toString());
                                           },
                                           items: _dropValues
                                               .map((e) => DropdownMenuItem(
@@ -389,6 +421,6 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   void _authCallback(bool b) {
-    print(b.toString());
+    debugPrint(b.toString());
   }
 }

@@ -42,16 +42,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _precachedImg();
     _getSetLang();
     _setOptimalDisplayMode();
-    precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
-    precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
-    precacheImage(const AssetImage('images/send_nav_icon.png'), context);
-    precacheImage(const AssetImage('images/price_frame.png'), context);
-    precacheImage(const AssetImage('images/rocket_pin.png'), context);
-    precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
-    precacheImage(const AssetImage('images/wave.png'), context);
-    precacheImage(const AssetImage('images/logo_big.png'), context);
   }
 
   Locale? _locale;
@@ -62,6 +55,17 @@ class _MyAppState extends State<MyApp> {
         _locale = value;
       });
     });
+  }
+
+  void _precachedImg() async {
+    await precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
+    await precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
+    await precacheImage(const AssetImage('images/send_nav_icon.png'), context);
+    await precacheImage(const AssetImage('images/price_frame.png'), context);
+    await precacheImage(const AssetImage('images/rocket_pin.png'), context);
+    await precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
+    await precacheImage(const AssetImage('images/wave.png'), context);
+    await precacheImage(const AssetImage('images/logo_big.png'), context);
   }
 
   void _getSetLang() async {

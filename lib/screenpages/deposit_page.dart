@@ -253,30 +253,33 @@ class _DepositPageState extends State<DepositPage> {
                     color: Color(0xFF252525),
                   ),
                   child: Center(
-                    child: AutoSizeTextField(
-                      maxLines: 1,
-                      minFontSize: 6.0,
-                      style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(color: Colors.white, fontSize: 14.0),
-                      autocorrect: false,
-                      readOnly: true,
-                      controller: _addressController,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                    isDense: true,
-                    hintStyle: Theme.of(context)
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0, right: 8.0),
+                      child: AutoSizeTextField(
+                        maxLines: 1,
+                        minFontSize: 6.0,
+                        style: Theme.of(context)
                         .textTheme
-                        .subtitle2!
-                        .copyWith(color: Colors.white54, fontSize: 14.0),
-                    hintText: AppLocalizations.of(context)!.address,
-                    enabledBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
+                        .bodyText1!
+                        .copyWith(color: Colors.white, fontSize: 14.0),
+                        autocorrect: false,
+                        readOnly: true,
+                        controller: _addressController,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                      isDense: true,
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .subtitle2!
+                          .copyWith(color: Colors.white54, fontSize: 14.0),
+                      hintText: AppLocalizations.of(context)!.address,
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                      ),
+                        ),
                       ),
                     ),
                   ),
