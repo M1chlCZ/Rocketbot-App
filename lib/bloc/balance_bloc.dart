@@ -6,6 +6,7 @@ import 'package:rocketbot/netInterface/api_response.dart';
 
 class BalancesBloc {
   final CoinBalances _balanceList = CoinBalances();
+  int _sort = 0;
 
   StreamController<ApiResponse<List<CoinBalance>>>? _coinListController;
 
@@ -23,10 +24,16 @@ class BalancesBloc {
     fetchBalancesList(lc);
   }
 
-  fetchBalancesList(List<CoinBalance>? lc) async {
+  fetchBalancesList(List<CoinBalance>? lc, {int? sort}) async {
     if(lc == null)  coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
-      List<CoinBalance>? _coins = await _balanceList.fetchAllBalances();
+      List<CoinBalance>? _coins;
+      if(sort == null) {
+        _coins = await _balanceList.fetchAllBalances(sort: _sort);
+      }else {
+        _sort = sort;
+        _coins = await _balanceList.fetchAllBalances(sort: sort);
+      }
       if (!_coinListController!.isClosed) {
         coinsListSink.add(ApiResponse.completed(_coins));
       }

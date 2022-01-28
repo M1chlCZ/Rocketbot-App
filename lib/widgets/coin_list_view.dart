@@ -113,7 +113,7 @@ class _CoinListViewState extends State<CoinListView> {
                               ),
                             ],
                           ),
-                          Align(
+                              widget.coin.priceData != null ?  Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5.0),
@@ -125,7 +125,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
+                          ) : Container(),
                         ]),
                       ),
                     ),
@@ -158,7 +158,7 @@ class _CoinListViewState extends State<CoinListView> {
                                 ),
                               ),
                             ),
-                            Wrap(
+                            widget.coin.priceData != null ? Wrap(
                               crossAxisAlignment: WrapCrossAlignment.start,
                               runAlignment: WrapAlignment.end,
                               children: [
@@ -181,7 +181,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
                                 ),
                               ],
-                            ),
+                            ) : Container(),
                           ],
                         ),
                       ),
@@ -206,7 +206,7 @@ class _CoinListViewState extends State<CoinListView> {
             )),
         Padding(
           padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-          child: SizedBox(height: 1.0, child: Container(color: Colors.white10,),),
+          child: SizedBox(height: 0.5, child: Container(color: Colors.white.withOpacity(0.08),),),
         )
       ],
 

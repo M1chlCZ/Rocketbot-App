@@ -414,16 +414,20 @@ class _CoinScreenState extends State<CoinScreen> {
     double? _freeCoins = preFree;
     widget.changeFree(preFree);
 
-    for (var element in _listCoins) {
-      if (element.coin == _coinActive) {
-        double? _priceUSD = element.priceData!.prices!.usd;
-        double? _priceBTC = element.priceData!.prices!.btc;
-        _percentage = element.priceData!.priceChange24HPercent!.usd!;
-        usdCost = element.priceData!.prices!.usd!;
+    try {
+      for (var element in _listCoins) {
+            if (element.coin == _coinActive) {
+              double? _priceUSD = element.priceData!.prices!.usd;
+              double? _priceBTC = element.priceData!.prices!.btc;
+              _percentage = element.priceData!.priceChange24HPercent!.usd!;
+              usdCost = element.priceData!.prices!.usd!;
 
-        totalCoins = _freeCoins;
-        totalUSD = _freeCoins * _priceUSD!;
-      }
+              totalCoins = _freeCoins;
+              totalUSD = _freeCoins * _priceUSD!;
+            }
+          }
+    } catch (e) {
+      print(e);
     }
     setState(() {_coinNameOpacity = 1.0;});
   }

@@ -48,6 +48,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
           _dropValues.add('PIN');
         }
       } else {
+        _dropValues.clear();
         _dropValues.add('PIN');
         _dropValues.add("Fingerprint");
         _dropValues.add("PIN + Fingerprint");

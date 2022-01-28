@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:decimal/decimal.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -50,6 +51,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   bool _pinEnabled = false;
 
   double _listHeight = 0.0;
+
+  var _dropValue = "By amount";
+  final _dropValues = ["By amount", "Alphabetically"];
 
   @override
   void initState() {
@@ -281,10 +285,62 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                               )
                             : Container(),
                       ),
+                      const SizedBox(height: 5.0,),
                       SizedBox(
-                        height: 0.5,
-                        child: Container(
-                          color: portCalc ? Colors.white12 : Colors.transparent,
+                        height: 25.0,
+                        width: double.infinity,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(bottom: 1.0),
+                                  child: Icon(Icons.sort, color: Colors.white30, size: 10.0,),
+                                ),
+                                // Text('sort by:', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 14.0, color: Colors.white30)),
+                                const SizedBox(width: 5.0,),
+                                Opacity(
+                                  opacity: 0.6,
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: _dropValue,
+                                      isDense: true,
+                                      onChanged: (String? val) {
+                                        setState(() {
+                                          _dropValue = val!;
+                                        });
+                                        _bloc!.fetchBalancesList(null, sort: _dropValues.indexWhere((element) => element == _dropValue));
+                                      },
+                                      items: _dropValues
+                                          .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: SizedBox(
+                                              width: 85,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(bottom: 2.0),
+                                                child: Text(e, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color: Colors.white70)),
+                                              ))))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5.0, right: 8.0, top:1.0),
+                                    child: SizedBox(
+                                      height: 0.5,
+                                      child: Container(
+                                        color: portCalc ? Colors.white12 : Colors.transparent,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       Expanded(
@@ -577,24 +633,34 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _calculatePortfolio() {
-    totalUSD = 0;
-    totalBTC = 0;
-    for (var element in _listCoins!) {
-      double? _freeCoins = element.free;
-      double? _priceUSD = element.priceData!.prices!.usd;
-      double? _priceBTC = element.priceData!.prices!.btc;
+    try {
+      totalUSD = 0;
+      totalBTC = 0;
+      for (var element in _listCoins!) {
+            double? _freeCoins = element.free;
+            double? _priceUSD = element.priceData?.prices?.usd;
+            double? _priceBTC = element.priceData?.prices?.btc;
+            if(_priceUSD != null && _priceBTC != null) {
+              double _usd = _freeCoins! * _priceUSD;
+              totalUSD += _usd;
+              double _btc = _freeCoins * _priceBTC;
+              totalBTC += _btc;
+            }
+          }
 
-      double _usd = _freeCoins! * _priceUSD!;
-      totalUSD += _usd;
-      double _btc = _freeCoins * _priceBTC!;
-      totalBTC += _btc;
-    }
-
-    Future.delayed(const Duration(milliseconds: 200), () {
-      setState(() {
-        portCalc = true;
+      Future.delayed(const Duration(milliseconds: 200), () {
+            setState(() {
+              portCalc = true;
+            });
+          });
+    } catch (e) {
+      print(e);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        setState(() {
+          portCalc = true;
+        });
       });
-    });
+    }
   }
   Color qrColors(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
