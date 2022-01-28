@@ -267,6 +267,7 @@ class _DepositPageState extends State<DepositPage> {
                         controller: _addressController,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(left: 4.0, right: 4.0),
                       isDense: true,
                       hintStyle: Theme.of(context)
                           .textTheme
