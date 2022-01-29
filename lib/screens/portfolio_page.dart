@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:decimal/decimal.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -15,11 +13,11 @@ import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
-import 'package:rocketbot/screens/socials_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
 import '../support/notification_helper.dart';
 import '../widgets/coin_list_view.dart';
+import 'package:rocketbot/support/globals.dart' as globals;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -53,7 +51,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   double _listHeight = 0.0;
 
   var _dropValue = "Default";
-  final _dropValues = ["Default", "By amount", "Alphabetically"];
+  var _dropValues = ["Default", "By amount", "Alphabetically"];
 
   @override
   void initState() {
@@ -66,7 +64,19 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         setState(() {popMenu = false;});
       }
     });
+    _fillSort();
     // portCalc = widget.listBalances != null ? true : false;
+  }
+
+  void _fillSort()  {
+    Future.delayed(Duration.zero, () async {
+    _dropValue = AppLocalizations.of(context)!.deflt;
+    _dropValues.clear();
+    _dropValues = [AppLocalizations.of(context)!.deflt,AppLocalizations.of(context)!.alphabeticall, AppLocalizations.of(context)!.by_amount, AppLocalizations.of(context)!.by_value];
+    var i = await _storage.read(key: globals.SORT_TYPE);
+    _dropValue = _dropValues[int.parse(i!)];
+      setState(() {});
+    });
   }
 
   @override
@@ -312,13 +322,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         setState(() {
                                           _dropValue = val!;
                                         });
+                                        _storage.write(key: globals.SORT_TYPE, value: _dropValues.indexWhere((element) => element == _dropValue).toString());
                                         _bloc!.fetchBalancesList(null, sort: _dropValues.indexWhere((element) => element == _dropValue));
                                       },
                                       items: _dropValues
                                           .map((e) => DropdownMenuItem(
                                           value: e,
                                           child: SizedBox(
-                                              width: 85,
+                                              width: 130,
                                               child: Padding(
                                                 padding: const EdgeInsets.only(bottom: 2.0),
                                                 child: Text(e, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color: Colors.white70)),
@@ -516,7 +527,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                               }, transitionsBuilder:
                                               (_, Animation<double> animation, __, Widget child) {
                                             return FadeTransition(opacity: animation, child: child);
-                                          }));
+                                          })).then((value) => _fillSort());
                                         },
                                       ),
                                     ),
@@ -706,8 +717,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   @override
-  void onPaused() {
-    _paused = true;
+  void onPaused() async {
+    if (!_paused) {
+      var _endTime = DateTime.now().millisecondsSinceEpoch + (1000 * 60);
+      await _storage.write(key: globals.COUNTDOWN, value: _endTime.toString());
+      _paused = true;
+    }
   }
 
   @override
@@ -719,7 +734,28 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     // _getMessages();
     if (_pinEnabled == true && _paused) {
       _paused = false;
-      _restartApp();
+      var restart = await _checkCountdown();
+      if (restart) {
+        _restartApp();
+      }
     }
+  }
+
+  Future<bool> _checkCountdown() async {
+    var _countDown = await _storage.read(key: globals.COUNTDOWN);
+    print(_countDown);
+    if (_countDown != null) {
+      int nowDate = DateTime.now().millisecondsSinceEpoch;
+      print(nowDate.toString());
+      int countTime = int.parse(_countDown);
+      // print(nowDate);
+      // print(countTime);
+      if (nowDate > countTime) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 }

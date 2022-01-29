@@ -102,5 +102,9 @@
   "coin_sent" : "Transaction executed successfully",
   "reg_succ" : "Please check your email inbox, for register confirmation",
   "terms_agree" : "You need to agree with terms and conditions",
-  "language" : "Language"
+  "language" : "Language",
+  "deflt": "Default",
+  "by_amount" : "By Amount",
+  "alphabeticall" : "Alphabetically",
+  "by_value" : "By Value"
 }

@@ -102,5 +102,9 @@
   "coin_sent" : "Transaction úspěšně provedena",
   "reg_succ" : "Prosím zkontrolujte e-mailovou schránku pro potvrzení registrace",
   "terms_agree" : "Prosím odsouhlaste podmínky použití",
-  "language" : "Jazyk"
+  "language" : "Jazyk",
+  "deflt": "Výchozí",
+  "by_amount" : "Podle množství",
+  "alphabeticall" : "Abecedně",
+  "by_value" : "Podle hodnoty"
 }

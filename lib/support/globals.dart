@@ -18,6 +18,7 @@ const String PASS = "pass";
 const String AUTH_TYPE = "AUTH_TYPE";
 const String COUNTDOWN = "countdownTime";
 const String LOCALE_APP = 'locale_app';
+const String SORT_TYPE = 'sortby';
 
 const String DB_NAME = "databazia";
 

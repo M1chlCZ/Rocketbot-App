@@ -101,5 +101,9 @@
   "coin_sent": "Tapahtuma suoritettu onnistuneesti",
   "reg_succ": "Tarkista sähköpostisi suorittaaksesi vahvistuksen rekisteröitymisestä",
   "terms_agree": "Sinun on hyväksyttävä käyttöehdot",
-  "language": "Kieli"
+  "language": "Kieli",
+  "deflt": "Oletus",
+  "by_amount" : "Määrän mukaan",
+  "alphabeticall" : "Aakkosjärjestyksessä",
+  "by_value" : "Hinnan mukaan"
 }
