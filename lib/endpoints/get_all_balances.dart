@@ -31,10 +31,7 @@ class CoinBalances {
         _finalList.add(coinBal);
       }
     });
-    Map<int, dynamic> m = {
-      0 : _finalList,
-      1 : sort
-    };
+    Map<int, dynamic> m = {0: _finalList, 1: sort};
     List<CoinBalance> _listSort = await compute(sortList, m);
     return _listSort;
   }
@@ -42,13 +39,15 @@ class CoinBalances {
   List<CoinBalance> sortList(Map<int, dynamic> value) {
     List<CoinBalance> _finalList = value[0];
     int sort = value[1];
-    if (sort == 1) {
+    if (sort == 0) {
+      return _finalList;
+    } else if (sort == 2) {
       _finalList.sort((a, b) {
         var A = a.coin!.name;
         var B = b.coin!.name;
         return A.toString().toLowerCase().compareTo(B.toString().toLowerCase());
       });
-    } else if (sort == 0) {
+    } else if (sort == 1) {
       _finalList.sort((a, b) {
         double A = a.free!;
         double B = b.free!;
