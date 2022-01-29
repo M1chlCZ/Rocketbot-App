@@ -68,7 +68,7 @@ class _QScanWidgetState extends State<QScanWidget> {
                                         print(snapshot.data.toString());
                                         return SizedBox(
                                           width: 100,
-                                            child: AutoSizeText(AppLocalizations.of(context)!.qr_scan_flash + ' ${snapshot.data == true ? AppLocalizations.of(context)!.qr_scan_on.toUpperCase() : AppLocalizations.of(context)!.qr_scan_off.toUpperCase()}',
+                                            child: AutoSizeText(AppLocalizations.of(context)!.qr_scan_flash + ' ${snapshot.data == true ? AppLocalizations.of(context)!.qr_scan_off.toUpperCase() : AppLocalizations.of(context)!.qr_scan_on.toUpperCase()}',
                                               maxLines: 1,
                                               minFontSize: 8,
                                               textAlign: TextAlign.center,
