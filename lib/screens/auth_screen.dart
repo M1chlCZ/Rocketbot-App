@@ -132,7 +132,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     },
                     onSuccess: () {
                       if (widget.type == 0) {
-                        Navigator.of(context).push(PageRouteBuilder(pageBuilder:
+                        Navigator.of(context).pushReplacement(PageRouteBuilder(pageBuilder:
                             (BuildContext context, _, __) {
                           return const PortfolioScreen();
                         }, transitionsBuilder:

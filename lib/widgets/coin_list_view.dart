@@ -116,7 +116,7 @@ class _CoinListViewState extends State<CoinListView> {
                               widget.coin.priceData != null ?  Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
+                              padding: const EdgeInsets.only(top: 11.0),
                               child: Text(
                                   "\$"+  widget.coin.priceData!.prices!.usd!.toStringAsFixed(2),
                                 style: Theme.of(context).textTheme.headline3,
@@ -163,7 +163,7 @@ class _CoinListViewState extends State<CoinListView> {
                               runAlignment: WrapAlignment.end,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 2.0),
+                                  padding: const EdgeInsets.only(top: 10.0),
                                   child: Text(
                                     // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
                                    "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!) ,
@@ -177,7 +177,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   width: 4.0,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 2.0),
+                                  padding: const EdgeInsets.only(top: 9.2),
                                   child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
                                 ),
                               ],
