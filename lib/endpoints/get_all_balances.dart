@@ -41,22 +41,22 @@ class CoinBalances {
     int sort = value[1];
     if (sort == 0) {
       return _finalList;
-    }else if(sort == 3) {
-      _finalList.sort((a, b) {
-        double A = a.free! * a.priceData!.prices!.usd!;
-        double B = b.free! * b.priceData!.prices!.usd!;
-        return B.compareTo(A);
-      });
-    } else if (sort == 2) {
+    } else if (sort == 1) {
       _finalList.sort((a, b) {
         var A = a.coin!.name;
         var B = b.coin!.name;
         return A.toString().toLowerCase().compareTo(B.toString().toLowerCase());
       });
-    } else if (sort == 1) {
+    } else if (sort == 2) {
       _finalList.sort((a, b) {
         double A = a.free!;
         double B = b.free!;
+        return B.compareTo(A);
+      });
+    }else if(sort == 3) {
+      _finalList.sort((a, b) {
+        double A = a.free! * a.priceData!.prices!.usd!;
+        double B = b.free! * b.priceData!.prices!.usd!;
         return B.compareTo(A);
       });
     }

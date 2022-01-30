@@ -434,7 +434,29 @@ class _AboutScreenState extends State<AboutScreen> {
                             child: Image.asset("images/twitter.png", color: Colors.white70),
                           ),
                           onTap: () {
-                            _launchURL("https://twitter.com/https://twitter.com/DfWplay");
+                            _launchURL("https://twitter.com/DfWplay");
+                          },
+                        ),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Image.asset("images/linked.png", color: Colors.white70),
+                          ),
+                          onTap: () {
+                            _launchURL("https://www.linkedin.com/in/jonathan-astie-2054201/");
+                          },
+                        ),
+                        NeuButton(
+                          width: 25,
+                          height: 25,
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Image.asset("images/email.png", color: Colors.white70,),
+                          ),
+                          onTap: () {
+                            _launchURL("mailto:dfwplay@gmail.com");
                           },
                         ),
                       ],),
