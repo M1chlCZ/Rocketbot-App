@@ -1,9 +1,10 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PriceBadge extends StatelessWidget {
-  final double percentage;
+  final Decimal percentage;
   const PriceBadge({Key? key, required this.percentage}) : super(key: key);
 
   String _getNum(double num) {
@@ -32,10 +33,10 @@ class PriceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _getWidth(percentage),
+      width: _getWidth(percentage.toDouble()),
       child: Container(
           decoration: BoxDecoration(
-            color: percentage > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
+            color: percentage.toDouble() > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
             borderRadius: const BorderRadius.all(
               Radius.circular(20.0),
             ),
@@ -48,10 +49,10 @@ class PriceBadge extends StatelessWidget {
               children: [
                 SizedBox(
                   height: 15,
-                    child: SvgPicture.string( percentage > 0 ? arrowUP : arrowDown)),
+                    child: SvgPicture.string( percentage.toDouble() > 0 ? arrowUP : arrowDown)),
                 const SizedBox(width: 2.0,),
-                Text(_getNum(percentage) + "%", style: TextStyle (
-                  color: percentage > 0 ? const Color(0xFF1AD37A) : const Color(0xFFEB3912),
+                Text(_getNum(percentage.toDouble()) + "%", style: TextStyle (
+                  color: percentage.toDouble() > 0 ? const Color(0xFF1AD37A) : const Color(0xFFEB3912),
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0,))
               ],

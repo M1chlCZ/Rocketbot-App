@@ -21,7 +21,7 @@ class NetInterface {
   Future<dynamic> get(String url) async {
     String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
     var _token = await const FlutterSecureStorage().read(key: token);
-//     // // print(_token);
+    // print(_token);
 // // print(_baseUrl + url);
     dynamic responseJson;
     try {
@@ -329,7 +329,7 @@ class NetInterface {
 
   static Future<int> checkToken() async {
     try {
-      print("check token////");
+      // print("check token////");
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       String? encoded =
           await const FlutterSecureStorage().read(key: NetInterface.token);
@@ -364,6 +364,7 @@ class NetInterface {
         // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
+          print(res.data!.token.toString());
           await const FlutterSecureStorage()
               .write(key: NetInterface.token, value: res.data!.token);
           await const FlutterSecureStorage().write(
@@ -399,8 +400,8 @@ class NetInterface {
             "accept": "application/json",
             "content-type": "application/json",
           });
-      print(resp.body);
-      print(resp.statusCode);
+      // print(resp.body);
+      // print(resp.statusCode);
       TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
       if (res.data!.token != null) {
         await const FlutterSecureStorage()

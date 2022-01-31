@@ -106,5 +106,6 @@
   "deflt": "Default",
   "by_amount" : "By Amount",
   "alphabeticall" : "Alphabetically",
-  "by_value" : "By Value"
+  "by_value" : "By Value",
+  "less_than" : "Less than"
 }

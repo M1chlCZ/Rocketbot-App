@@ -32,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    print(widget.coinBalance.coin!.id!);
     _coinActive = widget.coinBalance.coin!;
     _free = widget.coinBalance.free!;
     _lc = widget.listCoins!;

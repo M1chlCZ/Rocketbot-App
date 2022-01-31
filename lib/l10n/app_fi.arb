@@ -105,5 +105,6 @@
   "deflt": "Oletus",
   "by_amount" : "Määrän mukaan",
   "alphabeticall" : "Aakkosjärjestyksessä",
-  "by_value" : "Hinnan mukaan"
+  "by_value" : "Hinnan mukaan",
+  "less_than" : "Less than"
 }

@@ -1,5 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:decimal/decimal.dart';
+import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
 import 'package:rocketbot/models/balance_portfolio.dart';
@@ -43,17 +46,18 @@ class CoinScreen extends StatefulWidget {
 
 class _CoinScreenState extends State<CoinScreen> {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
+  final _formatter = NumberFormat.decimalPattern();
   final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
   late Coin _coinActive;
-  double _percentage = 0.0;
+  Decimal _percentage = Decimal.parse((0.0).toString());
 
   CoinPriceBloc? _priceBlock;
   TransactionBloc? _txBloc;
 
-  double totalCoins = 0.0;
-  double totalUSD = 0.0;
-  double usdCost = 0.0;
+  Decimal totalCoins = Decimal.zero;
+  Decimal totalUSD = Decimal.zero;
+  Decimal usdCost = Decimal.zero ;
 
   double _coinNameOpacity = 0.0;
 
@@ -245,7 +249,7 @@ class _CoinScreenState extends State<CoinScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 1.5),
                                 child: Text(
-                                  "\$" + usdCost.toStringAsFixed(3),
+                                  "\$" + _formatDecimal(usdCost),
                                   style: Theme.of(context).textTheme.headline2,
                                   textAlign: TextAlign.center,
                                 ),
@@ -289,7 +293,7 @@ class _CoinScreenState extends State<CoinScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "\$" + totalUSD.toStringAsFixed(3),
+                                "\$" + _formatDecimal(totalUSD),
                                 style: Theme.of(context).textTheme.headline2,
                               ),
                               const SizedBox(width: 5.0),
@@ -386,13 +390,42 @@ class _CoinScreenState extends State<CoinScreen> {
     widget.blockTouch(b);
   }
 
-  String _formatPrice(double d) {
-    var _split = d.toString().split('.');
-    var _decimal = _split[1];
-    if (_decimal.length >= 8) {
-      var _sub = _decimal.substring(0, 7);
-      return _split[0] + "." + _sub;
-    } else {
+  String _formatDecimal(Decimal d) {
+    try {
+      if(d == Decimal.zero) return "0.0";
+      var str = d.toString();
+      var split = str.split(".");
+      var subs = split[1];
+      var count = 0;
+      loop:
+      for(var i = 0; i< subs.length; i++) {
+              if(subs[i] == "0") {
+                count++;
+              }else{
+                break loop;
+              }
+          }
+      if(count > 8) {
+            return d.toStringAsExponential(4);
+          }
+      return d.toString();
+    } catch (e) {
+      return "0.0";
+    }
+  }
+
+  String _formatPrice(Decimal d) {
+    try {
+      if(d == Decimal.zero) return "0.0";
+      var _split = d.toString().split('.');
+      var _decimal = _split[1];
+      if (_decimal.length >= 8) {
+            var _sub = _decimal.substring(0, 7);
+            return _split[0] + "." + _sub;
+          } else {
+            return d.toString();
+          }
+    } catch (e) {
       return d.toString();
     }
   }
@@ -411,19 +444,19 @@ class _CoinScreenState extends State<CoinScreen> {
       print(e);
     }
 
-    double? _freeCoins = preFree;
+    Decimal? _freeCoins = Decimal.parse(preFree.toString());
     widget.changeFree(preFree);
 
     try {
       for (var element in _listCoins) {
             if (element.coin == _coinActive) {
-              double? _priceUSD = element.priceData!.prices!.usd;
-              double? _priceBTC = element.priceData!.prices!.btc;
+              Decimal? _priceUSD = element.priceData!.prices!.usd!;
+              Decimal? _priceBTC = element.priceData!.prices!.btc!;
               _percentage = element.priceData!.priceChange24HPercent!.usd!;
               usdCost = element.priceData!.prices!.usd!;
 
               totalCoins = _freeCoins;
-              totalUSD = _freeCoins * _priceUSD!;
+              totalUSD = _freeCoins * _priceUSD;
             }
           }
     } catch (e) {

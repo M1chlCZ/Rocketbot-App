@@ -48,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+
     _initPackageInfo();
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();

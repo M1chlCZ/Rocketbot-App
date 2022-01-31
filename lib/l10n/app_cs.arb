@@ -106,5 +106,6 @@
   "deflt": "Výchozí",
   "by_amount" : "Podle množství",
   "alphabeticall" : "Abecedně",
-  "by_value" : "Podle hodnoty"
+  "by_value" : "Podle hodnoty",
+  "less_than" : "Méně než"
 }

@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/endpoints/get_all_balances.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:rocketbot/support/globals.dart' as globals;
+
 
 class BalancesBloc {
   final CoinBalances _balanceList = CoinBalances();
+  final _storage = const FlutterSecureStorage();
   int _sort = 0;
 
   StreamController<ApiResponse<List<CoinBalance>>>? _coinListController;
@@ -29,6 +33,12 @@ class BalancesBloc {
     try {
       List<CoinBalance>? _coins;
       if(sort == null) {
+        var i = await _storage.read(key: globals.SORT_TYPE);
+        if(i != null) {
+          _sort = int.parse(i);
+        }else{
+          _sort = 0;
+        }
         _coins = await _balanceList.fetchAllBalances(sort: _sort);
       }else {
         _sort = sort;

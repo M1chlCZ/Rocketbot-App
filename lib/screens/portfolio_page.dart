@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -58,13 +59,13 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     super.initState();
     _initializeLocalNotifications();
     _firebaseMessaging.setNotifications();
-    _bloc = BalancesBloc(null);
     _scrollController.addListener(() {
       if(popMenu) {
         setState(() {popMenu = false;});
       }
     });
     _fillSort();
+    _bloc = BalancesBloc(null);
     // portCalc = widget.listBalances != null ? true : false;
   }
 
@@ -74,9 +75,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     _dropValues.clear();
     _dropValues = [AppLocalizations.of(context)!.deflt,AppLocalizations.of(context)!.alphabeticall, AppLocalizations.of(context)!.by_amount, AppLocalizations.of(context)!.by_value];
     var i = await _storage.read(key: globals.SORT_TYPE);
-    _dropValue = _dropValues[int.parse(i!)];
+    if(i == null) {
+      _dropValue = _dropValues[0];
+    }else{
+      _dropValue = _dropValues[int.parse(i)];
+    }
       setState(() {});
     });
+
   }
 
   @override
@@ -390,7 +396,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       itemBuilder: (ctx, index) {
                                         return CoinListView(
                                           coin: snapshot.data!.data![index],
-                                          free: snapshot.data!.data![index].free!,
+                                          free: Decimal.parse(snapshot.data!.data![index].free.toString()),
                                           coinSwitch: _changeCoin,
                                         );
                                       });
@@ -649,8 +655,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       totalBTC = 0;
       for (var element in _listCoins!) {
             double? _freeCoins = element.free;
-            double? _priceUSD = element.priceData?.prices?.usd;
-            double? _priceBTC = element.priceData?.prices?.btc;
+            double? _priceUSD = element.priceData?.prices?.usd!.toDouble();
+            double? _priceBTC = element.priceData?.prices?.btc!.toDouble();
             if(_priceUSD != null && _priceBTC != null) {
               double _usd = _freeCoins! * _priceUSD;
               totalUSD += _usd;

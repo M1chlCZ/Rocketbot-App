@@ -1,5 +1,6 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class CoinListView extends StatefulWidget {
   final CoinBalance coin;
   final String? customLocale;
   final Function(CoinBalance h) coinSwitch;
-  final double? free;
+  final Decimal? free;
 
   const CoinListView({Key? key,required this.coin, this.customLocale, this.free, required this.coinSwitch}) : super (key: key);
 
@@ -63,7 +64,7 @@ class _CoinListViewState extends State<CoinListView> {
                     Expanded(
                         flex: 2,
                         child: Container(
-                          margin: EdgeInsets.all(15.0),
+                          margin: const EdgeInsets.all(15.0),
                           child: Center(child:
                           SizedBox( height: 30,
                               child: CachedNetworkImage(
@@ -85,7 +86,7 @@ class _CoinListViewState extends State<CoinListView> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
+                                padding: const EdgeInsets.only(top: 9.0),
                                 child: Text(
                                     widget.coin.coin!.ticker!,
                                   style: Theme.of(context).textTheme.headline3,
@@ -116,9 +117,9 @@ class _CoinListViewState extends State<CoinListView> {
                               widget.coin.priceData != null ?  Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 11.0),
+                              padding: const EdgeInsets.only(top: 12.0),
                               child: Text(
-                                  "\$"+  widget.coin.priceData!.prices!.usd!.toStringAsFixed(2),
+                                  _formatValue(widget.coin.priceData!.prices!.usd!),
                                 style: Theme.of(context).textTheme.headline3,
                                 maxLines: 1,
                                 textAlign: TextAlign.start,
@@ -147,7 +148,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
-                                      widget.free!.toString(),
+                                      _formatFree(widget.free!),
                                       style: Theme.of(context).textTheme.headline3,
                                       minFontSize: 8,
                                       maxLines: 1,
@@ -166,7 +167,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   padding: const EdgeInsets.only(top: 10.0),
                                   child: Text(
                                     // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                   "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!) ,
+                                   "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()) ,
                                     style: Theme.of(context).textTheme.headline3,
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
@@ -177,7 +178,7 @@ class _CoinListViewState extends State<CoinListView> {
                                   width: 4.0,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 9.2),
+                                  padding: const EdgeInsets.only(top: 10),
                                   child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
                                 ),
                               ],
@@ -221,6 +222,22 @@ class _CoinListViewState extends State<CoinListView> {
       return _split[0] + "." + _sub;
     } else {
       return d.toString();
+    }
+  }
+
+  String _formatValue(Decimal decimal) {
+    if(decimal < Decimal.parse("0.01")) {
+      return "Less than 1¢";
+    }else{
+      return "\$" + decimal.toStringAsFixed(2);
+    }
+  }
+
+  String _formatFree(Decimal decimal) {
+    if(decimal == Decimal.zero) {
+      return "0.0";
+    }else{
+      return decimal.toString();
     }
   }
 }

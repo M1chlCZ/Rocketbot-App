@@ -20,11 +20,13 @@ class CoinBalances {
         var coinID = coin!.id;
         final price = priceData['data'][coinID!.toString()];
         if (price == null) {
+          // print("null");
           _finalList.add(coinBal);
         } else {
           PriceData? p = PriceData.fromJson(price);
           coinBal.setPriceData(p);
           _finalList.add(coinBal);
+
         }
       } catch (e) {
         var coinBal = (item as CoinBalance);
@@ -55,8 +57,8 @@ class CoinBalances {
       });
     }else if(sort == 3) {
       _finalList.sort((a, b) {
-        double A = a.free! * a.priceData!.prices!.usd!;
-        double B = b.free! * b.priceData!.prices!.usd!;
+        double A = a.free! * a.priceData!.prices!.usd!.toDouble();
+        double B = b.free! * b.priceData!.prices!.usd!.toDouble();
         return B.compareTo(A);
       });
     }

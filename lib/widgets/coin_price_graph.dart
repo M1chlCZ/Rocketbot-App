@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,11 +73,11 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
             hourAgo = 0;
           }
 
-      for (List<double> data in _price!.usd!) {
-            if (data[0] >= hourAgo) {
-              if (minY > data[1]) minY = data[1];
-              if (maxY < data[1]) maxY = data[1];
-              var _spot = FlSpot(data[0].toDouble(), data[1]);
+      for (List<Decimal>? data in _price!.usd!) {
+            if (data![0] >= Decimal.fromInt(hourAgo)) {
+              if (Decimal.parse(minY.toString())> data[1]) minY = data[1].toDouble();
+              if (Decimal.parse(maxY.toString()) < data[1]) maxY = data[1].toDouble();
+              var _spot = FlSpot(data[0].toDouble(), data[1].toDouble());
               _values.add(_spot);
             }
           }
@@ -133,6 +134,23 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
               widget.blockTouch(false);
           }
         },
+          getTouchedSpotIndicator:
+              (LineChartBarData barData, List<int> spotIndexes) {
+            return spotIndexes.map((spotIndex) {
+              return TouchedSpotIndicatorData(
+                FlLine(color: Colors.white54, strokeWidth: 0.8),
+                FlDotData(
+                    show: true,
+                    getDotPainter: (FlSpot spot, double radius,
+                        LineChartBarData lc, int i) {
+                      return FlDotCirclePainter(
+                          color: const Color(0xFF312d53).withOpacity(0.5),
+                          strokeColor: Colors.white54,
+                          radius: 3.0);
+                    }),
+              );
+            }).toList();
+          },
           touchTooltipData: LineTouchTooltipData(
               fitInsideHorizontally: true,
               fitInsideVertically: true,
@@ -146,7 +164,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
                     Theme.of(context).textTheme.subtitle1!,
                     children: [
                       TextSpan(
-                        text: flSpot.y.toStringAsFixed(3) + " USD",
+                        text: _formatTooltip(flSpot.y) + " USD",
                         style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -159,6 +177,32 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
           enabled: true),
       lineBarsData: [_lineBarData()],
     );
+  }
+
+  String _formatTooltip(double d) {
+    try {
+      var str = d.toString();
+      var split = str.split(".");
+      var subs = split[1];
+      var count = 0;
+      loop:
+      for(var i = 0; i< subs.length; i++) {
+        if(subs[i] == "0") {
+          count++;
+        }else{
+          break loop;
+        }
+      }
+      if(count < 4) {
+        return d.toStringAsFixed(2);
+      }
+      if(count > 8) {
+        return d.toStringAsExponential(4);
+      }
+      return d.toString();
+    } catch (e) {
+      return "0.0";
+    }
   }
 
   LineChartBarData _lineBarData() {

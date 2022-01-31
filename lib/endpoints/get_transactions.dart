@@ -24,7 +24,7 @@ class TransactionList {
         var it = (item as DataDeposits);
         if(priceValue == null) {
           CoinGraph cg = CoinGraph.fromJson(price, item.coin!.id!.toString());
-          priceValue = cg.data!.prices!.usd;
+          priceValue = cg.data!.prices!.usd!.toDouble();
         }
         TransactionData d = TransactionData.fromCustom(
             coin: it.coin,
@@ -46,7 +46,7 @@ class TransactionList {
         var it = (item as DataWithdrawals);
         if(priceValue == null) {
           CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
-          priceValue = cg.data!.prices!.usd;
+          priceValue = cg.data!.prices!.usd!.toDouble();
         }
         TransactionData d = TransactionData.fromCustom(
           coin: it.coin,
