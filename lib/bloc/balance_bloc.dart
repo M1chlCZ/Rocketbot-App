@@ -6,12 +6,13 @@ import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
 
-
 class BalancesBloc {
   final CoinBalances _balanceList = CoinBalances();
   final _storage = const FlutterSecureStorage();
   List<CoinBalance>? _coins;
+  List<CoinBalance>? _sortedCoins;
   int _sort = 0;
+
 
   StreamController<ApiResponse<List<CoinBalance>>>? _coinListController;
 
@@ -27,22 +28,24 @@ class BalancesBloc {
   }
 
   fetchBalancesList({int? sort, bool refresh = false}) async {
-  coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
+    coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
-      if(sort == null) {
+      if (sort == null) {
         var i = await _storage.read(key: globals.SORT_TYPE);
-        if(i != null) {
+        if (i != null) {
           _sort = int.parse(i);
-        }else{
+        } else {
           _sort = 0;
         }
-      }else{
+      } else {
         _sort = sort;
       }
       if (!_coinListController!.isClosed) {
-        if(refresh) _coins = null;
+        if (refresh) _coins = null;
+
+        coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
         _coins ??= await _balanceList.fetchAllBalances();
-        List<CoinBalance>? _sortedCoins = await _sortList(_coins, sort: _sort);
+        _sortedCoins = await _sortList(_coins, sort: _sort);
         coinsListSink.add(ApiResponse.completed(_sortedCoins));
       }
     } catch (e) {
@@ -50,6 +53,28 @@ class BalancesBloc {
       if (!_coinListController!.isClosed) {
         coinsListSink.add(ApiResponse.error(e.toString()));
       }
+      // print(e);
+    }
+  }
+
+  filterCoinsList({bool zero = true, sort = 0}) async {
+    try {
+      coinsListSink.add(ApiResponse.loading('Filtering All Coins'));
+      List<CoinBalance>? _filterList = [];
+      List<CoinBalance>? _filteredCoins;
+
+        for (var market in _sortedCoins!) {
+          if (market.free! != 0.0) {
+            _filterList.add(market);
+          }
+        }
+
+      if (!_coinListController!.isClosed) {
+
+        coinsListSink.add(ApiResponse.completed(_filterList));
+      }
+    } catch (e) {
+      coinsListSink.add(ApiResponse.error(e.toString()));
       // print(e);
     }
   }
@@ -73,7 +98,7 @@ class BalancesBloc {
         double B = b.free!;
         return B.compareTo(A);
       });
-    }else if(sort == 3) {
+    } else if (sort == 3) {
       _finalList!.sort((a, b) {
         double A = a.free! * a.priceData!.prices!.usd!.toDouble();
         double B = b.free! * b.priceData!.prices!.usd!.toDouble();

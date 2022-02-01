@@ -20,8 +20,6 @@ class _PriceBadgeState extends State<PriceBadge> {
     super.initState();
     if (widget.percentage != null) {
       _perc = widget.percentage!.toDouble();
-    }else{
-      print("null");
     }
   }
   

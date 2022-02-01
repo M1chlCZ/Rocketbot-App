@@ -48,6 +48,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   bool popMenu = false;
   bool _paused = false;
   bool _pinEnabled = false;
+  bool _hideZero = false;
 
   double _listHeight = 0.0;
 
@@ -274,19 +275,20 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(bottom: 1.0),
-                                  child: Icon(Icons.sort, color: Colors.white30, size: 10.0,),
-                                ),
-                                // Text('sort by:', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 14.0, color: Colors.white30)),
-                                const SizedBox(width: 5.0,),
-                                Opacity(
-                                  opacity: 0.6,
-                                  child: DropdownButtonHideUnderline(
+                            padding: const EdgeInsets.only(left: 8.0, right: 3.0),
+                            child: Opacity(
+                              opacity: 0.6,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(bottom: 0.0),
+                                    child: Icon(Icons.sort, color: Colors.white30, size: 10.0,),
+                                  ),
+                                  // Text('sort by:', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 14.0, color: Colors.white30)),
+                                  const SizedBox(width: 5.0,),
+                                  DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: _dropValue,
                                       isDense: true,
@@ -297,7 +299,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         });
                                         int sort = _dropValues.indexWhere((element) => element == _dropValue);
                                        await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
-                                       await _bloc!.fetchBalancesList(sort: sort);
+                                        await _bloc!.fetchBalancesList(sort: sort);
+                                        await _checkZero();
 
                                       },
                                       items: _dropValues
@@ -312,71 +315,97 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                           .toList(),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5.0, right: 8.0, top:1.0),
-                                    child: SizedBox(
-                                      height: 0.5,
-                                      child: Container(
-                                        color: portCalc ? Colors.white12 : Colors.transparent,
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 5.0, right: 8.0, top:1.0),
+                                      child: SizedBox(
+                                        height: 0.5,
+                                        child: Container(
+                                          color: portCalc ? Colors.white12 : Colors.transparent,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 5.0,),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 1.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if(_hideZero) {
+                                            _hideZero = false;
+                                            _bloc!.fetchBalancesList();
+                                            // _bloc!.filterCoinsList(zero: _hideZero);
+                                          }else{
+                                            _hideZero = true;
+                                            _bloc!.filterCoinsList(zero: _hideZero);
+                                            // _bloc!.filterCoinsList(zero: _hideZero);
+                                          }
+                                        });
+
+                                      },
+                                        child:
+                                        Text('Hide Zeros', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),)
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8.0,),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
-                          stream: _bloc!.coinsListStream,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              switch (snapshot.data!.status) {
-                                case Status.LOADING:
-                                  _listCoins = null;
-                                  return Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 40.0),
-                                      child: HeartbeatProgressIndicator(
-                                        startScale: 0.01,
-                                        endScale: 0.2,
-                                        child: const Image(
-                                          image: AssetImage('images/rocketbot_logo.png'),
-                                          color: Colors.white30,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 3.0),
+                          child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
+                            stream: _bloc!.coinsListStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                switch (snapshot.data!.status) {
+                                  case Status.LOADING:
+                                    _listCoins = null;
+                                    return Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 40.0),
+                                        child: HeartbeatProgressIndicator(
+                                          startScale: 0.01,
+                                          endScale: 0.2,
+                                          child: const Image(
+                                            image: AssetImage('images/rocketbot_logo.png'),
+                                            color: Colors.white30,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                case Status.COMPLETED:
-                                  if (_listCoins == null) {
-                                    _listCoins = snapshot.data!.data!;
-                                    _listHeight =_listCoins!.length * 75.0;
-                                    // widget.passBalances(listCoins);
-                                    _calculatePortfolio();
-                                  }
-                                  return ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemCount: snapshot.data!.data!.length,
-                                      itemBuilder: (ctx, index) {
-                                        return CoinListView(
-                                          key: ValueKey(snapshot.data!.data![index].coin!.id!),
-                                          coin: snapshot.data!.data![index],
-                                          free: Decimal.parse(snapshot.data!.data![index].free.toString()),
-                                          coinSwitch: _changeCoin,
-                                        );
-                                      });
-                                case Status.ERROR:
-                                  print("error");
-                                  break;
+                                    );
+                                  case Status.COMPLETED:
+                                    if (_listCoins == null) {
+                                      _listCoins = snapshot.data!.data!;
+                                      _listHeight =_listCoins!.length * 120.0;
+                                      // widget.passBalances(listCoins);
+                                      _calculatePortfolio();
+                                    }
+                                    return ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: snapshot.data!.data!.length,
+                                        itemBuilder: (ctx, index) {
+                                          return CoinListView(
+                                            key: ValueKey(snapshot.data!.data![index].coin!.id!),
+                                            coin: snapshot.data!.data![index],
+                                            free: Decimal.parse(snapshot.data!.data![index].free.toString()),
+                                            coinSwitch: _changeCoin,
+                                          );
+                                        });
+                                  case Status.ERROR:
+                                    print("error");
+                                    break;
+                                }
                               }
-                            }
-                            return Container();
-                          },
+                              return Container();
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -709,5 +738,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
+  }
+
+  _checkZero() async{
+    if(_hideZero == false) return;
+    Future.delayed(Duration.zero, (){
+    _bloc!.filterCoinsList(zero: _hideZero);
+    });
   }
 }
