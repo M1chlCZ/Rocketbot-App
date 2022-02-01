@@ -1,13 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
-import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
-import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/transaction_data.dart';
-import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/widgets/coin_deposit_view.dart';
 import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,7 +12,6 @@ import '../component_widgets/button_neu.dart';
 import '../component_widgets/container_neu.dart';
 import '../models/balance_list.dart';
 import '../models/coin.dart';
-import '../models/coin_graph.dart';
 import '../netInterface/api_response.dart';
 import '../widgets/coin_price_graph.dart';
 import '../widgets/price_badge.dart';
@@ -28,27 +23,26 @@ class CoinScreen extends StatefulWidget {
   final List<CoinBalance>? allCoins;
   final Function(Coin? c) setActiveCoin;
   final Function(bool touch) blockTouch;
-  final Function(double free) changeFree;
 
   const CoinScreen(
       {Key? key,
-        required this.activeCoin,
-        this.allCoins,
-        required this.goBack,
-        required this.setActiveCoin,
-        required this.blockTouch,
-        required this.changeFree})
+      required this.activeCoin,
+      this.allCoins,
+      required this.goBack,
+      required this.setActiveCoin,
+      required this.blockTouch,
+     })
       : super(key: key);
 
   @override
   _CoinScreenState createState() => _CoinScreenState();
 }
 
-class _CoinScreenState extends State<CoinScreen> {
+class _CoinScreenState extends State<CoinScreen>
+    with SingleTickerProviderStateMixin {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
-  final _formatter = NumberFormat.decimalPattern();
-  final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
+  CoinBalance? _balanceData;
   late Coin _coinActive;
   Decimal _percentage = Decimal.parse((0.0).toString());
 
@@ -57,7 +51,7 @@ class _CoinScreenState extends State<CoinScreen> {
 
   Decimal totalCoins = Decimal.zero;
   Decimal totalUSD = Decimal.zero;
-  Decimal usdCost = Decimal.zero ;
+  Decimal usdCost = Decimal.zero;
 
   double _coinNameOpacity = 0.0;
 
@@ -68,8 +62,11 @@ class _CoinScreenState extends State<CoinScreen> {
     super.initState();
     _coinActive = widget.activeCoin;
     _listCoins = widget.allCoins!;
+    _balanceData = _listCoins
+        .singleWhere((element) => element.coin!.id! == _coinActive.id!);
     _calculatePortfolio();
-    _priceBlock = CoinPriceBloc(widget.activeCoin.cryptoId!, widget.activeCoin.id!);
+    _priceBlock =
+        CoinPriceBloc(widget.activeCoin.cryptoId!, widget.activeCoin.id!);
     _txBloc = TransactionBloc(widget.activeCoin);
   }
 
@@ -120,33 +117,39 @@ class _CoinScreenState extends State<CoinScreen> {
                     height: 30,
                     child: NeuContainer(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Center(
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<Coin>(
-                                value: _coinActive,
-                                isDense: true,
-                                onChanged: (Coin? coin) {
-                                  setState(() {
-                                    widget.setActiveCoin(coin);
-                                    _coinActive = coin!;
-                                    _priceBlock!.changeCoin(coin.cryptoId!, coin.id!);
-                                    _coinNameOpacity = 0.0;
-                                    _txBloc!.changeCoin(coin);
-                                  });
-                                  _calculatePortfolio();
-                                },
-                                items: _listCoins
-                                    .map((e) => DropdownMenuItem(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Center(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<Coin>(
+                            value: _coinActive,
+                            isDense: true,
+                            onChanged: (Coin? coin) {
+                              setState(() {
+                                widget.setActiveCoin(coin);
+                                _coinActive = coin!;
+                                _balanceData = _listCoins.singleWhere(
+                                    (element) =>
+                                        element.coin!.id! == _coinActive.id!);
+                                _graphKey.currentState!.updatePrices(
+                                    _balanceData!.priceData?.historyPrices);
+                                _priceBlock!
+                                    .changeCoin(coin.cryptoId!, coin.id!);
+                                _coinNameOpacity = 0.0;
+                                _txBloc!.changeCoin(coin);
+                              });
+                              _calculatePortfolio();
+                            },
+                            items: _listCoins
+                                .map((e) => DropdownMenuItem(
                                     value: e.coin!,
                                     child: SizedBox(
                                         width: 50,
                                         child: Text(e.coin!.cryptoId!))))
-                                    .toList(),
-                              ),
-                            ),
+                                .toList(),
                           ),
-                        )),
+                        ),
+                      ),
+                    )),
                   )
                 else
                   Container(),
@@ -185,51 +188,24 @@ class _CoinScreenState extends State<CoinScreen> {
               SizedBox(
                   width: double.infinity,
                   height: 250,
-                  child: StreamBuilder<ApiResponse<PriceData>>(
-                    stream: _priceBlock!.coinsListStream,
-                    builder: (BuildContext context, snapshot) {
-                      if (snapshot.hasData) {
-                        switch (snapshot.data!.status) {
-                          case Status.COMPLETED:
-                            Future.delayed(const Duration(milliseconds: 50),
-                                    () {
-                                  setState(() {
-                                    portCalc = true;
-                                  });
-                                });
-                            return GestureDetector(
-                              behavior: HitTestBehavior.deferToChild,
-                              onTap: () {
-                                _blockSwipe(true);
-                              },
-                              child: CoinPriceGraph(
-                                key: _graphKey,
-                                prices: snapshot.data!.data!.historyPrices,
-                                time: 24,
-                                blockTouch: _blockSwipe,
-                              ),
-                            );
-                          case Status.LOADING:
-                          // return Center(child: Text("loading data"));
-                            return HeartbeatProgressIndicator(
-                              startScale: 0.01,
-                              endScale: 0.4,
-                              child: const Image(
-                                image: AssetImage('images/rocketbot_logo.png'),
-                                color: Colors.white30,
-                              ),
-                            );
-                          case Status.ERROR:
-                            return const Center(child: Text("data error"));
-                        }
-                      } else {
-                        return Container();
-                      }
-                    },
-                  )),
+                  child: _coinNameOpacity != 0.0
+                      ? CoinPriceGraph(
+                          key: _graphKey,
+                          prices: _balanceData!.priceData?.historyPrices,
+                          time: 24,
+                          blockTouch: _blockSwipe,
+                        )
+                      : HeartbeatProgressIndicator(
+                          startScale: 0.01,
+                          endScale: 0.4,
+                          child: const Image(
+                            image: AssetImage('images/rocketbot_logo.png'),
+                            color: Colors.white30,
+                          ),
+                        )),
               AnimatedOpacity(
                 opacity: _coinNameOpacity,
-                duration: const Duration(milliseconds: 100),
+                duration: const Duration(milliseconds: 300),
                 child: Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
@@ -263,20 +239,9 @@ class _CoinScreenState extends State<CoinScreen> {
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    )),
-              ),
-              AnimatedOpacity(
-                  opacity: _coinNameOpacity,
-                  duration: const Duration(milliseconds: 100),
-                  child: SizedBox(
-                      width: double.infinity,
-                      height: 250,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                          const SizedBox(
+                            height: 40.0,
+                          ),
                           SizedBox(
                             width: 320,
                             child: AutoSizeText(
@@ -293,20 +258,22 @@ class _CoinScreenState extends State<CoinScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "\$" + _formatDecimal(totalUSD),
+                                "\$" + _formatPrice(totalUSD),
                                 style: Theme.of(context).textTheme.headline2,
                               ),
                               const SizedBox(width: 5.0),
                             ],
                           )
                         ],
-                      ))),
+                      ),
+                    )),
+              ),
             ],
           ),
           Container(
             decoration: const BoxDecoration(
               border:
-              Border(top: BorderSide(color: Colors.white30, width: 0.5)),
+                  Border(top: BorderSide(color: Colors.white30, width: 0.5)),
             ),
           ),
           Expanded(
@@ -324,21 +291,21 @@ class _CoinScreenState extends State<CoinScreen> {
                             child: portCalc
                                 ? Container()
                                 : const Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.0,
-                                )),
+                                    child: CircularProgressIndicator(
+                                    strokeWidth: 2.0,
+                                  )),
                           ),
                         );
                       case Status.COMPLETED:
                         if (snapshot.data!.data!.isEmpty) {
                           return Center(
                               child: Text(
-                                AppLocalizations.of(context)!.no_tx,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline2!
-                                    .copyWith(color: Colors.white12),
-                              ));
+                            AppLocalizations.of(context)!.no_tx,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline2!
+                                .copyWith(color: Colors.white12),
+                          ));
                         } else {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
@@ -347,28 +314,31 @@ class _CoinScreenState extends State<CoinScreen> {
                                 if (snapshot.data!.data![index].toAddress ==
                                     null) {
                                   return CoinDepositView(
+                                    price: _balanceData?.priceData,
                                     data: snapshot.data!.data![index],
                                   );
                                 } else {
                                   return CoinWithdrawalView(
+                                      price: _balanceData?.priceData,
                                       data: snapshot.data!.data![index]);
                                 }
                               });
                         }
-                    // break;
+                      // break;
                       case Status.ERROR:
                         return Center(
                             child: Text(
-                              'There has been an error communicating with the server',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline2!
-                                  .copyWith(color: Colors.white12),
-                            ));
-                    // print(snapshot.error);
-                    // break;
+                              AppLocalizations.of(context)!.tx_problem,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline2!
+                              .copyWith(color: Colors.white12),
+                        ));
+                      // print(snapshot.error);
+                      // break;
                     }
-                  }else {
+                  } else {
                     return Container();
                   }
                 },
@@ -392,23 +362,23 @@ class _CoinScreenState extends State<CoinScreen> {
 
   String _formatDecimal(Decimal d) {
     try {
-      if(d == Decimal.zero) return "0.0";
+      if (d == Decimal.zero) return "0.0";
       var str = d.toString();
       var split = str.split(".");
       var subs = split[1];
       var count = 0;
       loop:
-      for(var i = 0; i< subs.length; i++) {
-              if(subs[i] == "0") {
-                count++;
-              }else{
-                break loop;
-              }
-          }
-      if(count > 8) {
-            return d.toStringAsExponential(4);
-          }
-      return d.toString();
+      for (var i = 0; i < subs.length; i++) {
+        if (subs[i] == "0") {
+          count++;
+        } else {
+          break loop;
+        }
+      }
+      if (count > 8) {
+        return d.toStringAsExponential(3);
+      }
+      return _formatPrice(d);
     } catch (e) {
       return "0.0";
     }
@@ -416,15 +386,15 @@ class _CoinScreenState extends State<CoinScreen> {
 
   String _formatPrice(Decimal d) {
     try {
-      if(d == Decimal.zero) return "0.0";
+      if (d == Decimal.zero) return "0.0";
       var _split = d.toString().split('.');
       var _decimal = _split[1];
       if (_decimal.length >= 8) {
-            var _sub = _decimal.substring(0, 7);
-            return _split[0] + "." + _sub;
-          } else {
-            return d.toString();
-          }
+        var _sub = _decimal.substring(0, 8);
+        return _split[0] + "." + _sub;
+      } else {
+        return d.toString();
+      }
     } catch (e) {
       return d.toString();
     }
@@ -434,35 +404,27 @@ class _CoinScreenState extends State<CoinScreen> {
     setState(() {
       portCalc = false;
     });
-    var preFree = 0.0;
-    try {
-      var res =
-      await _interface.get('User/GetBalance?coinId=${_coinActive.id}');
-      var response = BalancePortfolio.fromJson(res);
-      preFree = response.data!.free!;
-    } catch (e) {
-      print(e);
-    }
-
-    Decimal? _freeCoins = Decimal.parse(preFree.toString());
-    widget.changeFree(preFree);
+    Decimal? _freeCoins = Decimal.parse(_balanceData!.free!.toString());
 
     try {
       for (var element in _listCoins) {
-            if (element.coin == _coinActive) {
-              Decimal? _priceUSD = element.priceData!.prices!.usd!;
-              Decimal? _priceBTC = element.priceData!.prices!.btc!;
-              _percentage = element.priceData!.priceChange24HPercent!.usd!;
-              usdCost = element.priceData!.prices!.usd!;
+        if (element.coin == _coinActive) {
+          Decimal? _priceUSD = element.priceData!.prices!.usd!;
+          Decimal? _priceBTC = element.priceData!.prices!.btc!;
+          _percentage = element.priceData!.priceChange24HPercent!.usd!;
+          usdCost = element.priceData!.prices!.usd!;
 
-              totalCoins = _freeCoins;
-              totalUSD = _freeCoins * _priceUSD;
-            }
-          }
+          totalCoins = _freeCoins;
+          totalUSD = _freeCoins * _priceUSD;
+        }
+      }
     } catch (e) {
       print(e);
     }
-    setState(() {_coinNameOpacity = 1.0;});
+    Future.delayed(const Duration(milliseconds: 400), () {
+      setState(() {
+        _coinNameOpacity = 1.0;
+      });
+    });
   }
-
 }

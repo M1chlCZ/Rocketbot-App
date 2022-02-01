@@ -1,17 +1,35 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class PriceBadge extends StatelessWidget {
-  final Decimal percentage;
+class PriceBadge extends StatefulWidget {
+  final Decimal? percentage;
   const PriceBadge({Key? key, required this.percentage}) : super(key: key);
 
+  @override
+  State<PriceBadge> createState() => _PriceBadgeState();
+}
+
+class _PriceBadgeState extends State<PriceBadge> {
+
+  double _perc = 0.0;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.percentage != null) {
+      _perc = widget.percentage!.toDouble();
+    }else{
+      print("null");
+    }
+  }
+  
   String _getNum(double num) {
     if(num > 0) {
-      return num.toStringAsFixed(2);
+      return "+" + num.toStringAsFixed(2);
     }else{
-      return (num * - 1).toStringAsFixed(2);
+      return (num).toStringAsFixed(2);
     }
   }
 
@@ -21,7 +39,7 @@ class PriceBadge extends StatelessWidget {
     }
 
     if(num < 10) {
-      return 55.0;
+      return 60.0;
     }else if(num < 100) {
       return 60.0;
     }else if(num < 1000){
@@ -30,36 +48,45 @@ class PriceBadge extends StatelessWidget {
       return 85.0;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _getWidth(percentage.toDouble()),
+      width: _getWidth(_perc),
       child: Container(
           decoration: BoxDecoration(
-            color: percentage.toDouble() > 0 ? Color(0x1A1AD37A) : Color(0xEB3912).withOpacity(0.1),
+            color: _perc > 0 ? const Color(0x1A1AD37A) : const Color(0xEB3912).withOpacity(0.1),
             borderRadius: const BorderRadius.all(
               Radius.circular(20.0),
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2.0, left: 3.0, bottom: 2.0, right: 3.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 15,
-                    child: SvgPicture.string( percentage.toDouble() > 0 ? arrowUP : arrowDown)),
-                const SizedBox(width: 2.0,),
-                Text(_getNum(percentage.toDouble()) + "%", style: TextStyle (
-                  color: percentage.toDouble() > 0 ? const Color(0xFF1AD37A) : const Color(0xFFEB3912),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12.0,))
-              ],
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.0, left: 6.0, bottom: 2.0, right: 6.0),
+              child:
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+                  // SizedBox(
+                  //   height: 15,
+                  //     child: SvgPicture.string( _perc > 0 ? arrowUP : arrowDown)),
+                  // const SizedBox(width: 3.0,),
+                  AutoSizeText(_getNum(_perc) + "%",
+                      minFontSize: 8.0,
+                      maxLines: 1,
+                      style: TextStyle (
+                    color: _perc > 0 ? const Color(0xFF1AD37A) : const Color(0xFFEB3912),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.0,))
+                // ],
+              // ),
             ),
           )),
     );
   }
+
+
 }
 
 

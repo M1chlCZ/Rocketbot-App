@@ -10,6 +10,7 @@ import 'package:rocketbot/support/globals.dart' as globals;
 class BalancesBloc {
   final CoinBalances _balanceList = CoinBalances();
   final _storage = const FlutterSecureStorage();
+  List<CoinBalance>? _coins;
   int _sort = 0;
 
   StreamController<ApiResponse<List<CoinBalance>>>? _coinListController;
@@ -20,18 +21,14 @@ class BalancesBloc {
   Stream<ApiResponse<List<CoinBalance>>> get coinsListStream =>
       _coinListController!.stream;
 
-  BalancesBloc(List<CoinBalance>? lc) {
+  BalancesBloc() {
     _coinListController = StreamController<ApiResponse<List<CoinBalance>>>();
-    if(lc != null) {
-      coinsListSink.add(ApiResponse.completed(lc));
-    }
-    fetchBalancesList(lc);
+    fetchBalancesList();
   }
 
-  fetchBalancesList(List<CoinBalance>? lc, {int? sort}) async {
-    if(lc == null)  coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
+  fetchBalancesList({int? sort, bool refresh = false}) async {
+  coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
-      List<CoinBalance>? _coins;
       if(sort == null) {
         var i = await _storage.read(key: globals.SORT_TYPE);
         if(i != null) {
@@ -39,20 +36,51 @@ class BalancesBloc {
         }else{
           _sort = 0;
         }
-        _coins = await _balanceList.fetchAllBalances(sort: _sort);
-      }else {
+      }else{
         _sort = sort;
-        _coins = await _balanceList.fetchAllBalances(sort: sort);
       }
       if (!_coinListController!.isClosed) {
-        coinsListSink.add(ApiResponse.completed(_coins));
+        if(refresh) _coins = null;
+        _coins ??= await _balanceList.fetchAllBalances();
+        List<CoinBalance>? _sortedCoins = await _sortList(_coins, sort: _sort);
+        coinsListSink.add(ApiResponse.completed(_sortedCoins));
       }
     } catch (e) {
+      print(e);
       if (!_coinListController!.isClosed) {
         coinsListSink.add(ApiResponse.error(e.toString()));
       }
       // print(e);
     }
+  }
+
+  Future<List<CoinBalance>> _sortList(List<CoinBalance>? _finalList, {int sort = 0}) async {
+    if (sort == 0) {
+      _finalList!.sort((a, b) {
+        int A = a.coin!.rank!;
+        int B = b.coin!.rank!;
+        return A.compareTo(B);
+      });
+    } else if (sort == 1) {
+      _finalList!.sort((a, b) {
+        var A = a.coin!.cryptoId;
+        var B = b.coin!.cryptoId;
+        return A.toString().toLowerCase().compareTo(B.toString().toLowerCase());
+      });
+    } else if (sort == 2) {
+      _finalList!.sort((a, b) {
+        double A = a.free!;
+        double B = b.free!;
+        return B.compareTo(A);
+      });
+    }else if(sort == 3) {
+      _finalList!.sort((a, b) {
+        double A = a.free! * a.priceData!.prices!.usd!.toDouble();
+        double B = b.free! * b.priceData!.prices!.usd!.toDouble();
+        return B.compareTo(A);
+      });
+    }
+    return _finalList!;
   }
 
   dispose() {

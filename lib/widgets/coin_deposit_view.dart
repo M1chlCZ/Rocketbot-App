@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:decimal/decimal.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -7,15 +8,17 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
+import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CoinDepositView extends StatefulWidget {
   final TransactionData data;
+  final PriceData? price;
   final String? customLocale;
   
 
-  const CoinDepositView({Key? key,required this.data, this.customLocale}) : super (key: key);
+  const CoinDepositView({Key? key,required this.data, this.customLocale, required this.price}) : super (key: key);
 
   @override
   State<CoinDepositView> createState() => _CoinDepositViewState();
@@ -148,7 +151,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
                                       // widget.free!.toString(),
-                                      "+" + (widget.data.usdPrice! * widget.data.amount!).toStringAsFixed(3) + "  USD",
+                                      "+" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD",
                                       style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xff1AD37A)),
                                       minFontSize: 8,
                                       maxLines: 1,

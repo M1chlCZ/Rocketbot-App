@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
+import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/fees.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -24,9 +25,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 class SendPage extends StatefulWidget {
   final Coin? coinActive;
+  final Function(double free) changeFree;
   final double? free;
 
-  const SendPage({Key? key, this.coinActive, this.free}) : super(key: key);
+  const SendPage(
+      {Key? key, this.coinActive, this.free, required this.changeFree})
+      : super(key: key);
 
   @override
   _SendPageState createState() => _SendPageState();
@@ -65,7 +69,6 @@ class _SendPageState extends State<SendPage> {
       }
     });
     _curtain = false;
-
   }
 
   _getFees() async {
@@ -130,8 +133,21 @@ class _SendPageState extends State<SendPage> {
       _addressController.clear();
       _amountController.clear();
 
+      var preFree = 0.0;
+      var res =
+          await _interface.get('User/GetBalance?coinId=${_coinActive!.id!}');
+      var rs = BalancePortfolio.fromJson(res);
+      preFree = rs.data!.free!;
+      widget.changeFree(preFree);
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: SizedBox( height: 50,child: Center(child: Text(AppLocalizations.of(context)!.coin_sent, style: Theme.of(context).textTheme.headline4,))),
+        content: SizedBox(
+            height: 50,
+            child: Center(
+                child: Text(
+              AppLocalizations.of(context)!.coin_sent,
+              style: Theme.of(context).textTheme.headline4,
+            ))),
         duration: const Duration(seconds: 3),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.fixed,
@@ -428,7 +444,7 @@ class _SendPageState extends State<SendPage> {
                   height: 40.0,
                   width: MediaQuery.of(context).size.width * 0.95,
                   child: Stack(
-                      alignment: AlignmentDirectional.center,
+                    alignment: AlignmentDirectional.center,
                     children: [
                       TextField(
                           inputFormatters: <TextInputFormatter>[
@@ -658,7 +674,6 @@ class _SendPageState extends State<SendPage> {
       ),
     );
   }
-
 
   void _openQRScanner() async {
     FocusScope.of(context).unfocus();

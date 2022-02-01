@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/netInterface/interface.dart';
@@ -6,7 +5,7 @@ import 'package:rocketbot/netInterface/interface.dart';
 class CoinBalances {
   final NetInterface _helper = NetInterface();
 
-  Future<List<CoinBalance>?> fetchAllBalances({int sort = 0}) async {
+  Future<List<CoinBalance>?> fetchAllBalances() async {
     final response = await _helper.get("User/GetBalances");
     final priceData = await _helper.get(
         "Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=true&IncludeMarketcap=true&IncludeChange=true");
@@ -33,35 +32,6 @@ class CoinBalances {
         _finalList.add(coinBal);
       }
     });
-    Map<int, dynamic> m = {0: _finalList, 1: sort};
-    List<CoinBalance> _listSort = await compute(sortList, m);
-    return _listSort;
-  }
-
-  List<CoinBalance> sortList(Map<int, dynamic> value) {
-    List<CoinBalance> _finalList = value[0];
-    int sort = value[1];
-    if (sort == 0) {
-      return _finalList;
-    } else if (sort == 1) {
-      _finalList.sort((a, b) {
-        var A = a.coin!.name;
-        var B = b.coin!.name;
-        return A.toString().toLowerCase().compareTo(B.toString().toLowerCase());
-      });
-    } else if (sort == 2) {
-      _finalList.sort((a, b) {
-        double A = a.free!;
-        double B = b.free!;
-        return B.compareTo(A);
-      });
-    }else if(sort == 3) {
-      _finalList.sort((a, b) {
-        double A = a.free! * a.priceData!.prices!.usd!.toDouble();
-        double B = b.free! * b.priceData!.prices!.usd!.toDouble();
-        return B.compareTo(A);
-      });
-    }
     return _finalList;
   }
 }

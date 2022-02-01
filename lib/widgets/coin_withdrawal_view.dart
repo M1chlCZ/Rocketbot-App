@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
+import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -13,10 +15,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CoinWithdrawalView extends StatefulWidget {
   final TransactionData data;
+  final PriceData? price;
   final String? customLocale;
   
 
-  const CoinWithdrawalView({Key? key,required this.data, this.customLocale}) : super (key: key);
+  const CoinWithdrawalView({Key? key,required this.data, this.customLocale, this.price}) : super (key: key);
 
   @override
   State<CoinWithdrawalView> createState() => _CoinWithdrawalViewState();
@@ -140,7 +143,7 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
                                       // widget.free!.toString(),
-                                      "-" + (widget.data.usdPrice! * widget.data.amount!).toStringAsFixed(3) + "  USD",
+                                      "-" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD",
                                       style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xffEA3913)),
                                       minFontSize: 8,
                                       maxLines: 1,
@@ -285,7 +288,7 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                                                   onTap: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  icon: Icon(Icons.clear, color: Colors.white, size: 20.0,),)),
+                                                  icon: const Icon(Icons.clear, color: Colors.white, size: 20.0,),)),
                                           ],
                                         )
                                       ],
@@ -313,10 +316,10 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                                           });
                                         },
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                                           child: Container(
                                             color: Colors.black38,
-                                            padding: EdgeInsets.all(5.0),
+                                            padding: const EdgeInsets.all(5.0),
                                             child: Text(td.transactionId!,
                                               style: Theme.of(context).textTheme.subtitle2!.copyWith(fontSize: 12.0),
                                             ),
@@ -326,16 +329,16 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                                   ),
                                   IgnorePointer(
                                     child: AnimatedOpacity(
-                                      duration:Duration(milliseconds: 300) ,
+                                      duration:const Duration(milliseconds: 300) ,
                                       opacity: _copied ? 1.0 : 0.0,
                                       child: SizedBox(
                                         width: double.infinity,
                                         child:
                                         ClipRRect(
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                                           child: Container(
                                             color: Colors.green,
-                                            padding: EdgeInsets.all(5.0),
+                                            padding: const EdgeInsets.all(5.0),
                                             child: Text(AppLocalizations.of(context)!.txcopy+"\n",
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 12.0),

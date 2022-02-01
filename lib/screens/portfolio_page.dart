@@ -65,7 +65,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       }
     });
     _fillSort();
-    _bloc = BalancesBloc(null);
+    _bloc = BalancesBloc();
     // portCalc = widget.listBalances != null ? true : false;
   }
 
@@ -110,41 +110,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     return _listCoins!;
   }
 
-  void _initializeLocalNotifications() async {
-    if (Platform.isAndroid) {
-      AndroidNotificationChannel channel = const AndroidNotificationChannel(
-        'rocket1', // id
-        'Rocket 1 stuff', // title
-        description: 'This channel is used for transaction notifications.',
-        // description
-        importance: Importance.max,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.red,
-      );
-
-      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel);
-
-      AndroidNotificationChannel channel2 = const AndroidNotificationChannel(
-        'rocket2', // id
-        'Rocket 2 stuff', // title
-        description: 'This channel is used for message notifications.',
-        // description
-        importance: Importance.max,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.red,
-      );
-
-      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel2);
-    }
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
-    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -152,6 +117,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         child: Stack(
           children: [
             RefreshIndicator(
+              color: const Color(0xFFCB1668),
               onRefresh: _refreshData,
               child: SingleChildScrollView(
                 controller: _scrollController,
@@ -324,12 +290,15 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                     child: DropdownButton<String>(
                                       value: _dropValue,
                                       isDense: true,
-                                      onChanged: (String? val) {
+                                      onChanged: (String? val) async {
                                         setState(() {
                                           _dropValue = val!;
+                                          _listCoins = null;
                                         });
-                                        _storage.write(key: globals.SORT_TYPE, value: _dropValues.indexWhere((element) => element == _dropValue).toString());
-                                        _bloc!.fetchBalancesList(null, sort: _dropValues.indexWhere((element) => element == _dropValue));
+                                        int sort = _dropValues.indexWhere((element) => element == _dropValue);
+                                       await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
+                                       await _bloc!.fetchBalancesList(sort: sort);
+
                                       },
                                       items: _dropValues
                                           .map((e) => DropdownMenuItem(
@@ -395,6 +364,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       itemCount: snapshot.data!.data!.length,
                                       itemBuilder: (ctx, index) {
                                         return CoinListView(
+                                          key: ValueKey(snapshot.data!.data![index].coin!.id!),
                                           coin: snapshot.data!.data![index],
                                           free: Decimal.parse(snapshot.data!.data![index].free.toString()),
                                           coinSwitch: _changeCoin,
@@ -445,56 +415,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                         color: const Color(0xFF1B1B1B),
                         child: Column(
                           children: [
-                            // SizedBox(
-                            //     // SizedBox(
-                            //     height: 40,
-                            //     child: Center(
-                            //       child: Directionality(
-                            //         textDirection: TextDirection.ltr,
-                            //         child: SizedBox(
-                            //           width: 140,
-                            //           child: TextButton(
-                            //             child: Text(
-                            //               'Socials',
-                            //               style: Theme.of(context)
-                            //                   .textTheme
-                            //                   .headline1!
-                            //                   .copyWith(fontSize: 14.0),
-                            //             ),
-                            //             style: ButtonStyle(
-                            //                 backgroundColor:
-                            //                     MaterialStateProperty.resolveWith(
-                            //                         (states) =>
-                            //                             qrColors(states)),
-                            //                 shape: MaterialStateProperty.all<
-                            //                         RoundedRectangleBorder>(
-                            //                     RoundedRectangleBorder(
-                            //                         borderRadius:
-                            //                             BorderRadius.circular(
-                            //                                 0.0),
-                            //                         side: const BorderSide(
-                            //                             color: Colors
-                            //                                 .transparent)))),
-                            //             onPressed: () {
-                            //               setState(() {popMenu = false;});
-                            //               Navigator.of(context).push(PageRouteBuilder(
-                            //                   pageBuilder: (BuildContext context, _, __) {
-                            //                     return const SocialScreen();
-                            //                   }, transitionsBuilder:
-                            //                   (_, Animation<double> animation, __, Widget child) {
-                            //                 return FadeTransition(opacity: animation, child: child);
-                            //               }));
-                            //             },
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     )),
-                            // Padding(
-                            //   padding:
-                            //       const EdgeInsets.only(left: 4.0, right: 4.0),
-                            //   child:
-                            //       Container(height: 0.5, color: Colors.white12),
-                            // ),
                             SizedBox(
                               // SizedBox(
                                 height: 40,
@@ -621,7 +541,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   Future _refreshData() async {
-    await _bloc!.fetchBalancesList(null);
+    await _bloc!.fetchBalancesList(refresh: true);
     _listCoins = null;
     setState(() {});
   }
@@ -635,7 +555,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       );
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
-    })).then((value) => _refreshData());
+    }));
   }
 
   String _formatPrice(double d) {
@@ -733,11 +653,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
   @override
   void onResumed() async {
-    // FlutterAppBadger.removeBadge();
-    // flutterLocalNotificationsPlugin.cancelAll();
-    // _checkNot();
     await _getPin();
-    // _getMessages();
     if (_pinEnabled == true && _paused) {
       _paused = false;
       var restart = await _checkCountdown();
@@ -749,13 +665,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
   Future<bool> _checkCountdown() async {
     var _countDown = await _storage.read(key: globals.COUNTDOWN);
-    print(_countDown);
     if (_countDown != null) {
       int nowDate = DateTime.now().millisecondsSinceEpoch;
-      print(nowDate.toString());
       int countTime = int.parse(_countDown);
-      // print(nowDate);
-      // print(countTime);
       if (nowDate > countTime) {
         return true;
       } else {
@@ -763,5 +675,39 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       }
     }
     return true;
+  }
+
+  void _initializeLocalNotifications() async {
+    if (Platform.isAndroid) {
+      AndroidNotificationChannel channel = const AndroidNotificationChannel(
+        'rocket1', // id
+        'Rocket 1 stuff', // title
+        description: 'This channel is used for transaction notifications.',
+        // description
+        importance: Importance.max,
+        enableVibration: true,
+        enableLights: true,
+        ledColor: Colors.red,
+      );
+
+      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel);
+
+      AndroidNotificationChannel channel2 = const AndroidNotificationChannel(
+        'rocket2', // id
+        'Rocket 2 stuff', // title
+        description: 'This channel is used for message notifications.',
+        // description
+        importance: Importance.max,
+        enableVibration: true,
+        enableLights: true,
+        ledColor: Colors.red,
+      );
+
+      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel2);
+    }
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
+    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
   }
 }

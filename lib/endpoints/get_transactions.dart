@@ -1,5 +1,4 @@
 import 'package:rocketbot/NetInterface/interface.dart';
-import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/get_deposits.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -11,7 +10,7 @@ class TransactionList {
   Future<List<TransactionData>?> fetchTransactions(int coinID) async {
     final _deposits = await _helper.get("Transfers/GetDeposits?page=1&pageSize=50&coinId=$coinID");
     final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=50&coinId=$coinID");
-    final price = await _helper.get("Coin/GetPriceData?coinId=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
+    // final price = await _helper.get("Coin/GetPriceData?coinId=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
 
     List<DataWithdrawals>? _with = WithdrawalsModels.fromJson(_withdrawals).data;
     List<DataDeposits>? _dep = DepositsModel.fromJson(_deposits).data;
@@ -22,10 +21,10 @@ class TransactionList {
     await Future.forEach(_dep!, (item) async {
       try {
         var it = (item as DataDeposits);
-        if(priceValue == null) {
-          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.id!.toString());
-          priceValue = cg.data!.prices!.usd!.toDouble();
-        }
+        // if(priceValue == null) {
+        //   CoinGraph cg = CoinGraph.fromJson(price, item.coin!.id!.toString());
+        //   priceValue = cg.data!.prices!.usd!.toDouble();
+        // }
         TransactionData d = TransactionData.fromCustom(
             coin: it.coin,
             amount: it.amount,
@@ -33,7 +32,7 @@ class TransactionList {
             transactionId: it.transactionId,
             chainConfirmed: it.isConfirmed,
             confirmations: it.confirmations,
-            usdPrice: priceValue);
+            usdPrice: 0.0);
         _finalList.add(d);
 
       } catch (e) {
@@ -44,10 +43,10 @@ class TransactionList {
     await Future.forEach(_with!, (item) {
       try {
         var it = (item as DataWithdrawals);
-        if(priceValue == null) {
-          CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
-          priceValue = cg.data!.prices!.usd!.toDouble();
-        }
+        // if(priceValue == null) {
+        //   CoinGraph cg = CoinGraph.fromJson(price, item.coin!.cryptoId!);
+        //   priceValue = cg.data!.prices!.usd!.toDouble();
+        // }
         TransactionData d = TransactionData.fromCustom(
           coin: it.coin,
           amount: it.amount,
@@ -55,7 +54,7 @@ class TransactionList {
           receivedAt: it.createdAt,
           transactionId: it.transactionId,
           chainConfirmed: it.chainConfirmed,
-          usdPrice: priceValue,
+          usdPrice: 0.0,
         );
         _finalList.add(d);
       }catch(e) {

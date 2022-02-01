@@ -102,9 +102,10 @@
   "reg_succ": "Tarkista sähköpostisi suorittaaksesi vahvistuksen rekisteröitymisestä",
   "terms_agree": "Sinun on hyväksyttävä käyttöehdot",
   "language": "Kieli",
-  "deflt": "Oletus",
+  "deflt": "Sijoitus",
   "by_amount" : "Määrän mukaan",
   "alphabeticall" : "Aakkosjärjestyksessä",
   "by_value" : "Hinnan mukaan",
-  "less_than" : "Less than"
+  "less_than" : "Vähemmän kuin",
+  "tx_problem" : "Palvelimella on yhteysongelmia"
 }

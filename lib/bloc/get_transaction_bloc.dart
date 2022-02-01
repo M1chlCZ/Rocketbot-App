@@ -17,21 +17,27 @@ class TransactionBloc {
   Stream<ApiResponse<List<TransactionData>>> get coinsListStream =>
       _coinListController!.stream;
 
-  TransactionBloc(Coin coin) {
+  TransactionBloc(Coin coin, {List<TransactionData>? list}) {
     _coinListController = StreamController<ApiResponse<List<TransactionData>>>();
-    fetchTransactionData(coin);
+    fetchTransactionData(coin, list: list);
   }
 
-  changeCoin (Coin coin) {
-    fetchTransactionData(coin);
+  changeCoin (Coin coin, {List<TransactionData>? list}) {
+    fetchTransactionData(coin,list: list);
   }
 
-  Future <void> fetchTransactionData(Coin coin) async {
+  Future <void> fetchTransactionData(Coin coin, {List<TransactionData>? list}) async {
     if (!_coinListController!.isClosed) {
       coinsListSink.add(ApiResponse.loading('Fetching Transactions'));
     }
     try {
-      List<TransactionData>? _coins = await _coinBalances.fetchTransactions(coin.id!);
+      List<TransactionData>? _coins;
+      if(list == null ) {
+        _coins = await _coinBalances.fetchTransactions(
+            coin.id!);
+      }else{
+        _coins = list;
+      }
       if (!_coinListController!.isClosed) {
         coinsListSink.add(ApiResponse.completed(_coins));
       }

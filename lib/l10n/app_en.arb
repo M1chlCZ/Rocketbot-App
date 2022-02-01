@@ -103,9 +103,10 @@
   "reg_succ" : "Please check your email inbox, for register confirmation",
   "terms_agree" : "You need to agree with terms and conditions",
   "language" : "Language",
-  "deflt": "Default",
-  "by_amount" : "By Amount",
-  "alphabeticall" : "Alphabetically",
-  "by_value" : "By Value",
-  "less_than" : "Less than"
+  "deflt": "Rank",
+  "by_amount" : "Amount",
+  "alphabeticall" : "Alphabet",
+  "by_value" : "Total Value",
+  "less_than" : "Less than",
+  "tx_problem" : "Can't load transactions"
 }

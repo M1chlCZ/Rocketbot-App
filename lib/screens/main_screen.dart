@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/screenPages/coin_page.dart';
 import 'package:rocketbot/screenpages/deposit_page.dart';
 import 'package:rocketbot/screenpages/send_page.dart';
@@ -32,7 +33,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.coinBalance.coin!.id!);
     _coinActive = widget.coinBalance.coin!;
     _free = widget.coinBalance.free!;
     _lc = widget.listCoins!;
@@ -69,6 +69,7 @@ class _MainScreenState extends State<MainScreen> {
     _free = free;
   }
 
+
   void changeCoinName(Coin? s) {
     _lc = _portfolioKey.currentState!.getList();
     setState(() {
@@ -100,7 +101,6 @@ class _MainScreenState extends State<MainScreen> {
                   child: child,
                 ),
                 child: CoinScreen(
-                  changeFree: _changeFree,
                   setActiveCoin: _setActiveCoin,
                         activeCoin: _coinActive,
                         allCoins: _lc,
@@ -108,7 +108,10 @@ class _MainScreenState extends State<MainScreen> {
                   blockTouch: _blockTouch,
                       ),
               ),
-              SendPage(coinActive: _coinActive, free: _free,),
+              SendPage(
+                changeFree: _changeFree,
+                coinActive: _coinActive,
+                free: _free,),
             ]),
       ),
       bottomNavigationBar: Container(

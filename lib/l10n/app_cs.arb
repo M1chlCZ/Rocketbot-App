@@ -78,8 +78,8 @@
   "as_enter_desired_pin" : "Zadejte požadovaný PIN",
   "as_enter_desired_confirm_pin" : "Prosím potvrďte požadovaný PIN",
   "dl_log_out":  "Opravdu se chcete odhlásit z aplikace?",
-  "about_rocket" : "RocketBot Wallet App, používá kryptoměnu na sociálních sítích (Twitter, Telegram & Discord).",
-  "about_terms" :"Zásadý používání",
+  "about_rocket" : "RocketBot Pěněženka\n Provádějte mikroplatby na sociálních sítích (Twitter, Telegram & Discord).",
+  "about_terms" :"Zásady používání",
   "about_policy" :"Zásady soukromí",
   "about_visit" :"Navšivte naší stránku",
   "about_merge" :"Projekt Merge",
@@ -103,9 +103,10 @@
   "reg_succ" : "Prosím zkontrolujte e-mailovou schránku pro potvrzení registrace",
   "terms_agree" : "Prosím odsouhlaste podmínky použití",
   "language" : "Jazyk",
-  "deflt": "Výchozí",
+  "deflt": "Dle hodnocení",
   "by_amount" : "Podle množství",
   "alphabeticall" : "Abecedně",
   "by_value" : "Podle hodnoty",
-  "less_than" : "Méně než"
+  "less_than" : "Méně než",
+  "tx_problem" : "Nepodařilo se načíst transakce"
 }
