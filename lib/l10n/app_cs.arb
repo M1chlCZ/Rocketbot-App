@@ -108,5 +108,6 @@
   "alphabeticall" : "Abecedně",
   "by_value" : "Podle hodnoty",
   "less_than" : "Méně než",
-  "tx_problem" : "Nepodařilo se načíst transakce"
+  "tx_problem" : "Nepodařilo se načíst transakce",
+  "hide_zeros" : "Skrýt nulové položky"
 }

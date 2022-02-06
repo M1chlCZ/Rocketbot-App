@@ -16,6 +16,7 @@ import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
+import 'package:rocketbot/widgets/button_flat.dart';
 import '../support/notification_helper.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
@@ -329,9 +330,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                   const SizedBox(width: 5.0,),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 1.0),
-                                    child: GestureDetector(
+                                    child: FlatCustomButton(
                                       onTap: () {
                                         setState(() {
+                                          _listCoins = null;
                                           if(_hideZero) {
                                             _hideZero = false;
                                             _bloc!.fetchBalancesList();
@@ -342,11 +344,17 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                             // _bloc!.filterCoinsList(zero: _hideZero);
                                           }
                                         });
-
                                       },
                                         child:
-                                        Text('Hide Zeros', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),)
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 0.0, right: 1.0),
+                                          child: FittedBox(
+                                            child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
+                                            )
                                     ),
+                                        ),
+                                  ),
+
                                   ),
                                   const SizedBox(width: 8.0,),
                                 ],
@@ -382,7 +390,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                   case Status.COMPLETED:
                                     if (_listCoins == null) {
                                       _listCoins = snapshot.data!.data!;
-                                      _listHeight =_listCoins!.length * 120.0;
+                                      _listHeight = _hideZero ?_listCoins!.length * 80.0 : _listCoins!.length * 69.0;
                                       // widget.passBalances(listCoins);
                                       _calculatePortfolio();
                                     }

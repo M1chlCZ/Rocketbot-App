@@ -108,5 +108,6 @@
   "alphabeticall" : "Alphabet",
   "by_value" : "Total Value",
   "less_than" : "Less than",
-  "tx_problem" : "Can't load transactions"
+  "tx_problem" : "Can't load transactions",
+  "hide_zeros" : "Hide zeros"
 }
