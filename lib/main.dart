@@ -9,6 +9,8 @@ import 'package:rocketbot/screens/login_screen.dart';
 import 'Support/material_color_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
+import 'package:catcher/catcher.dart';
+
 
 
 void main() async {
@@ -20,11 +22,23 @@ void main() async {
       DeviceOrientation.portraitDown,
     ],
   );
-  runApp(
-    Phoenix(
-      child: const MyApp(),
-    ),
-  );
+  CatcherOptions debugOptions =
+  CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+
+  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
+    EmailManualHandler(["m1chlcz18@gmail.com"])
+  ]);
+
+  Catcher(rootWidget: Phoenix(
+    child: const MyApp(),
+  ),
+      debugConfig: debugOptions,
+      releaseConfig: releaseOptions);
+  // runApp(
+  //   Phoenix(
+  //     child: const MyApp(),
+  //   ),
+  // );
 }
 
 class MyApp extends StatefulWidget {

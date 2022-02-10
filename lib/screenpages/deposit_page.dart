@@ -340,15 +340,32 @@ class _DepositPageState extends State<DepositPage> {
                   style: Theme.of(context).textTheme.headline3,
                 ),
                 const SizedBox(
-                  height: 20.0,
+                  height: 30.0,
                 ),
                 NeuButton(
                   onTap: () {
                     _openQR(context, widget.coin!.fullName!);
                   },
-                  width: 140,
-                  height: 140,
-                  child: Image.asset("images/qr_code_scan.png"),
+                  color: Colors.white,
+                  width: 200,
+                  height: 200,
+                  // child: Image.asset("images/qr_code_scan.png"),
+                  child: Container(
+                    decoration: const BoxDecoration(color: Colors.transparent,borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                    margin: const EdgeInsets.all(0.0),
+                    // child: Image.asset("images/qr_code_scan.png"),
+                    child: QrImage(
+                      dataModuleStyle: const QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square),
+                      eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square),
+                      errorCorrectionLevel: QrErrorCorrectLevel.H,
+                      data: _depositAddr.toString(),
+                      foregroundColor: Colors.black87,
+                      version: QrVersions.auto,
+                      size: 200,
+                      gapless: false,
+                    ),
+                  ),
                 ),
               ],
             ),

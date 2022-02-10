@@ -294,13 +294,16 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       value: _dropValue,
                                       isDense: true,
                                       onChanged: (String? val) async {
+                                        var _tempZero = _hideZero;
                                         setState(() {
+                                          _hideZero = false;
                                           _dropValue = val!;
                                           _listCoins = null;
                                         });
                                         int sort = _dropValues.indexWhere((element) => element == _dropValue);
                                        await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
                                         await _bloc!.fetchBalancesList(sort: sort);
+                                        _hideZero = _tempZero;
                                         await _checkZero();
 
                                       },
@@ -328,33 +331,56 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 5.0,),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(bottom: 1.0),
+                                  //   child: FlatCustomButton(
+                                  //     onTap: () {
+                              // _listCoins = null;
+                                  //       setState(() {
+                                  //         if(_hideZero) {
+                                  //           _hideZero = false;
+                                  //           _bloc!.fetchBalancesList();
+                                  //           // _bloc!.filterCoinsList(zero: _hideZero);
+                                  //         }else{
+                                  //           _hideZero = true;
+                                  //           _bloc!.filterCoinsList(zero: _hideZero);
+                                  //           // _bloc!.filterCoinsList(zero: _hideZero);
+                                  //         }
+                                  //       });
+                                  //     },
+                                  //       child:
+                                  //       Padding(
+                                  //         padding: const EdgeInsets.only(left: 0.0, right: 1.0),
+                                  //         child: FittedBox(
+                                  //           child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
+                                  //           )
+                                  //   ),
+                                  //       ),
+                                  // ),
+                                  //
+                                  // ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 1.0),
-                                    child: FlatCustomButton(
-                                      onTap: () {
-                                        setState(() {
-                                          _listCoins = null;
-                                          if(_hideZero) {
-                                            _hideZero = false;
-                                            _bloc!.fetchBalancesList();
-                                            // _bloc!.filterCoinsList(zero: _hideZero);
-                                          }else{
-                                            _hideZero = true;
-                                            _bloc!.filterCoinsList(zero: _hideZero);
-                                            // _bloc!.filterCoinsList(zero: _hideZero);
-                                          }
-                                        });
-                                      },
-                                        child:
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 0.0, right: 1.0),
-                                          child: FittedBox(
-                                            child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
-                                            )
-                                    ),
-                                        ),
-                                  ),
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _listCoins = null;
+                                            if(_hideZero) {
+                                              _hideZero = false;
+                                              _bloc!.fetchBalancesList();
+                                              // _bloc!.filterCoinsList(zero: _hideZero);
+                                            }else{
+                                              _hideZero = true;
+                                              _bloc!.filterCoinsList(zero: _hideZero);
+                                              // _bloc!.filterCoinsList(zero: _hideZero);
+                                            }
+                                          });
 
+                                        },
+                                        child:
+                                        AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
+                                    ),
+                                  ),
                                   ),
                                   const SizedBox(width: 8.0,),
                                 ],
