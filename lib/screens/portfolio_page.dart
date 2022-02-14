@@ -11,12 +11,15 @@ import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:rocketbot/netInterface/interface.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
+import 'package:rocketbot/screens/socials_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
+import '../models/user.dart';
 import '../support/notification_helper.dart';
 import '../widgets/coin_list_view.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
@@ -37,10 +40,14 @@ class PortfolioScreen extends StatefulWidget {
 
 class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   final _storage = const FlutterSecureStorage();
+  final NetInterface _interface = NetInterface();
   final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
+  List<int> _socials = [];
   final _firebaseMessaging = FCM();
+
+  bool _socialsOK = false;
 
   double totalUSD = 0.0;
   double totalBTC = 0.0;
@@ -68,23 +75,46 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     });
     _fillSort();
     _bloc = BalancesBloc();
+    _getUserInfo();
     // portCalc = widget.listBalances != null ? true : false;
   }
 
   void _fillSort()  {
     Future.delayed(Duration.zero, () async {
-    _dropValue = AppLocalizations.of(context)!.deflt;
-    _dropValues.clear();
-    _dropValues = [AppLocalizations.of(context)!.deflt,AppLocalizations.of(context)!.alphabeticall, AppLocalizations.of(context)!.by_amount, AppLocalizations.of(context)!.by_value];
-    var i = await _storage.read(key: globals.SORT_TYPE);
-    if(i == null) {
-      _dropValue = _dropValues[0];
-    }else{
-      _dropValue = _dropValues[int.parse(i)];
-    }
+      _dropValue = AppLocalizations.of(context)!.deflt;
+      _dropValues.clear();
+      _dropValues = [AppLocalizations.of(context)!.deflt,AppLocalizations.of(context)!.alphabeticall, AppLocalizations.of(context)!.by_amount, AppLocalizations.of(context)!.by_value];
+      var i = await _storage.read(key: globals.SORT_TYPE);
+      if(i == null) {
+        _dropValue = _dropValues[0];
+      }else{
+        _dropValue = _dropValues[int.parse(i)];
+      }
       setState(() {});
     });
 
+  }
+
+  void _getUserInfo() async {
+    try {
+      final response =
+      await _interface.get("User/Me");
+      var d = User.fromJson(response);
+      if (d.hasError == false) {
+        for (var element in d.data!.socialMediaAccounts!) {
+          _socials.add(element.socialMedia!);
+        }
+        if(_socials.length == 3) {
+          setState(() {
+            _socialsOK = true;
+          });
+        }
+      } else {
+        print(d.error);
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -132,7 +162,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                     children: [
                       Padding(
                         padding:
-                            const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 0.0),
+                        const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 0.0),
                         child: Row(
                           children: [
                             Text(AppLocalizations.of(context)!.portfolio,
@@ -170,9 +200,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         //       return FadeTransition(opacity: animation, child: child);
                                         //     }));
                                       },
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.more_vert,
-                                        color: Colors.white70,
+                                        color: _socialsOK ? Colors.white70 : Colors.red,
                                       ),
                                     ),
                                   ),
@@ -187,86 +217,86 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                         height: 250,
                         child: portCalc
                             ? Stack(
-                                // alignment: AlignmentDirectional.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 0.0, right: 10.0, top: 50.0),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      child: Transform(
-                                        transform: scaleXYZTransform(),
-                                        child: const Image(
-                                          fit: BoxFit.fitWidth,
-                                          image: AssetImage("images/wave.png"),
-                                        ),
+                          // alignment: AlignmentDirectional.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 0.0, right: 10.0, top: 50.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Transform(
+                                  transform: scaleXYZTransform(),
+                                  child: const Image(
+                                    fit: BoxFit.fitWidth,
+                                    image: AssetImage("images/wave.png"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 170.0, right: 0.0, top: 90.0),
+                              child: Transform.scale(
+                                scale: 0.35,
+                                child: const Image(
+                                  image: AssetImage("images/rocket_pin.png"),
+                                ),
+                              ),
+                            ),
+                            const Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 98.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1.6,
+                                  child: Image(
+                                      fit: BoxFit.fitWidth,
+                                      image:
+                                      AssetImage("images/price_frame.png")),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 130.0, top: 25.0),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 200,
+                                      child: AutoSizeText(
+                                        "\$" + totalUSD.toStringAsFixed(2),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                        minFontSize: 8.0,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 170.0, right: 0.0, top: 90.0),
-                                    child: Transform.scale(
-                                      scale: 0.35,
-                                      child: const Image(
-                                        image: AssetImage("images/rocket_pin.png"),
+                                    const SizedBox(
+                                      height: 3.0,
+                                    ),
+                                    SizedBox(
+                                      width: 130,
+                                      child: AutoSizeText(
+                                        _formatPrice(totalBTC) + " BTC",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline2,
+                                        minFontSize: 8.0,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  ),
-                                  const Align(
-                                    alignment: Alignment.center,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(bottom: 98.0),
-                                      child: AspectRatio(
-                                        aspectRatio: 1.6,
-                                        child: Image(
-                                            fit: BoxFit.fitWidth,
-                                            image:
-                                                AssetImage("images/price_frame.png")),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 130.0, top: 25.0),
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: 200,
-                                            child: AutoSizeText(
-                                              "\$" + totalUSD.toStringAsFixed(2),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline1,
-                                              minFontSize: 8.0,
-                                              maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 3.0,
-                                          ),
-                                          SizedBox(
-                                            width: 130,
-                                            child: AutoSizeText(
-                                              _formatPrice(totalBTC) + " BTC",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline2,
-                                              minFontSize: 8.0,
-                                              maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
                             : Container(),
                       ),
                       const SizedBox(height: 5.0,),
@@ -294,16 +324,13 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       value: _dropValue,
                                       isDense: true,
                                       onChanged: (String? val) async {
-                                        var _tempZero = _hideZero;
                                         setState(() {
-                                          _hideZero = false;
                                           _dropValue = val!;
                                           _listCoins = null;
                                         });
                                         int sort = _dropValues.indexWhere((element) => element == _dropValue);
-                                       await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
+                                        await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
                                         await _bloc!.fetchBalancesList(sort: sort);
-                                        _hideZero = _tempZero;
                                         await _checkZero();
 
                                       },
@@ -331,56 +358,33 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 5.0,),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.only(bottom: 1.0),
-                                  //   child: FlatCustomButton(
-                                  //     onTap: () {
-                              // _listCoins = null;
-                                  //       setState(() {
-                                  //         if(_hideZero) {
-                                  //           _hideZero = false;
-                                  //           _bloc!.fetchBalancesList();
-                                  //           // _bloc!.filterCoinsList(zero: _hideZero);
-                                  //         }else{
-                                  //           _hideZero = true;
-                                  //           _bloc!.filterCoinsList(zero: _hideZero);
-                                  //           // _bloc!.filterCoinsList(zero: _hideZero);
-                                  //         }
-                                  //       });
-                                  //     },
-                                  //       child:
-                                  //       Padding(
-                                  //         padding: const EdgeInsets.only(left: 0.0, right: 1.0),
-                                  //         child: FittedBox(
-                                  //           child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
-                                  //           )
-                                  //   ),
-                                  //       ),
-                                  // ),
-                                  //
-                                  // ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 1.0),
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _listCoins = null;
-                                            if(_hideZero) {
-                                              _hideZero = false;
-                                              _bloc!.fetchBalancesList();
-                                              // _bloc!.filterCoinsList(zero: _hideZero);
-                                            }else{
-                                              _hideZero = true;
-                                              _bloc!.filterCoinsList(zero: _hideZero);
-                                              // _bloc!.filterCoinsList(zero: _hideZero);
-                                            }
-                                          });
-
-                                        },
-                                        child:
-                                        AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
+                                    child: FlatCustomButton(
+                                      onTap: () {
+                                        setState(() {
+                                          _listCoins = null;
+                                          if(_hideZero) {
+                                            _hideZero = false;
+                                            _bloc!.fetchBalancesList();
+                                            // _bloc!.filterCoinsList(zero: _hideZero);
+                                          }else{
+                                            _hideZero = true;
+                                            _bloc!.filterCoinsList(zero: _hideZero);
+                                            // _bloc!.filterCoinsList(zero: _hideZero);
+                                          }
+                                        });
+                                      },
+                                      child:
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 0.0, right: 1.0),
+                                        child: FittedBox(
+                                            child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
+                                            )
+                                        ),
+                                      ),
                                     ),
-                                  ),
+
                                   ),
                                   const SizedBox(width: 8.0,),
                                 ],
@@ -416,7 +420,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                   case Status.COMPLETED:
                                     if (_listCoins == null) {
                                       _listCoins = snapshot.data!.data!;
-                                      _listHeight = _hideZero ?_listCoins!.length * 80.0 : _listCoins!.length * 69.0;
+                                      _listHeight = _hideZero ?_listCoins!.length * MediaQuery.of(context).size.height * 0.11 : _listCoins!.length * (MediaQuery.of(context).size.height * 0.085);
                                       // widget.passBalances(listCoins);
                                       _calculatePortfolio();
                                     }
@@ -488,6 +492,58 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       width: 140,
                                       child: TextButton(
                                         child: Text(
+                                          AppLocalizations.of(context)!.socials_popup + (_socialsOK ? '' : ' (!)'),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline1!
+                                              .copyWith(fontSize: 14.0, color: _socialsOK ? Colors.white : Colors.red),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                            MaterialStateProperty.resolveWith(
+                                                    (states) =>
+                                                    qrColors(states)),
+                                            shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(
+                                                        0.0),
+                                                    side: const BorderSide(
+                                                        color: Colors
+                                                            .transparent)))),
+                                        onPressed: () {
+                                          setState(() {popMenu = false;});
+                                          Navigator.of(context).push(PageRouteBuilder(
+                                              pageBuilder: (BuildContext context, _, __) {
+                                                return SocialScreen(socials: _socials,);
+                                              }, transitionsBuilder:
+                                              (_, Animation<double> animation, __, Widget child) {
+                                            return FadeTransition(opacity: animation, child: child);
+                                          }));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                            Padding(
+                              padding:
+                              const EdgeInsets.only(left: 4.0, right: 4.0),
+                              child: Container(
+                                height: 0.5,
+                                color: Colors.white12,
+                              ),
+                            ),
+                            SizedBox(
+                              // SizedBox(
+                                height: 40,
+                                child: Center(
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: SizedBox(
+                                      width: 140,
+                                      child: TextButton(
+                                        child: Text(
                                           AppLocalizations.of(context)!.settings_popup,
                                           style: Theme.of(context)
                                               .textTheme
@@ -509,7 +565,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
-                                            setState(() {popMenu = false;});
+                                          setState(() {popMenu = false;});
                                           Navigator.of(context).push(PageRouteBuilder(
                                               pageBuilder: (BuildContext context, _, __) {
                                                 return const SettingsScreen();
@@ -524,7 +580,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                 )),
                             Padding(
                               padding:
-                                  const EdgeInsets.only(left: 4.0, right: 4.0),
+                              const EdgeInsets.only(left: 4.0, right: 4.0),
                               child: Container(
                                 height: 0.5,
                                 color: Colors.white12,
@@ -637,22 +693,22 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       totalUSD = 0;
       totalBTC = 0;
       for (var element in _listCoins!) {
-            double? _freeCoins = element.free;
-            double? _priceUSD = element.priceData?.prices?.usd!.toDouble();
-            double? _priceBTC = element.priceData?.prices?.btc!.toDouble();
-            if(_priceUSD != null && _priceBTC != null) {
-              double _usd = _freeCoins! * _priceUSD;
-              totalUSD += _usd;
-              double _btc = _freeCoins * _priceBTC;
-              totalBTC += _btc;
-            }
-          }
+        double? _freeCoins = element.free;
+        double? _priceUSD = element.priceData?.prices?.usd!.toDouble();
+        double? _priceBTC = element.priceData?.prices?.btc!.toDouble();
+        if(_priceUSD != null && _priceBTC != null) {
+          double _usd = _freeCoins! * _priceUSD;
+          totalUSD += _usd;
+          double _btc = _freeCoins * _priceBTC;
+          totalBTC += _btc;
+        }
+      }
 
       Future.delayed(const Duration(milliseconds: 200), () {
-            setState(() {
-              portCalc = true;
-            });
-          });
+        setState(() {
+          portCalc = true;
+        });
+      });
     } catch (e) {
       print(e);
       Future.delayed(const Duration(milliseconds: 200), () {
@@ -777,7 +833,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   _checkZero() async{
     if(_hideZero == false) return;
     Future.delayed(Duration.zero, (){
-    _bloc!.filterCoinsList(zero: _hideZero);
+      _bloc!.filterCoinsList(zero: _hideZero);
     });
   }
 }

@@ -115,6 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!emailValid) {
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.email_invalid,
           AppLocalizations.of(context)!.email_invalid_message);
+      setState(() {
+        _curtain = false;
+      });
       return;
     }
     setState(() {
@@ -293,6 +296,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // print(m.status);
       Dialogs.openAlertBox(context, m.title!, m.errors.toString());
       setState(() {
+        _curtain = false;
         _registerButton = true;
       });
     }

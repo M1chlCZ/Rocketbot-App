@@ -45,6 +45,7 @@
   "txcopy": "Tapahtuman ID kopioitu leikepöydälle.",
   "confirmations": "vahvistukset",
   "history_popup": "HISTORIA",
+  "socials_popup" : "CONNECT",
   "settings_popup": "ASETUKSET",
   "about_popup": "TIETOA",
   "choose_coin": "Valitse kolikko",
@@ -108,5 +109,10 @@
   "by_value" : "Hinnan mukaan",
   "less_than" : "Vähemmän kuin",
   "tx_problem" : "Palvelimella on yhteysongelmia",
-  "hide_zeros" : "Piilota nollat"
+  "hide_zeros" : "Piilota nollat",
+  "social_accounts": "Social Accounts",
+  "join_discord" : "Join Rocketbot Discord",
+  "send_discord" : "Send DM to Rocket(bot)",
+  "socials_info": "By linking your social media accounts, all tokens will be combined by RocketBot.pro. This secures your balances in the event your social media account is suspended. One account for all, powered by Merge.",
+  "socials_info_add": "RocketBot.pro & Merge need to be linked to web"
 }

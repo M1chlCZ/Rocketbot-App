@@ -47,6 +47,7 @@
   "confirmations" : "confirmations",
   "history_popup" : "HISTORY",
   "settings_popup" : "SETTINGS",
+  "socials_popup" : "CONNECT",
   "about_popup" : "ABOUT",
   "choose_coin" : "Choose coin",
   "or_scan_qr" : "or receive via QR-code",
@@ -109,5 +110,10 @@
   "by_value" : "Total Value",
   "less_than" : "Less than",
   "tx_problem" : "Can't load transactions",
-  "hide_zeros" : "Hide zeros"
+  "hide_zeros" : "Hide zeros",
+  "social_accounts": "Social Accounts",
+  "join_discord" : "Join Rocketbot Discord",
+  "send_discord" : "Send DM to Rocket(bot)",
+  "socials_info": "By linking your social media accounts, all tokens will be combined by RocketBot.pro. This secures your balances in the event your social media account is suspended. One account for all, powered by Merge.",
+  "socials_info_add": "RocketBot.pro & Merge need to be linked to web"
 }

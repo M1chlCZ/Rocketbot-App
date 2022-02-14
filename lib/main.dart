@@ -29,16 +29,16 @@ void main() async {
     EmailManualHandler(["m1chlcz18@gmail.com"])
   ]);
 
-  Catcher(rootWidget: Phoenix(
-    child: const MyApp(),
-  ),
-      debugConfig: debugOptions,
-      releaseConfig: releaseOptions);
-  // runApp(
-  //   Phoenix(
-  //     child: const MyApp(),
-  //   ),
-  // );
+  // Catcher(rootWidget: Phoenix(
+  //   child: const MyApp(),
+  // ),
+  //     debugConfig: debugOptions,
+  //     releaseConfig: releaseOptions);
+  runApp(
+    Phoenix(
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

@@ -22,11 +22,11 @@ dependencies:
   auto_size_text: ^3.0.0
   auto_size_text_field: ^1.0.1
   intl: ^0.17.0
-  fl_chart: ^0.41.0
+  fl_chart: ^0.45.0
   cached_network_image: ^3.2.0
   animations: ^2.0.2
   progress_indicators: ^1.0.0
-  url_launcher: ^6.0.19
+  url_launcher: ^6.0.20
   webview_flutter_plus: ^0.2.4
   qr_flutter: ^4.0.0
   share: any
@@ -42,7 +42,7 @@ dependencies:
   google_sign_in: ^5.2.3
   sign_in_with_apple: ^3.3.0
   flutter_displaymode: ^0.3.2
-  flutter_local_notifications: ^9.2.0
+  flutter_local_notifications: ^9.3.1
   oauth2_client: ^2.3.2
   catcher: ^0.6.9
   flutter_user_agent:

@@ -46,6 +46,7 @@
   "txcopy" : "TX id zkopírována do schránky",
   "confirmations" : "potvrzení",
   "history_popup" : "HISTORIE",
+  "socials_popup" : "CONNECT",
   "settings_popup" : "NASTAVENÍ",
   "about_popup" : "O APPCE",
   "choose_coin" : "Zvolte minci",
@@ -109,5 +110,10 @@
   "by_value" : "Podle hodnoty",
   "less_than" : "Méně než",
   "tx_problem" : "Nepodařilo se načíst transakce",
-  "hide_zeros" : "Skrýt nulové položky"
+  "hide_zeros" : "Skrýt nulové položky",
+  "social_accounts": "Social Accounts",
+  "join_discord" : "Připojte se k Rocketbot Discord",
+  "send_discord" : "Zašlete DM na Rocket(bot)",
+  "socials_info": "Napojením vašich sociálních sítích, všechny vaše tokeny budou spravovány Rocketbot.pro. Tímto krokem zabezpečíte všechen Váš obnos v případě, že Váš účet sociální sítě bude pozastaven. Jeden účet pro vše díky Merge.",
+  "socials_info_add": "RocketBot.pro & Merge need to be linked to web"
 }
