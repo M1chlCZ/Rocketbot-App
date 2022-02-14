@@ -1,5 +1,6 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/models/socials.dart';
@@ -344,7 +345,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                   splashColor: const Color(0xFF7289DA),
                   highlightColor: Colors.black54,
                   onTap: () async {
-                    if(!_socials.contains(1)) {
+                    if(_socials.contains(1)) {
                       setState(() {
                         _discordDetails
                             ? _discordDetails = false
@@ -477,55 +478,66 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(4.0)),
                         color: Color(0xFF252525),
                       ),
-                      child: Row(
+                      child: Stack(
                         children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.79,
-                            child: AutoSizeTextField(
-                              maxLines: 1,
-                              minFontSize: 8.0,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(
-                                      color: Colors.white, fontSize: 14.0),
-                              autocorrect: false,
-                              readOnly: true,
-                              controller: _discordTextController,
-                              textAlign: TextAlign.left,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.only(
-                                    left: 4.0, right: 4.0),
-                                isDense: true,
-                                hintStyle: Theme.of(context)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.82,
+                              child: AutoSizeTextField(
+                                maxLines: 1,
+                                minFontSize: 8.0,
+                                style: Theme.of(context)
                                     .textTheme
-                                    .subtitle2!
+                                    .bodyText1!
                                     .copyWith(
-                                        color: Colors.white54, fontSize: 14.0),
-                                hintText: '',
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent),
+                                        color: Colors.white, fontSize: 14.0),
+                                autocorrect: false,
+                                readOnly: true,
+                                controller: _discordTextController,
+                                textAlign: TextAlign.left,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(
+                                      left: 4.0, right: 4.0),
+                                  isDense: true,
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .subtitle2!
+                                      .copyWith(
+                                          color: Colors.white54, fontSize: 14.0),
+                                  hintText: '',
+                                  enabledBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  focusedBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 30.0,
-                            height: 25.0,
-                            child: FlatCustomButton(
-                                onTap: () {},
-                                color: const Color(0xFF7289DA),
-                                splashColor: Colors.black38,
-                                child: const Icon(
-                                  Icons.content_copy,
-                                  size: 18.0,
-                                  color: Colors.white,
-                                )),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 0.0, right: 3.0),
+                              child: SizedBox(
+                                width: 30.0,
+                                height: 25.0,
+                                child: FlatCustomButton(
+                                    onTap: () {
+                                      Clipboard.setData(ClipboardData(text: 'connect ' + _discord!.data!.key!));
+                                    },
+                                    color: const Color(0xFF7289DA),
+                                    splashColor: Colors.black38,
+                                    child: const Icon(
+                                      Icons.content_copy,
+                                      size: 18.0,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                            ),
                           )
                         ],
                       ),
@@ -560,9 +572,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
 
   @override
   void onPaused() {
-    if (!_paused) {
       _paused = true;
-    }
   }
 
   @override

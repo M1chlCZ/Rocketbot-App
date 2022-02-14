@@ -104,7 +104,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         for (var element in d.data!.socialMediaAccounts!) {
           _socials.add(element.socialMedia!);
         }
-        if(_socials.length == 3) {
+        if(_socials.isNotEmpty) {
           setState(() {
             _socialsOK = true;
           });
@@ -520,7 +520,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                               }, transitionsBuilder:
                                               (_, Animation<double> animation, __, Widget child) {
                                             return FadeTransition(opacity: animation, child: child);
-                                          }));
+                                          })).then((value) => _getUserInfo());
                                         },
                                       ),
                                     ),
