@@ -5,6 +5,7 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/models/socials.dart';
 import 'package:rocketbot/netInterface/interface.dart';
+import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,12 +37,16 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   void initState() {
     _socials = widget.socials;
     super.initState();
-    _loadDiscordDirective();
-    _loadTwitterDirective();
-    _loadTelegramDirective();
+    _loadDirectives();
   }
 
-  void _loadDiscordDirective() async {
+  _loadDirectives() async {
+   await _loadDiscordDirective();
+   await _loadTwitterDirective();
+   await _loadTelegramDirective();
+  }
+
+  _loadDiscordDirective() async {
     Map<String, dynamic> _request = {
       "socialMedia": 1,
     };
@@ -61,7 +66,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
     }
   }
 
-  void _loadTwitterDirective() async {
+  _loadTwitterDirective() async {
     Map<String, dynamic> _request = {
       "socialMedia": 3,
     };
@@ -80,7 +85,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
     }
   }
 
-  void _loadTelegramDirective() async {
+  _loadTelegramDirective() async {
     Map<String, dynamic> _request = {
       "socialMedia": 2,
     };
@@ -93,6 +98,27 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
         setState(() {});
       } else {
         print(d.error);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _socialsDisconnect(int socSite) async {
+    Map<String, dynamic> _request = {
+      "socialMedia": socSite,
+    };
+    try {
+      final response =
+      await _interface.post("Auth/DisconnectSocialMediaAccount", _request);
+      var d = Socials.fromJson(response);
+      if (d.hasError == false) {
+        await _loadDirectives();
+        setState(() {});
+      } else {
+        await _loadDirectives();
+        setState(() {});
+        Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error, d.error);
       }
     } catch (e) {
       print(e);
@@ -191,9 +217,11 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                 child: InkWell(
                   splashColor: const Color(0xFF1DA1F2),
                   highlightColor: Colors.black54,
-                  onTap: () async {
+                  onTap: ()  {
                     if(!_socials.contains(3)) {
                       _launchURL(_twitter!.data!.url!);
+                    }else{
+                     Dialogs.openSocDisconnectBox(context, 3, 'Twitter',(soc) =>  _socialsDisconnect(soc));
                     }
                   },
                   // widget.coinSwitch(widget.coin);
@@ -272,6 +300,8 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                   onTap: () async {
                     if(!_socials.contains(2)) {
                       _launchURL(_telegram!.data!.url!);
+                    }else{
+                      Dialogs.openSocDisconnectBox(context, 2, 'Telegram', (soc) =>  _socialsDisconnect(soc));
                     }
                   },
                   child: Padding(
@@ -345,12 +375,14 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                   splashColor: const Color(0xFF7289DA),
                   highlightColor: Colors.black54,
                   onTap: () async {
-                    if(_socials.contains(1)) {
+                    if(!_socials.contains(1)) {
                       setState(() {
                         _discordDetails
                             ? _discordDetails = false
                             : _discordDetails = true;
                       });
+                    }else{
+                      Dialogs.openSocDisconnectBox(context, 1, 'Discord',(soc) =>  _socialsDisconnect(soc));
                     }
                     // _launchURL("https://rocketbot.pro/privacy");
                   },

@@ -156,4 +156,47 @@ class Dialogs {
           );
         });
   }
+
+  static Future<void> openSocDisconnectBox(
+      context,int soc, String name, Function(int soc) acc) async {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return DialogBody(
+            header: AppLocalizations.of(context)!.unlink,
+            buttonLabel: 'OK',
+            oneButton: false,
+            onTap: () async {
+              acc(soc);
+              Navigator.of(context).pop(true);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 25, bottom: 25, left: 15.0, right: 15.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+                  child: Container(
+                    color: Colors.black38,
+                    padding: const EdgeInsets.all(15.0),
+                    child: AutoSizeText(
+                      AppLocalizations.of(context)!.dl_soc_log_out.replaceAll("{1}", name),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 8,
+                      minFontSize: 8.0,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6!
+                          .copyWith(fontSize: 16.0, color: Colors.white70),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+  }
 }

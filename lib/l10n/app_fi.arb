@@ -78,6 +78,7 @@
   "as_enter_desired_pin": "Anna haluamasi PIN-koodi",
   "as_enter_desired_confirm_pin": "Vahvista haluamasi PIN-koodi",
   "dl_log_out": "Haluatko varmasti kirjautua ulos sovelluksesta?",
+  "dl_soc_log_out" : "Do you really want to unlink {1} from Rocketbot?",
   "about_rocket": "RocketBot sovellus käyttää kryptovaluuttoja mikromaksuihin sosiaalisen median alustoilla (Twitter, Telegram & Discord).",
   "about_terms": "Käyttöehdot",
   "about_policy": "Tietosuojakäytäntö",
@@ -114,5 +115,6 @@
   "join_discord" : "Join Rocketbot Discord",
   "send_discord" : "Send DM to Rocket(bot)",
   "socials_info": "By linking your social media accounts, all tokens will be combined by RocketBot.pro. This secures your balances in the event your social media account is suspended. One account for all, powered by Merge.",
-  "socials_info_add": "RocketBot.pro & Merge need to be linked to web"
+  "socials_info_add": "RocketBot.pro & Merge need to be linked to web",
+  "unlink" : "unlink"
 }

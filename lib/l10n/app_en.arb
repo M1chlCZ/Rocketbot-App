@@ -79,6 +79,7 @@
   "as_enter_desired_pin" : "Please enter desired PIN",
   "as_enter_desired_confirm_pin" : "Please confirm desired PIN",
   "dl_log_out":  "Do you really want to log out of the app?",
+  "dl_soc_log_out" : "Do you really want to unlink {1} from Rocketbot?",
   "about_rocket" : "RocketBot Wallet App, uses cryptocurrencies for micropayments on social media platforms(Twitter, Telegram & Discord).",
   "about_terms" :"Terms of Use",
   "about_policy" :"Privacy Policy",
@@ -115,5 +116,6 @@
   "join_discord" : "Join Rocketbot Discord",
   "send_discord" : "Send DM to Rocket(bot)",
   "socials_info": "By linking your social media accounts, all tokens will be combined by RocketBot.pro. This secures your balances in the event your social media account is suspended. One account for all, powered by Merge.",
-  "socials_info_add": "RocketBot.pro & Merge need to be linked to web"
+  "socials_info_add": "RocketBot.pro & Merge need to be linked to web",
+  "unlink" : "Unlink"
 }
