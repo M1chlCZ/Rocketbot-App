@@ -44,8 +44,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
   List<CoinBalance>? _listCoins;
-  List<int> _socials = [];
+  final List<int> _socials = [];
   final _firebaseMessaging = FCM();
+  User? _me;
 
   bool _socialsOK = false;
 
@@ -101,6 +102,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       await _interface.get("User/Me");
       var d = User.fromJson(response);
       if (d.hasError == false) {
+        _me = d;
+        print(_me!.toJson());
         for (var element in d.data!.socialMediaAccounts!) {
           _socials.add(element.socialMedia!);
         }
@@ -516,7 +519,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                           setState(() {popMenu = false;});
                                           Navigator.of(context).push(PageRouteBuilder(
                                               pageBuilder: (BuildContext context, _, __) {
-                                                return SocialScreen(socials: _socials,);
+                                                return SocialScreen(socials: _socials, me: _me!,);
                                               }, transitionsBuilder:
                                               (_, Animation<double> animation, __, Widget child) {
                                             return FadeTransition(opacity: animation, child: child);

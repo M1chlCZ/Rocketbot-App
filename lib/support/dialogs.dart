@@ -164,7 +164,7 @@ class Dialogs {
         context: context,
         builder: (BuildContext context) {
           return DialogBody(
-            header: AppLocalizations.of(context)!.unlink,
+            header: AppLocalizations.of(context)!.unlink.replaceAll("{1}", name),
             buttonLabel: 'OK',
             oneButton: false,
             onTap: () async {

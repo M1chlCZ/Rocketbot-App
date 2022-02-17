@@ -117,5 +117,5 @@
   "send_discord" : "Zašlete DM na Rocket(bot)",
   "socials_info": "Napojením vašich sociálních sítích, všechny vaše tokeny budou spravovány Rocketbot.pro. Tímto krokem zabezpečíte všechen Váš obnos v případě, že Váš účet sociální sítě bude pozastaven. Jeden účet pro vše díky Merge.",
   "socials_info_add": "RocketBot.pro & Merge need to be linked to web",
-  "unlink" : "unlink"
+  "unlink" : "Unlink {1}"
 }

@@ -34,8 +34,8 @@ dependencies:
   vibration: ^1.7.4-nullsafety.0
   flutter_switch: ^0.3.2
   qr_code_scanner: ^0.6.1
-  permission_handler: ^9.0.1
-  local_auth: ^1.1.10
+  permission_handler: ^9.1.0
+  local_auth: ^1.1.11
   flutter_phoenix: ^1.0.0
   package_info: any
   flutter_lock_screen: ^2.0.1

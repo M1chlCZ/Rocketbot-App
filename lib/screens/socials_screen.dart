@@ -8,14 +8,17 @@ import 'package:rocketbot/netInterface/interface.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
+import 'package:rocketbot/widgets/social_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/user.dart';
 
 class SocialScreen extends StatefulWidget {
   final List<int> socials;
+  final User me;
 
-  const SocialScreen({Key? key, required this.socials}) : super(key: key);
+  const SocialScreen({Key? key, required this.socials, required this.me})
+      : super(key: key);
 
   @override
   _SocialScreenState createState() => _SocialScreenState();
@@ -26,24 +29,75 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   final TextEditingController _discordTextController = TextEditingController();
   List<int> _socials = [];
   bool _paused = false;
+  User? _me;
 
   Socials? _discord;
   Socials? _twitter;
   Socials? _telegram;
+
+  SocialMediaAccounts? _twitterAccount;
+  SocialMediaAccounts? _telegramAccount;
+  SocialMediaAccounts? _discordAccount;
 
   bool _discordDetails = false;
 
   @override
   void initState() {
     _socials = widget.socials;
+    _me = widget.me;
     super.initState();
     _loadDirectives();
+    _getAccounts();
   }
 
   _loadDirectives() async {
-   await _loadDiscordDirective();
-   await _loadTwitterDirective();
-   await _loadTelegramDirective();
+    await _loadDiscordDirective();
+    await _loadTwitterDirective();
+    await _loadTelegramDirective();
+  }
+
+  _getUserInfo() async {
+    try {
+      final response = await _interface.get("User/Me");
+      var d = User.fromJson(response);
+      _twitterAccount = null;
+      _telegramAccount = null;
+      _discordAccount = null;
+      if (d.hasError == false) {
+        _socials.clear();
+        _me = d;
+        for (var element in d.data!.socialMediaAccounts!) {
+          _socials.add(element.socialMedia!);
+        }
+        await _getAccounts();
+        setState(() {});
+      } else {
+        debugPrint(d.error);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  _getAccounts() async {
+    try {
+      _twitterAccount = _me!.data!.socialMediaAccounts
+          ?.firstWhere((element) => element.socialMedia == 3);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    try {
+      _telegramAccount = _me!.data!.socialMediaAccounts
+          ?.firstWhere((element) => element.socialMedia == 2);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    try {
+      _discordAccount = _me!.data!.socialMediaAccounts
+          ?.firstWhere((element) => element.socialMedia == 1);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   _loadDiscordDirective() async {
@@ -59,10 +113,10 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
         _discordTextController.text = 'connect ' + _discord!.data!.key!;
         setState(() {});
       } else {
-        print(d.error);
+        debugPrint(d.error);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -78,10 +132,10 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
         _twitter = d;
         setState(() {});
       } else {
-        print(d.error);
+        debugPrint(d.error);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -97,10 +151,10 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
         _telegram = d;
         setState(() {});
       } else {
-        print(d.error);
+        debugPrint(d.error);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -110,18 +164,23 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
     };
     try {
       final response =
-      await _interface.post("Auth/DisconnectSocialMediaAccount", _request);
+          await _interface.post("Auth/DisconnectSocialMediaAccount", _request);
       var d = Socials.fromJson(response);
       if (d.hasError == false) {
-        await _loadDirectives();
-        setState(() {});
+        Future.delayed(const Duration(seconds: 2), () async {
+          _socials.clear();
+          await _loadDirectives();
+          await _getUserInfo();
+          setState(() {});
+        });
       } else {
         await _loadDirectives();
         setState(() {});
-        Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error, d.error);
+        Dialogs.openAlertBox(
+            context, AppLocalizations.of(context)!.error, d.error);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -195,251 +254,57 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
           child: Text(AppLocalizations.of(context)!.socials_info,
               style: const TextStyle(color: Colors.white70)),
         ),
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0),
-        //   child: Text(AppLocalizations.of(context)!.socials_info, style: TextStyle(color: Colors.white70)),
-        // ),
         const SizedBox(
           height: 30.0,
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, right: 20.0),
-          child: SizedBox(
-            height: 50.0,
-            child: Card(
-                elevation: 0,
-                color: Colors.black12,
-                margin: EdgeInsets.zero,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: InkWell(
-                  splashColor: const Color(0xFF1DA1F2),
-                  highlightColor: Colors.black54,
-                  onTap: ()  {
-                    if(!_socials.contains(3)) {
-                      _launchURL(_twitter!.data!.url!);
-                    }else{
-                     Dialogs.openSocDisconnectBox(context, 3, 'Twitter',(soc) =>  _socialsDisconnect(soc));
-                    }
-                  },
-                  // widget.coinSwitch(widget.coin);
-                  // widget.activeCoin(widget.coin.coin!);
-
-                  child: Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 15.0,
-                        ),
-                        SizedBox(
-                            width: 22.0,
-                            child: Image.asset(
-                              'images/twitter.png',
-                              color: Colors.white70,
-                            )),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, bottom: 0.0),
-                          child: Text('Twitter',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .copyWith(
-                                      fontSize: 18.0, color: Colors.white)),
-                        ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: IgnorePointer(
-                            child: NeuButton(
-                                height: 28,
-                                width: 32,
-                                child: RotatedBox(
-                                  quarterTurns: 0,
-                                  child: Icon(
-                                    _socials.contains(3)
-                                        ? Icons.check
-                                        : Icons.arrow_forward_ios_sharp,
-                                    color: Colors.white,
-                                    size: 22.0,
-                                  ),
-                                )),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )),
-          ),
+        SocialMediaCard(
+          name: 'Twitter',
+          cardActiveColor: const Color(0xFF1DA1F2),
+          pictureName: 'images/twitter.png',
+          onTap: () async {
+            if (!_socials.contains(3)) {
+              await _loadTwitterDirective();
+              _launchURL(_twitter!.data!.url!);
+              }
+          },
+          unlink: _socialsDisconnect,
+          socials: _twitterAccount,
         ),
         const SizedBox(
           height: 10.0,
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, right: 20.0),
-          child: SizedBox(
-            height: 50.0,
-            child: Card(
-                elevation: 0,
-                color: Colors.black12,
-                margin: EdgeInsets.zero,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: InkWell(
-                  splashColor: const Color(0xFF7289DA),
-                  highlightColor: Colors.black54,
-                  onTap: () async {
-                    if(!_socials.contains(2)) {
-                      _launchURL(_telegram!.data!.url!);
-                    }else{
-                      Dialogs.openSocDisconnectBox(context, 2, 'Telegram', (soc) =>  _socialsDisconnect(soc));
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 15.0,
-                        ),
-                        SizedBox(
-                            width: 22.0,
-                            child: Image.asset(
-                              'images/telegram.png',
-                              color: Colors.white70,
-                            )),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, bottom: 0.0),
-                          child: Text('Telegram',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .copyWith(
-                                      fontSize: 18.0, color: Colors.white)),
-                        ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: IgnorePointer(
-                            child: NeuButton(
-                                height: 28,
-                                width: 32,
-                                child: RotatedBox(
-                                  quarterTurns: 0,
-                                  child: Icon(
-                                    _socials.contains(2)
-                                        ? Icons.check
-                                        : Icons.arrow_forward_ios_sharp,
-                                    color: Colors.white,
-                                    size: 22.0,
-                                  ),
-                                )),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )),
-          ),
+        SocialMediaCard(
+          name: 'Telegram',
+          cardActiveColor: const Color(0xFF229ED9),
+          pictureName: 'images/telegram.png',
+          onTap: () async {
+            if (!_socials.contains(2)) {
+              await _loadTelegramDirective();
+              _launchURL(_telegram!.data!.url!);
+            }
+          },
+          socials: _telegramAccount,
+          unlink: _socialsDisconnect,
         ),
         const SizedBox(
           height: 10.0,
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, right: 20.0),
-          child: SizedBox(
-            height: 50.0,
-            child: Card(
-                elevation: 0,
-                color: Colors.black12,
-                margin: EdgeInsets.zero,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: InkWell(
-                  splashColor: const Color(0xFF7289DA),
-                  highlightColor: Colors.black54,
-                  onTap: () async {
-                    if(!_socials.contains(1)) {
-                      setState(() {
-                        _discordDetails
-                            ? _discordDetails = false
-                            : _discordDetails = true;
-                      });
-                    }else{
-                      Dialogs.openSocDisconnectBox(context, 1, 'Discord',(soc) =>  _socialsDisconnect(soc));
-                    }
-                    // _launchURL("https://rocketbot.pro/privacy");
-                  },
-                  // widget.coinSwitch(widget.coin);
-                  // widget.activeCoin(widget.coin.coin!);
-
-                  child: Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 15.0,
-                        ),
-                        SizedBox(
-                            width: 22.0,
-                            child: Image.asset(
-                              'images/discord.png',
-                              color: Colors.white70,
-                            )),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, bottom: 0.0),
-                          child: Text('Discord',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4!
-                                  .copyWith(
-                                      fontSize: 18.0, color: Colors.white)),
-                        ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: IgnorePointer(
-                            child: NeuButton(
-                                height: 28,
-                                width: 32,
-                                child: RotatedBox(
-                                  quarterTurns: _socials.contains(1) ? 0 : 1,
-                                  child: Icon(
-                                    _socials.contains(1)
-                                        ? Icons.check
-                                        : Icons.arrow_forward_ios_sharp,
-                                    color: Colors.white,
-                                    size: 22.0,
-                                  ),
-                                )),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )),
-          ),
+        SocialMediaCard(
+          name: 'Discord',
+          cardActiveColor: const Color(0xFF7289DA),
+          pictureName: 'images/discord.png',
+          onTap: () async {
+            if (!_socials.contains(1)) {
+              await _loadDiscordDirective();
+              setState(() {
+                _discordDetails
+                    ? _discordDetails = false
+                    : _discordDetails = true;
+              });
+            }
+          },
+          unlink: _socialsDisconnect,
+          socials: _discordAccount,
         ),
         AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
@@ -536,7 +401,8 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                                       .textTheme
                                       .subtitle2!
                                       .copyWith(
-                                          color: Colors.white54, fontSize: 14.0),
+                                          color: Colors.white54,
+                                          fontSize: 14.0),
                                   hintText: '',
                                   enabledBorder: const UnderlineInputBorder(
                                     borderSide:
@@ -553,13 +419,16 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 0.0, right: 3.0),
+                              padding:
+                                  const EdgeInsets.only(top: 0.0, right: 3.0),
                               child: SizedBox(
                                 width: 30.0,
                                 height: 25.0,
                                 child: FlatCustomButton(
                                     onTap: () {
-                                      Clipboard.setData(ClipboardData(text: 'connect ' + _discord!.data!.key!));
+                                      Clipboard.setData(ClipboardData(
+                                          text: 'connect ' +
+                                              _discord!.data!.key!));
                                     },
                                     color: const Color(0xFF7289DA),
                                     splashColor: Colors.black38,
@@ -583,12 +452,12 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   }
 
   void _launchURL(String url) async {
-    var _url = url;
-    print(_url);
+    var _url = url.replaceAll(" ", "+");
+    // print(_url);
     try {
       await launch(_url);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -604,33 +473,18 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
 
   @override
   void onPaused() {
-      _paused = true;
+    _paused = true;
   }
 
   @override
-  void onResumed() {
+  void onResumed() async {
     if (_paused) {
       _getUserInfo();
       _paused = false;
     }
   }
 
-  void _getUserInfo() async {
-    try {
-      final response = await _interface.get("User/Me");
-      var d = User.fromJson(response);
-      if (d.hasError == false) {
-        for (var element in d.data!.socialMediaAccounts!) {
-          _socials.add(element.socialMedia!);
-        }
-        setState(() {});
-      } else {
-        print(d.error);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+
 }
 
 extension StringExtension on String {
