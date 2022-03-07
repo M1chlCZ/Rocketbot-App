@@ -23,6 +23,7 @@ class CoinScreen extends StatefulWidget {
   final List<CoinBalance>? allCoins;
   final Function(Coin? c) setActiveCoin;
   final Function(bool touch) blockTouch;
+  final double? free;
 
   const CoinScreen(
       {Key? key,
@@ -31,6 +32,7 @@ class CoinScreen extends StatefulWidget {
       required this.goBack,
       required this.setActiveCoin,
       required this.blockTouch,
+        required this.free
      })
       : super(key: key);
 
@@ -404,7 +406,7 @@ class _CoinScreenState extends State<CoinScreen>
     setState(() {
       portCalc = false;
     });
-    Decimal? _freeCoins = Decimal.parse(_balanceData!.free!.toString());
+    Decimal? _freeCoins = Decimal.parse(widget.free!.toString());
 
     try {
       for (var element in _listCoins) {

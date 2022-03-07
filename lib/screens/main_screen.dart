@@ -2,10 +2,14 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
+import 'package:rocketbot/models/deposit_address.dart';
+import 'package:rocketbot/models/pos_coins_list.dart';
 import 'package:rocketbot/models/transaction_data.dart';
+import 'package:rocketbot/netInterface/interface.dart';
 import 'package:rocketbot/screenPages/coin_page.dart';
 import 'package:rocketbot/screenpages/deposit_page.dart';
 import 'package:rocketbot/screenpages/send_page.dart';
+import 'package:rocketbot/screenpages/staking_page.dart';
 import 'package:rocketbot/support/notification_helper.dart';
 
 import '../component_widgets/button_neu.dart';
@@ -14,21 +18,27 @@ import '../screens/portfolio_page.dart';
 class MainScreen extends StatefulWidget {
   final CoinBalance coinBalance;
   final List<CoinBalance>? listCoins;
-  const MainScreen({Key? key, required this.coinBalance, this.listCoins}) : super(key: key);
+  final PosCoinsList? posCoinsList;
+  final VoidCallback refreshList;
+  const MainScreen({Key? key, required this.coinBalance, this.listCoins, this.posCoinsList, required this.refreshList}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final NetInterface _interface = NetInterface();
   final _portfolioKey = GlobalKey<PortfolioScreenState>();
   final _pageController = PageController(initialPage: 1);
+  String? _depositAddr;
+  String? _posDepositAddr;
   int _selectedPageIndex = 1;
   List<CoinBalance>? _lc;
   int _mainPageIndex = 0;
   late Coin _coinActive;
   double _free = 0.0;
   bool _swipeBlock = false;
+  bool _posCoin = false;
 
   @override
   void initState() {
@@ -36,6 +46,8 @@ class _MainScreenState extends State<MainScreen> {
     _coinActive = widget.coinBalance.coin!;
     _free = widget.coinBalance.free!;
     _lc = widget.listCoins!;
+    _checkPosCoin(_coinActive);
+    _getDepositAddr();
     // _bloc = BalancesBloc();
     // _priceBlock = CoinPriceBloc("merge");
   }
@@ -54,11 +66,25 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _checkPosCoin(Coin? c) {
+    final indexPos = widget.posCoinsList!.coins!.indexWhere((element) => element.idCoin! == c?.id!);
+    indexPos != -1 ? _posCoin = true : _posCoin = false;
+    if(indexPos != -1) {
+      _posDepositAddr = widget.posCoinsList!.coins![indexPos].depositAddr!;
+    }else{
+      _posDepositAddr = null;
+    }
+    setState(() {});
+  }
+
   void _setActiveCoin(Coin? c) {
     final index = _lc!.indexWhere((element) =>
                                       element.coin == c);
     _free = _lc![index].free!;
     _coinActive = c!;
+    _checkPosCoin(_coinActive);
+    _getDepositAddr();
+    setState(() {});
   }
 
   void getBalances(List<CoinBalance>? lc) {
@@ -67,6 +93,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _changeFree(double free) {
     _free = free;
+    widget.refreshList();
   }
 
 
@@ -76,6 +103,22 @@ class _MainScreenState extends State<MainScreen> {
       _mainPageIndex = 1;
       _coinActive = s!;
     });
+  }
+
+  _getDepositAddr() async {
+    Map<String, dynamic> _request = {
+      "coinId": _coinActive.id!,
+    };
+    try {
+      final response =
+      await _interface.post("Transfers/CreateDepositAddress", _request);
+      var d = DepositAddress.fromJson(response);
+      setState(() {
+        _depositAddr = d.data!.address!;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -91,22 +134,25 @@ class _MainScreenState extends State<MainScreen> {
               });
             },
             children: <Widget>[
-              DepositPage(coin: _coinActive, free: _free,),
-              PageTransitionSwitcher(
-                duration: const Duration(milliseconds: 800),
-                transitionBuilder: (child, animation, secondaryAnimation) =>
-                    FadeThroughTransition(
-                  animation: animation,
-                  secondaryAnimation: secondaryAnimation,
-                  child: child,
-                ),
-                child: CoinScreen(
+              DepositPage(coin: _coinActive, free: _free, depositAddr: _depositAddr,),
+               CoinScreen(
                   setActiveCoin: _setActiveCoin,
                         activeCoin: _coinActive,
                         allCoins: _lc,
                         goBack: goBack,
                   blockTouch: _blockTouch,
+                 free: _free
                       ),
+              StakingPage(
+                setActiveCoin: _setActiveCoin,
+                changeFree: _changeFree,
+                depositAddress: _depositAddr,
+                depositPosAddress: _posDepositAddr,
+                activeCoin: _coinActive,
+                allCoins: _lc,
+                free: _free,
+                goBack: goBack,
+                blockTouch: _blockTouch,
               ),
               SendPage(
                 changeFree: _changeFree,
@@ -206,7 +252,46 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    _onTappedBar(2);
+                    if(_posCoin) {
+                      _onTappedBar(2);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 0.0),
+                    child: Image.asset(
+                      "images/staking_icon.png",
+                      width: 38,
+                      fit: BoxFit.fitWidth,
+                      color: _posCoin ? Colors.white : Colors.white30,
+                    ),
+                  ),
+                ),
+                label: '',
+                activeIcon: NeuButton(
+                  width: 45,
+                  height: 45,
+                  onTap: () {
+                    if(_posCoin) {
+                      _onTappedBar(2);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 0.0),
+                    child: Image.asset(
+                      "images/staking_icon.png",
+                      color: const Color(0xFFFDCB29),
+                      width: 38,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: NeuButton(
+                  width: 45,
+                  height: 45,
+                  onTap: () {
+                    _onTappedBar(3);
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 3.0),
@@ -222,7 +307,7 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    _onTappedBar(2);
+                    _onTappedBar(3);
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 3.0),

@@ -17,8 +17,9 @@ import 'package:vibration/vibration.dart';
 class DepositPage extends StatefulWidget {
   final Coin? coin;
   final double? free;
+  final String? depositAddr;
 
-  const DepositPage({Key? key, this.coin, this.free}) : super(key: key);
+  const DepositPage({Key? key, this.coin, this.free, this.depositAddr}) : super(key: key);
 
   @override
   _DepositPageState createState() => _DepositPageState();
@@ -26,39 +27,20 @@ class DepositPage extends StatefulWidget {
 
 class _DepositPageState extends State<DepositPage> {
   final TextEditingController _addressController = TextEditingController();
-  final NetInterface _interface = NetInterface();
   var popMenu = false;
-  String? _depositAddr;
 
-  _getDepositAddr() async {
-    Map<String, dynamic> _request = {
-      "coinId": widget.coin!.id!,
-    };
-    try {
-      final response =
-          await _interface.post("Transfers/CreateDepositAddress", _request);
-      var d = DepositAddress.fromJson(response);
-      setState(() {
-        _depositAddr = d.data!.address!;
-        _addressController.text = _depositAddr!;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    _addressController.text = '';
-    _getDepositAddr();
+    _addressController.text = widget.depositAddr!;
   }
 
   _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     // print(data!.text!);
     setState(() {
-      if (data! != null) _addressController.text = data.text!;
+        _addressController.text = data!.text!;
     });
   }
 
@@ -359,7 +341,7 @@ class _DepositPageState extends State<DepositPage> {
                           dataModuleShape: QrDataModuleShape.square),
                       eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square),
                       errorCorrectionLevel: QrErrorCorrectLevel.H,
-                      data: _depositAddr.toString(),
+                      data: widget.depositAddr!,
                       foregroundColor: Colors.black87,
                       version: QrVersions.auto,
                       size: 200,
@@ -665,7 +647,7 @@ class _DepositPageState extends State<DepositPage> {
                         padding: const EdgeInsets.only(top: 2.0),
                         child: GestureDetector(
                           onTap: () {
-                            Clipboard.setData(ClipboardData(text: qr));
+                            Clipboard.setData(ClipboardData(text: widget.depositAddr!));
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text("QR code copied to clipboard"),
                               duration: Duration(seconds: 3),
@@ -685,7 +667,7 @@ class _DepositPageState extends State<DepositPage> {
                                 dataModuleShape: QrDataModuleShape.square),
                             eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square),
                             errorCorrectionLevel: QrErrorCorrectLevel.H,
-                            data: _depositAddr!,
+                            data: widget.depositAddr!,
                             foregroundColor: Colors.black87,
                             version: QrVersions.auto,
                             // size: 250,

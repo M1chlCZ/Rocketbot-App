@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'Support/material_color_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

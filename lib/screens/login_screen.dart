@@ -18,6 +18,7 @@ import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/signin_code.dart';
 import 'auth_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -278,8 +279,8 @@ class _LoginScreenState extends State<LoginScreen> {
         pass: passwordRegController.text,
         surname: secondNameController.text,
         name: firstNameController.text);
-    var error = json.decode(res);
-    var succ = RegistrationSucc.fromJson(error);
+    var error = json.decode(res!);
+    var succ = SignCode.fromJson(error);
     if (succ.hasError != null && succ.hasError != true) {
       Future.delayed(const Duration(milliseconds: 5), () async {
         bool b = await _loggedIN();

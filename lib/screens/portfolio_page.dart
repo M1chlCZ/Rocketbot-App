@@ -10,8 +10,9 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
-import 'package:rocketbot/netInterface/api_response.dart';
-import 'package:rocketbot/netInterface/interface.dart';
+import 'package:rocketbot/models/pos_coins_list.dart';
+import 'package:rocketbot/netinterface/api_response.dart';
+import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/about_screen.dart';
 import 'package:rocketbot/screens/main_screen.dart';
 import 'package:rocketbot/screens/settings_screen.dart';
@@ -25,11 +26,10 @@ import '../widgets/coin_list_view.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class PortfolioScreen extends StatefulWidget {
-
-
   const PortfolioScreen({
     Key? key,
   }) : super(key: key);
@@ -43,12 +43,13 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   final NetInterface _interface = NetInterface();
   final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
+  PosCoinsList? pl;
   List<CoinBalance>? _listCoins;
   final List<int> _socials = [];
   final _firebaseMessaging = FCM();
   User? _me;
 
-  bool _socialsOK = false;
+  bool _socialsOK = true;
 
   double totalUSD = 0.0;
   double totalBTC = 0.0;
@@ -70,46 +71,55 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     _initializeLocalNotifications();
     _firebaseMessaging.setNotifications();
     _scrollController.addListener(() {
-      if(popMenu) {
-        setState(() {popMenu = false;});
+      if (popMenu) {
+        setState(() {
+          popMenu = false;
+        });
       }
     });
     _fillSort();
     _bloc = BalancesBloc();
     _getUserInfo();
+    _posHandle();
     // portCalc = widget.listBalances != null ? true : false;
   }
 
-  void _fillSort()  {
+  void _fillSort() {
     Future.delayed(Duration.zero, () async {
       _dropValue = AppLocalizations.of(context)!.deflt;
       _dropValues.clear();
-      _dropValues = [AppLocalizations.of(context)!.deflt,AppLocalizations.of(context)!.alphabeticall, AppLocalizations.of(context)!.by_amount, AppLocalizations.of(context)!.by_value];
+      _dropValues = [
+        AppLocalizations.of(context)!.deflt,
+        AppLocalizations.of(context)!.alphabeticall,
+        AppLocalizations.of(context)!.by_amount,
+        AppLocalizations.of(context)!.by_value
+      ];
       var i = await _storage.read(key: globals.SORT_TYPE);
-      if(i == null) {
+      if (i == null) {
         _dropValue = _dropValues[0];
-      }else{
+      } else {
         _dropValue = _dropValues[int.parse(i)];
       }
       setState(() {});
     });
-
   }
 
   void _getUserInfo() async {
     try {
-      final response =
-      await _interface.get("User/Me");
+      final response = await _interface.get("User/Me");
       var d = User.fromJson(response);
       if (d.hasError == false) {
         _me = d;
-        print(_me!.toJson());
         for (var element in d.data!.socialMediaAccounts!) {
           _socials.add(element.socialMedia!);
         }
-        if(_socials.isNotEmpty) {
+        if (_socials.isNotEmpty) {
           setState(() {
             _socialsOK = true;
+          });
+        } else {
+          setState(() {
+            _socialsOK = false;
           });
         }
       } else {
@@ -145,6 +155,24 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     return _listCoins!;
   }
 
+  _posHandle() async {
+    await _registerPos();
+    await _getPosCoins();
+  }
+
+  _registerPos() async {
+    String? _posToken = await _storage.read(key: NetInterface.posToken);
+    if (_posToken == null) {
+      String? _token = await _storage.read(key: NetInterface.token);
+      NetInterface.registerPos(_token!);
+    }
+  }
+  
+  _getPosCoins() async {
+    var response = await _interface.get("coin/get", pos: true);
+    pl = PosCoinsList.fromJson(response);
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -158,14 +186,16 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                 controller: _scrollController,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  height: _listHeight == 0.0 ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 0.3 + _listHeight,
+                  height: _listHeight == 0.0
+                      ? MediaQuery.of(context).size.height
+                      : MediaQuery.of(context).size.height * 0.3 + _listHeight,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding:
-                        const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 0.0),
+                        padding: const EdgeInsets.only(
+                            left: 20.0, top: 10.0, bottom: 0.0),
                         child: Row(
                           children: [
                             Text(AppLocalizations.of(context)!.portfolio,
@@ -205,7 +235,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       },
                                       icon: Icon(
                                         Icons.more_vert,
-                                        color: _socialsOK ? Colors.white70 : Colors.red,
+                                        color: _socialsOK
+                                            ? Colors.white70
+                                            : Colors.red,
                                       ),
                                     ),
                                   ),
@@ -220,96 +252,103 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                         height: 250,
                         child: portCalc
                             ? Stack(
-                          // alignment: AlignmentDirectional.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 0.0, right: 10.0, top: 50.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Transform(
-                                  transform: scaleXYZTransform(),
-                                  child: const Image(
-                                    fit: BoxFit.fitWidth,
-                                    image: AssetImage("images/wave.png"),
+                                // alignment: AlignmentDirectional.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 0.0, right: 10.0, top: 50.0),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: Transform(
+                                        transform: scaleXYZTransform(),
+                                        child: const Image(
+                                          fit: BoxFit.fitWidth,
+                                          image: AssetImage("images/wave.png"),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 170.0, right: 0.0, top: 90.0),
-                              child: Transform.scale(
-                                scale: 0.35,
-                                child: const Image(
-                                  image: AssetImage("images/rocket_pin.png"),
-                                ),
-                              ),
-                            ),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 98.0),
-                                child: AspectRatio(
-                                  aspectRatio: 1.6,
-                                  child: Image(
-                                      fit: BoxFit.fitWidth,
-                                      image:
-                                      AssetImage("images/price_frame.png")),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 130.0, top: 25.0),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 200,
-                                      child: AutoSizeText(
-                                        "\$" + totalUSD.toStringAsFixed(2),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline1,
-                                        minFontSize: 8.0,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 170.0, right: 0.0, top: 90.0),
+                                    child: Transform.scale(
+                                      scale: 0.35,
+                                      child: const Image(
+                                        image:
+                                            AssetImage("images/rocket_pin.png"),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 3.0,
-                                    ),
-                                    SizedBox(
-                                      width: 130,
-                                      child: AutoSizeText(
-                                        _formatPrice(totalBTC) + " BTC",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline2,
-                                        minFontSize: 8.0,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
+                                  ),
+                                  const Align(
+                                    alignment: Alignment.center,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 98.0),
+                                      child: AspectRatio(
+                                        aspectRatio: 1.6,
+                                        child: Image(
+                                            fit: BoxFit.fitWidth,
+                                            image: AssetImage(
+                                                "images/price_frame.png")),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 130.0, top: 25.0),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 200,
+                                            child: AutoSizeText(
+                                              "\$" +
+                                                  totalUSD.toStringAsFixed(2),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline1,
+                                              minFontSize: 8.0,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 3.0,
+                                          ),
+                                          SizedBox(
+                                            width: 130,
+                                            child: AutoSizeText(
+                                              _formatPrice(totalBTC) + " BTC",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline2,
+                                              minFontSize: 8.0,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
                             : Container(),
                       ),
-                      const SizedBox(height: 5.0,),
+                      const SizedBox(
+                        height: 5.0,
+                      ),
                       SizedBox(
                         height: 25.0,
                         width: double.infinity,
                         child: Align(
                           alignment: Alignment.center,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 3.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 3.0),
                             child: Opacity(
                               opacity: 0.6,
                               child: Row(
@@ -318,10 +357,16 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                 children: [
                                   const Padding(
                                     padding: EdgeInsets.only(bottom: 0.0),
-                                    child: Icon(Icons.sort, color: Colors.white30, size: 10.0,),
+                                    child: Icon(
+                                      Icons.sort,
+                                      color: Colors.white30,
+                                      size: 10.0,
+                                    ),
                                   ),
                                   // Text('sort by:', style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 14.0, color: Colors.white30)),
-                                  const SizedBox(width: 5.0,),
+                                  const SizedBox(
+                                    width: 5.0,
+                                  ),
                                   DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: _dropValue,
@@ -331,65 +376,93 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                           _dropValue = val!;
                                           _listCoins = null;
                                         });
-                                        int sort = _dropValues.indexWhere((element) => element == _dropValue);
-                                        await _storage.write(key: globals.SORT_TYPE, value: sort.toString());
-                                        await _bloc!.fetchBalancesList(sort: sort);
+                                        int sort = _dropValues.indexWhere(
+                                            (element) => element == _dropValue);
+                                        await _storage.write(
+                                            key: globals.SORT_TYPE,
+                                            value: sort.toString());
+                                        await _bloc!
+                                            .fetchBalancesList(sort: sort);
                                         await _checkZero();
-
                                       },
                                       items: _dropValues
                                           .map((e) => DropdownMenuItem(
-                                          value: e,
-                                          child: SizedBox(
-                                              width: 130,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(bottom: 2.0),
-                                                child: Text(e, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color: Colors.white70)),
-                                              ))))
+                                              value: e,
+                                              child: SizedBox(
+                                                  width: 130,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 2.0),
+                                                    child: Text(e,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .headline2!
+                                                            .copyWith(
+                                                                fontSize: 11.0,
+                                                                color: Colors
+                                                                    .white70)),
+                                                  ))))
                                           .toList(),
                                     ),
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.only(left: 5.0, right: 8.0, top:1.0),
+                                      padding: const EdgeInsets.only(
+                                          left: 5.0, right: 8.0, top: 1.0),
                                       child: SizedBox(
                                         height: 0.5,
                                         child: Container(
-                                          color: portCalc ? Colors.white12 : Colors.transparent,
+                                          color: portCalc
+                                              ? Colors.white12
+                                              : Colors.transparent,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 5.0,),
+                                  const SizedBox(
+                                    width: 5.0,
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 1.0),
                                     child: FlatCustomButton(
                                       onTap: () {
                                         setState(() {
                                           _listCoins = null;
-                                          if(_hideZero) {
+                                          if (_hideZero) {
                                             _hideZero = false;
                                             _bloc!.fetchBalancesList();
                                             // _bloc!.filterCoinsList(zero: _hideZero);
-                                          }else{
+                                          } else {
                                             _hideZero = true;
-                                            _bloc!.filterCoinsList(zero: _hideZero);
+                                            _bloc!.filterCoinsList(
+                                                zero: _hideZero);
                                             // _bloc!.filterCoinsList(zero: _hideZero);
                                           }
                                         });
                                       },
-                                      child:
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 0.0, right: 1.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 0.0, right: 1.0),
                                         child: FittedBox(
-                                            child: AutoSizeText(AppLocalizations.of(context)!.hide_zeros, style: Theme.of(context).textTheme.headline2!.copyWith( fontSize: 11.0, color:_hideZero ?  Colors.white : Colors.white30),
-                                            )
-                                        ),
+                                            child: AutoSizeText(
+                                          AppLocalizations.of(context)!
+                                              .hide_zeros,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2!
+                                              .copyWith(
+                                                  fontSize: 11.0,
+                                                  color: _hideZero
+                                                      ? Colors.white
+                                                      : Colors.white30),
+                                        )),
                                       ),
                                     ),
-
                                   ),
-                                  const SizedBox(width: 8.0,),
+                                  const SizedBox(
+                                    width: 8.0,
+                                  ),
                                 ],
                               ),
                             ),
@@ -409,12 +482,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                     return Align(
                                       alignment: Alignment.topCenter,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(top: 40.0),
+                                        padding:
+                                            const EdgeInsets.only(top: 40.0),
                                         child: HeartbeatProgressIndicator(
                                           startScale: 0.01,
                                           endScale: 0.2,
                                           child: const Image(
-                                            image: AssetImage('images/rocketbot_logo.png'),
+                                            image: AssetImage(
+                                                'images/rocketbot_logo.png'),
                                             color: Colors.white30,
                                           ),
                                         ),
@@ -423,19 +498,33 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                   case Status.COMPLETED:
                                     if (_listCoins == null) {
                                       _listCoins = snapshot.data!.data!;
-                                      _listHeight = _hideZero ?_listCoins!.length * MediaQuery.of(context).size.height * 0.11 : _listCoins!.length * (MediaQuery.of(context).size.height * 0.085);
+                                      _listHeight = _hideZero
+                                          ? _listCoins!.length *
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.11
+                                          : _listCoins!.length *
+                                              (MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.085);
                                       // widget.passBalances(listCoins);
                                       _calculatePortfolio();
                                     }
                                     return ListView.builder(
                                         shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         itemCount: snapshot.data!.data!.length,
                                         itemBuilder: (ctx, index) {
                                           return CoinListView(
-                                            key: ValueKey(snapshot.data!.data![index].coin!.id!),
+                                            key: ValueKey(snapshot
+                                                .data!.data![index].coin!.id!),
                                             coin: snapshot.data!.data![index],
-                                            free: Decimal.parse(snapshot.data!.data![index].free.toString()),
+                                            free: Decimal.parse(snapshot
+                                                .data!.data![index].free
+                                                .toString()),
                                             coinSwitch: _changeCoin,
                                           );
                                         });
@@ -479,14 +568,15 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                     elevation: 10.0,
                     color: Colors.transparent,
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(8.0)),
                       child: Container(
                         width: 120,
                         color: const Color(0xFF1B1B1B),
                         child: Column(
                           children: [
                             SizedBox(
-                              // SizedBox(
+                                // SizedBox(
                                 height: 40,
                                 child: Center(
                                   child: Directionality(
@@ -495,35 +585,55 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       width: 140,
                                       child: TextButton(
                                         child: Text(
-                                          AppLocalizations.of(context)!.socials_popup + (_socialsOK ? '' : ' (!)'),
+                                          AppLocalizations.of(context)!
+                                                  .socials_popup +
+                                              (_socialsOK ? '' : ' (!)'),
                                           style: Theme.of(context)
                                               .textTheme
                                               .headline1!
-                                              .copyWith(fontSize: 14.0, color: _socialsOK ? Colors.white : Colors.red),
+                                              .copyWith(
+                                                  fontSize: 14.0,
+                                                  color: _socialsOK
+                                                      ? Colors.white
+                                                      : Colors.red),
                                         ),
                                         style: ButtonStyle(
                                             backgroundColor:
-                                            MaterialStateProperty.resolveWith(
+                                                MaterialStateProperty.resolveWith(
                                                     (states) =>
-                                                    qrColors(states)),
+                                                        qrColors(states)),
                                             shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        0.0),
+                                                        BorderRadius.circular(
+                                                            0.0),
                                                     side: const BorderSide(
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
-                                          setState(() {popMenu = false;});
-                                          Navigator.of(context).push(PageRouteBuilder(
-                                              pageBuilder: (BuildContext context, _, __) {
-                                                return SocialScreen(socials: _socials, me: _me!,);
-                                              }, transitionsBuilder:
-                                              (_, Animation<double> animation, __, Widget child) {
-                                            return FadeTransition(opacity: animation, child: child);
-                                          })).then((value) => _getUserInfo());
+                                          setState(() {
+                                            popMenu = false;
+                                          });
+                                          Navigator.of(context)
+                                              .push(PageRouteBuilder(
+                                                  pageBuilder:
+                                                      (BuildContext context, _,
+                                                          __) {
+                                                return SocialScreen(
+                                                  socials: _socials,
+                                                  me: _me!,
+                                                );
+                                              }, transitionsBuilder: (_,
+                                                      Animation<double>
+                                                          animation,
+                                                      __,
+                                                      Widget child) {
+                                                return FadeTransition(
+                                                    opacity: animation,
+                                                    child: child);
+                                              }))
+                                              .then((value) => _getUserInfo());
                                         },
                                       ),
                                     ),
@@ -531,14 +641,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                 )),
                             Padding(
                               padding:
-                              const EdgeInsets.only(left: 4.0, right: 4.0),
+                                  const EdgeInsets.only(left: 4.0, right: 4.0),
                               child: Container(
                                 height: 0.5,
                                 color: Colors.white12,
                               ),
                             ),
                             SizedBox(
-                              // SizedBox(
+                                // SizedBox(
                                 height: 40,
                                 child: Center(
                                   child: Directionality(
@@ -547,7 +657,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       width: 140,
                                       child: TextButton(
                                         child: Text(
-                                          AppLocalizations.of(context)!.settings_popup,
+                                          AppLocalizations.of(context)!
+                                              .settings_popup,
                                           style: Theme.of(context)
                                               .textTheme
                                               .headline1!
@@ -555,27 +666,38 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         ),
                                         style: ButtonStyle(
                                             backgroundColor:
-                                            MaterialStateProperty.resolveWith(
+                                                MaterialStateProperty.resolveWith(
                                                     (states) =>
-                                                    qrColors(states)),
+                                                        qrColors(states)),
                                             shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        0.0),
+                                                        BorderRadius.circular(
+                                                            0.0),
                                                     side: const BorderSide(
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
-                                          setState(() {popMenu = false;});
-                                          Navigator.of(context).push(PageRouteBuilder(
-                                              pageBuilder: (BuildContext context, _, __) {
+                                          setState(() {
+                                            popMenu = false;
+                                          });
+                                          Navigator.of(context)
+                                              .push(PageRouteBuilder(
+                                                  pageBuilder:
+                                                      (BuildContext context, _,
+                                                          __) {
                                                 return const SettingsScreen();
-                                              }, transitionsBuilder:
-                                              (_, Animation<double> animation, __, Widget child) {
-                                            return FadeTransition(opacity: animation, child: child);
-                                          })).then((value) => _fillSort());
+                                              }, transitionsBuilder: (_,
+                                                      Animation<double>
+                                                          animation,
+                                                      __,
+                                                      Widget child) {
+                                                return FadeTransition(
+                                                    opacity: animation,
+                                                    child: child);
+                                              }))
+                                              .then((value) => _fillSort());
                                         },
                                       ),
                                     ),
@@ -583,14 +705,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                 )),
                             Padding(
                               padding:
-                              const EdgeInsets.only(left: 4.0, right: 4.0),
+                                  const EdgeInsets.only(left: 4.0, right: 4.0),
                               child: Container(
                                 height: 0.5,
                                 color: Colors.white12,
                               ),
                             ),
                             SizedBox(
-                              // SizedBox(
+                                // SizedBox(
                                 height: 40,
                                 child: Center(
                                   child: Directionality(
@@ -599,7 +721,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       width: 140,
                                       child: TextButton(
                                         child: Text(
-                                          AppLocalizations.of(context)!.about_popup,
+                                          AppLocalizations.of(context)!
+                                              .about_popup,
                                           style: Theme.of(context)
                                               .textTheme
                                               .headline1!
@@ -607,26 +730,34 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         ),
                                         style: ButtonStyle(
                                             backgroundColor:
-                                            MaterialStateProperty.resolveWith(
+                                                MaterialStateProperty.resolveWith(
                                                     (states) =>
-                                                    qrColors(states)),
+                                                        qrColors(states)),
                                             shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        0.0),
+                                                        BorderRadius.circular(
+                                                            0.0),
                                                     side: const BorderSide(
                                                         color: Colors
                                                             .transparent)))),
                                         onPressed: () {
-                                          setState(() {popMenu = false;});
-                                          Navigator.of(context).push(PageRouteBuilder(
-                                              pageBuilder: (BuildContext context, _, __) {
-                                                return const AboutScreen();
-                                              }, transitionsBuilder:
-                                              (_, Animation<double> animation, __, Widget child) {
-                                            return FadeTransition(opacity: animation, child: child);
+                                          setState(() {
+                                            popMenu = false;
+                                          });
+                                          Navigator.of(context).push(
+                                              PageRouteBuilder(pageBuilder:
+                                                  (BuildContext context, _,
+                                                      __) {
+                                            return const AboutScreen();
+                                          }, transitionsBuilder: (_,
+                                                  Animation<double> animation,
+                                                  __,
+                                                  Widget child) {
+                                            return FadeTransition(
+                                                opacity: animation,
+                                                child: child);
                                           }));
                                         },
                                       ),
@@ -672,6 +803,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
       return MainScreen(
+        posCoinsList: pl,
+        refreshList: _refreshData,
         coinBalance: c,
         listCoins: _listCoins,
       );
@@ -683,10 +816,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   String _formatPrice(double d) {
     var _split = d.toString().split('.');
     var _decimal = _split[1];
-    if(_decimal.length >= 8) {
+    if (_decimal.length >= 8) {
       var _sub = _decimal.substring(0, 7);
       return _split[0] + "." + _sub;
-    }else{
+    } else {
       return d.toString();
     }
   }
@@ -699,7 +832,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         double? _freeCoins = element.free;
         double? _priceUSD = element.priceData?.prices?.usd!.toDouble();
         double? _priceBTC = element.priceData?.prices?.btc!.toDouble();
-        if(_priceUSD != null && _priceBTC != null) {
+        if (_priceUSD != null && _priceBTC != null) {
           double _usd = _freeCoins! * _priceUSD;
           totalUSD += _usd;
           double _btc = _freeCoins * _priceBTC;
@@ -721,6 +854,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       });
     }
   }
+
   Color qrColors(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.pressed,
@@ -738,7 +872,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     return s;
   }
 
-  void _onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
+  void _onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) {
     Dialogs.openAlertBox(context, "Alert", payload!);
   }
 
@@ -746,7 +881,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     Dialogs.openAlertBox(context, "Alert", payload!);
   }
 
-  Future <void> _getPin() async {
+  Future<void> _getPin() async {
     final String? pin = await _getPinFuture();
     if (pin != null) _pinEnabled = true;
   }
@@ -761,8 +896,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   @override
-  void onInactive() {
-  }
+  void onInactive() {}
 
   @override
   void onPaused() async {
@@ -812,7 +946,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         ledColor: Colors.red,
       );
 
-      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel);
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()!
+          .createNotificationChannel(channel);
 
       AndroidNotificationChannel channel2 = const AndroidNotificationChannel(
         'rocket2', // id
@@ -825,17 +962,27 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         ledColor: Colors.red,
       );
 
-      await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(channel2);
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()!
+          .createNotificationChannel(channel2);
     }
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_notification');
-    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: _onSelectNotification);
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_notification');
+    final IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
+            onDidReceiveLocalNotification: _onDidReceiveLocalNotification);
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: _onSelectNotification);
   }
 
-  _checkZero() async{
-    if(_hideZero == false) return;
-    Future.delayed(Duration.zero, (){
+  _checkZero() async {
+    if (_hideZero == false) return;
+    Future.delayed(Duration.zero, () {
       _bloc!.filterCoinsList(zero: _hideZero);
     });
   }

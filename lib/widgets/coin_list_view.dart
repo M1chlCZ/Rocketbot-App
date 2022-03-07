@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/models/balance_list.dart';
+import 'package:rocketbot/models/pos_coins_list.dart';
 
 import 'price_badge.dart';
 
@@ -74,27 +75,35 @@ class _CoinListViewState extends State<CoinListView> {
                                           child: CachedNetworkImage(
                                             imageUrl:
                                                 'https://app.rocketbot.pro/coins/' +
-                                                    widget.coin.coin!.imageSmall!,
+                                                    widget
+                                                        .coin.coin!.imageSmall!,
                                             // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                             //     CircularProgressIndicator(value: downloadProgress.progress),
-                                            errorWidget: (context, url, error) =>
-                                                const Icon(Icons.error),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
                                             fit: BoxFit.scaleDown,
                                           ))),
                                 ),
-                             Transform.scale(
+                                Transform.scale(
                                     scale: 0.85,
-                                    child: PriceBadge(percentage:widget.coin.priceData?.priceChange24HPercent?.usd,)),
+                                    child: PriceBadge(
+                                      percentage: widget.coin.priceData
+                                          ?.priceChange24HPercent?.usd,
+                                    )),
                               ],
                             ),
-                            Container(height: 50, width: 0.5, color: Colors.white10,),
+                            Container(
+                              height: 50,
+                              width: 0.5,
+                              color: Colors.white10,
+                            ),
                           ],
                         )),
-
                     Expanded(
                       flex: 10,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 5.0,top: 5.0),
+                        padding: const EdgeInsets.only(left: 5.0, top: 5.0),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,16 +163,17 @@ class _CoinListViewState extends State<CoinListView> {
                               ),
                               widget.coin.priceData != null
                                   ? Padding(
-                                    padding: const EdgeInsets.only(top: 12.0, right: 4.0),
-                                    child: Row(
+                                      padding: const EdgeInsets.only(
+                                          top: 12.0, right: 4.0),
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Align(
                                             alignment: Alignment.centerLeft,
                                             child: Text(
-                                              _formatValue(widget
-                                                  .coin.priceData!.prices!.usd!),
+                                              _formatValue(widget.coin
+                                                  .priceData!.prices!.usd!),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline3,
@@ -175,7 +185,12 @@ class _CoinListViewState extends State<CoinListView> {
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: AutoSizeText(
-                                              "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                              "\$" +
+                                                  _formatPrice(
+                                                      widget.coin.free! *
+                                                          widget.coin.priceData!
+                                                              .prices!.usd!
+                                                              .toDouble()),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline3,
@@ -187,7 +202,7 @@ class _CoinListViewState extends State<CoinListView> {
                                           ),
                                         ],
                                       ),
-                                  )
+                                    )
                                   : Container(),
                             ]),
                       ),

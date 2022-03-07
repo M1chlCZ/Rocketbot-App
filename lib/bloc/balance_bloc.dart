@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/endpoints/get_all_balances.dart';
 import 'package:rocketbot/models/balance_list.dart';
-import 'package:rocketbot/netInterface/api_response.dart';
+import 'package:rocketbot/netinterface/api_response.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
 
 class BalancesBloc {

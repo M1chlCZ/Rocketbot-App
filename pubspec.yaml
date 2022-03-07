@@ -3,7 +3,7 @@ description: Rocketbot
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.68+68
+version: 1.0.70+70
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -22,29 +22,29 @@ dependencies:
   auto_size_text: ^3.0.0
   auto_size_text_field: ^1.0.1
   intl: ^0.17.0
-  fl_chart: ^0.45.0
+  fl_chart: ^0.45.1
   cached_network_image: ^3.2.0
   animations: ^2.0.2
   progress_indicators: ^1.0.0
   url_launcher: ^6.0.20
-  webview_flutter_plus: ^0.2.4
   qr_flutter: ^4.0.0
   share: any
   decimal: ^2.1.0
   vibration: ^1.7.4-nullsafety.0
   flutter_switch: ^0.3.2
-  qr_code_scanner: ^0.6.1
-  permission_handler: ^9.1.0
+  qr_code_scanner: ^0.7.0
+  permission_handler: ^9.2.0
   local_auth: ^1.1.11
   flutter_phoenix: ^1.0.0
   package_info: any
   flutter_lock_screen: ^2.0.1
-  google_sign_in: ^5.2.3
+  google_sign_in: ^5.2.4
   sign_in_with_apple: ^3.3.0
   flutter_displaymode: ^0.3.2
-  flutter_local_notifications: ^9.3.2
+  flutter_local_notifications: ^9.3.3
   oauth2_client: ^2.3.2
   catcher: ^0.6.9
+  slide_to_act: any
   flutter_user_agent:
     git:
       url: https://github.com/M1chlCZ/flutter_user_agent.git

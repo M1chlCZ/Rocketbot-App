@@ -14,6 +14,7 @@ import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/fees.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
+import 'package:rocketbot/models/withdraw_confirm.dart';
 import 'package:rocketbot/models/withdraw_pwid.dart';
 import 'package:rocketbot/netinterface/app_exception.dart';
 import 'package:rocketbot/netinterface/interface.dart';
@@ -129,7 +130,9 @@ class _SendPageState extends State<SendPage> {
       Map<String, dynamic> _queryID = {
         "id": pwid.data!.pgwIdentifier!,
       };
-      await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+     var resWith = await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+     // var rw = WithdrawConfirm.fromJson(resWith);
+
       _addressController.clear();
       _amountController.clear();
 
@@ -170,9 +173,8 @@ class _SendPageState extends State<SendPage> {
 
   _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
-    print(data!.text!);
     setState(() {
-      if (data.text != null) _addressController.text = data.text!;
+      if (data!.text! != null) _addressController.text = data.text!;
       _addressController.selection =
           TextSelection.collapsed(offset: _addressController.text.length);
     });
