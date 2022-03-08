@@ -63,6 +63,7 @@ class _StakingPageState extends State<StakingPage>
   final _storage = const FlutterSecureStorage();
   final NetInterface _interface = NetInterface();
   final _graphKey = GlobalKey<CoinPriceGraphState>();
+  final _percentageKey= GlobalKey<PercentSwitchWidgetState>();
   final GlobalKey<SlideActionState> _keyStake = GlobalKey();
   final TextEditingController _amountController = TextEditingController();
   List<Stakes>? _stakeData;
@@ -89,9 +90,9 @@ class _StakingPageState extends State<StakingPage>
     super.initState();
     _coinActive = widget.activeCoin;
     _free = widget.free;
-    // _amountController.addListener(() {
-    //   _percentageKey.currentState!.deActivate();
-    // });
+    _amountController.addListener(() {
+      _percentageKey.currentState!.deActivate();
+    });
 
     _getPos();
     _getFees();
@@ -179,7 +180,7 @@ class _StakingPageState extends State<StakingPage>
                   const SizedBox(
                     width: 20.0,
                   ),
-                  Text("Staking", style: Theme.of(context).textTheme.headline4),
+                  Text(AppLocalizations.of(context)!.stake_label, style: Theme.of(context).textTheme.headline4),
                   const SizedBox(
                     width: 60,
                   ),
@@ -299,7 +300,7 @@ class _StakingPageState extends State<StakingPage>
                 child: Row(
                   children: [
                     GradientText(
-                      "Available amount:",
+                      AppLocalizations.of(context)!.stake_available + ":",
                       gradient: const LinearGradient(colors: [
                         Colors.white70,
                         Colors.white54,
@@ -339,7 +340,7 @@ class _StakingPageState extends State<StakingPage>
                 child: Row(
                   children: [
                     GradientText(
-                      "Staked amount:",
+                      AppLocalizations.of(context)!.stake_staked_amount +  ":",
                       gradient: const LinearGradient(colors: [
                         Colors.white70,
                         Colors.white54,
@@ -354,7 +355,8 @@ class _StakingPageState extends State<StakingPage>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8.0, top: 1.0),
                         child: AutoSizeText(
-                          _formatDecimal(Decimal.parse(_amountStaked.toString())) +
+                          _formatDecimal(
+                                  Decimal.parse(_amountStaked.toString())) +
                               " " +
                               _coinActive.cryptoId!,
                           maxLines: 1,
@@ -371,48 +373,54 @@ class _StakingPageState extends State<StakingPage>
                 ),
               ),
             ),
-           _unconfirmedAmount != 0.0 ? Opacity(
-              opacity: 0.6,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 3.0, left: 10.0),
-                  child: Row(
-                    children: [
-                      GradientText(
-                        "Unconfirmed stake amount:",
-                        gradient: const LinearGradient(colors: [
-                          Colors.white70,
-                          Colors.white54,
-                        ]),
-                        // textAlign: TextAlign.end,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(fontSize: 12.0, color: Colors.white70),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0, top: 1.0),
-                          child: AutoSizeText(
-                            _unconfirmedAmount.toStringAsFixed(3) +
-                                " " +
-                                _coinActive.cryptoId!,
-                            maxLines: 1,
-                            minFontSize: 8.0,
-                            textAlign: TextAlign.end,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(fontSize: 14.0, color: Colors.white70),
-                          ),
+            _unconfirmedAmount != 0.0
+                ? Opacity(
+                    opacity: 0.6,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 3.0, left: 10.0),
+                        child: Row(
+                          children: [
+                            GradientText(
+                              AppLocalizations.of(context)!.stake_unconfirmed + ":",
+                              gradient: const LinearGradient(colors: [
+                                Colors.white70,
+                                Colors.white54,
+                              ]),
+                              // textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                      fontSize: 12.0, color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 8.0, top: 1.0),
+                                child: AutoSizeText(
+                                  _unconfirmedAmount.toStringAsFixed(3) +
+                                      " " +
+                                      _coinActive.cryptoId!,
+                                  maxLines: 1,
+                                  minFontSize: 8.0,
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                          fontSize: 14.0,
+                                          color: Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ): Container(),
+                    ),
+                  )
+                : Container(),
             const SizedBox(
               height: 5.0,
             ),
@@ -423,7 +431,7 @@ class _StakingPageState extends State<StakingPage>
                 child: Row(
                   children: [
                     GradientText(
-                      "Reward:",
+                      AppLocalizations.of(context)!.stake_reward + ":",
                       gradient: const LinearGradient(colors: [
                         Colors.white70,
                         Colors.white54,
@@ -494,7 +502,7 @@ class _StakingPageState extends State<StakingPage>
                       .textTheme
                       .subtitle1!
                       .copyWith(color: Colors.white54, fontSize: 14.0),
-                  hintText: AppLocalizations.of(context)!.amount + " to stake",
+                  hintText: AppLocalizations.of(context)!.stake_amount,
                   enabledBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white12),
                   ),
@@ -505,14 +513,20 @@ class _StakingPageState extends State<StakingPage>
               ),
             ),
             PercentSwitchWidget(
-                // key: _percentageKey,
-                changePercent: (double p) {
-              _amountController.text = _formatDecimal(
-                  Decimal.parse(_free.toString()) *
-                      Decimal.parse(p.toString()));
-              // _percentageKey.currentState!.setState(() { });
-            }),
-            SizedBox(width: double.infinity, child: Center(child: Text("Min amount: " + _min.toString(), style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white30),)),),
+                key: _percentageKey,
+                changePercent: _changePercentage,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: Center(
+                  child: Text(
+                      AppLocalizations.of(context)!.min_withdraw + " " + _min.toString(),
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle1!
+                    .copyWith(color: Colors.white30),
+              )),
+            ),
             const SizedBox(
               height: 10.0,
             ),
@@ -522,7 +536,7 @@ class _StakingPageState extends State<StakingPage>
                 sliderButtonIconPadding: 5.0,
                 sliderButtonIconSize: 50.0,
                 borderRadius: 5.0,
-                text: "Swipe to stake",
+                text: AppLocalizations.of(context)!.stake_swipe,
                 innerColor: Colors.white.withOpacity(0.02),
                 outerColor: Colors.white.withOpacity(0.02),
                 elevation: 0.5,
@@ -545,46 +559,92 @@ class _StakingPageState extends State<StakingPage>
                 },
               ),
             ),
-            const SizedBox(height: 3.0,),
-            SizedBox(width: double.infinity, child: Center(child: Text("Might take a while!", style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white30),)),),
-            const SizedBox(height: 20.0,),
-           _staking ? Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 2.0, right: 2.0),
-                  child: FlatCustomButton(
-                    child: SizedBox(
-                      height: 40.0,
-                        child: Center(
-                            child: _loadingReward ? const Padding(
-                              padding:  EdgeInsets.all(3.0),
-                              child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white70,),
-                            ) : Text("Get the reward", style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 18.0, color: Colors.white70, fontWeight: FontWeight.w600),))),
-                    onTap: () {
-                      _unStake(1);
-                    },
-                    color: const Color(0xb26cb30b),
+            const SizedBox(
+              height: 3.0,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.stake_wait,
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle1!
+                    .copyWith(color: Colors.white30),
+              )),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            _staking
+                ? Column(
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                          child: FlatCustomButton(
+                            child: SizedBox(
+                                height: 40.0,
+                                child: Center(
+                                    child: _loadingReward
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(3.0),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.0,
+                                              color: Colors.white70,
+                                            ),
+                                          )
+                                        : Text(
+                                      AppLocalizations.of(context)!.stake_get_reward,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2!
+                                                .copyWith(
+                                                    fontSize: 18.0,
+                                                    color: Colors.white70,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                          ))),
+                            onTap: () {
+                              _unStake(1);
+                            },
+                            color: const Color(0xb26cb30b),
+                          )),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                          child: FlatCustomButton(
+                            child: SizedBox(
+                                height: 40.0,
+                                child: Center(
+                                    child: _loadingCoins
+                                        ? const Padding(
+                                            padding: EdgeInsets.all(3.0),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.0,
+                                              color: Colors.white70,
+                                            ),
+                                          )
+                                        : Text(
+                                      AppLocalizations.of(context)!.stake_get_all,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2!
+                                                .copyWith(
+                                                    fontSize: 18.0,
+                                                    color: Colors.white70,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                          ))),
+                            onTap: () {
+                              _unStake(0);
+                            },
+                            color: const Color(0xb20b8cb3),
+                          )),
+                    ],
                   )
-                ),
-                const SizedBox(height: 20.0,),
-                Padding(
-                    padding: const EdgeInsets.only(left: 2.0, right: 2.0),
-                    child: FlatCustomButton(
-                      child: SizedBox(
-                          height: 40.0,
-                          child: Center(
-                              child: _loadingCoins ? const Padding(
-                                padding:  EdgeInsets.all(3.0),
-                                child:  CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white70,),
-                              ) : Text("Get all coins", style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 18.0, color: Colors.white70, fontWeight: FontWeight.w600),))),
-                      onTap: () {
-                        _unStake(0);
-                      },
-                      color: const Color(0xb20b8cb3),
-                    )
-                ),
-              ],
-            ) : Container(),
+                : Container(),
           ],
         ),
       ),
@@ -660,18 +720,19 @@ class _StakingPageState extends State<StakingPage>
   }
 
   _createWithdrawal() async {
+    Dialogs.openWaitBox(context);
     String _serverTypeRckt = "< Rocketbot Service error >";
     String _serverTypePos= "< POS Service error >";
     bool _serverRckt = true;
+
     var amt = double.parse(_amountController.text);
+
     if(amt > _free) {
+      Navigator.of(context).pop();
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error, "Not enough enough coins to complete the operation!");
       return;
     }
-    if(amt + _amountStaked >= 10.0) {
-      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.alert, "This is an early access to staking functionality, which is still in development, deposit to staking is limited to 10 MERGE");
-      return;
-    }
+
     Map<String, dynamic> _query = {
       "coinId": _coinActive.id!,
       "fee": _fee,
@@ -702,7 +763,7 @@ class _StakingPageState extends State<StakingPage>
             }
           }
         }
-      return true;
+        return true;
       });
       _serverRckt = false;
       Map<String, dynamic> m = {
@@ -724,6 +785,7 @@ class _StakingPageState extends State<StakingPage>
       widget.changeFree(preFree);
       _keyStake.currentState!.reset();
       _getPos();
+      Navigator.of(context).pop();
     } on BadRequestException catch (r, e) {
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
@@ -732,31 +794,34 @@ class _StakingPageState extends State<StakingPage>
       var wm = WithdrawalsModels.fromJson(js);
       // _showError(wm.error!);
       _keyStake.currentState!.reset();
+      Navigator.of(context).pop();
       Dialogs.openAlertBox(context, wm.message!, wm.error! + "\n\n" +(_serverRckt ? _serverTypeRckt : _serverTypePos));
     } catch (e) {
       _keyStake.currentState!.reset();
+      Navigator.of(context).pop();
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, e.toString()  + "\n\n" +(_serverRckt ? _serverTypeRckt : _serverTypePos));
     }
   }
+
   _unStake(int rewardParam) async {
     if (rewardParam == 1) {
       _loadingReward = true;
-    }else{
+    } else {
       _loadingCoins = true;
     }
-    setState(() { });
+    setState(() {});
     try {
       Map<String, dynamic> m = {
-            "idCoin": _coinActive.id!,
-            "rewardParam": rewardParam
-          };
+        "idCoin": _coinActive.id!,
+        "rewardParam": rewardParam
+      };
 
       await _interface.post("stake/withdraw", m, pos: true);
       await Future.delayed(const Duration(seconds: 10));
       var preFree = 0.0;
-      var resB =
-      await _interface.get("User/GetBalance?coinId=" + _coinActive.id!.toString());
+      var resB = await _interface
+          .get("User/GetBalance?coinId=" + _coinActive.id!.toString());
       var rs = BalancePortfolio.fromJson(resB);
       preFree = rs.data!.free!;
       _free = preFree;
@@ -764,14 +829,18 @@ class _StakingPageState extends State<StakingPage>
       _getPos();
       if (rewardParam == 1) {
         _loadingReward = false;
-      }else{
+      } else {
         _loadingCoins = false;
       }
-      setState(() { });
+      setState(() {});
     } catch (e) {
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, e.toString());
     }
+  }
 
+  _changePercentage(double d) {
+    _amountController.text = (_free * d).toString();
+    setState(() { });
   }
 }

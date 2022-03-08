@@ -117,5 +117,15 @@
   "send_discord" : "Send DM to Rocket(bot)",
   "socials_info": "By linking your social media accounts, all tokens will be combined by RocketBot.pro. This secures your balances in the event your social media account is suspended. One account for all, powered by Merge.",
   "socials_info_add": "RocketBot.pro & Merge need to be linked to web",
-  "unlink" : "Unlink {1}"
+  "unlink" : "Unlink {1}",
+  "stake_get_all" : "Remove all Tokens",
+  "stake_get_reward": "Withdraw Rewads",
+  "stake_swipe": "Swipe to stake",
+  "stake_amount" : "Amount to stake",
+  "stake_wait": "Might take a while!",
+  "stake_reward" : "Reward",
+  "stake_unconfirmed": "Unconfirmed stake amount",
+  "stake_staked_amount" : "Staked amount",
+  "stake_available" : "Available amount",
+  "stake_label" : "Staking"
 }

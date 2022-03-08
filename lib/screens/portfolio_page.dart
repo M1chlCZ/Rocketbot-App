@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -10,7 +11,11 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
+import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/pos_coins_list.dart';
+import 'package:rocketbot/models/withdraw_confirm.dart';
+import 'package:rocketbot/models/withdraw_pwid.dart';
+import 'package:rocketbot/netInterface/app_exception.dart';
 import 'package:rocketbot/netinterface/api_response.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/about_screen.dart';
@@ -80,7 +85,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     _fillSort();
     _bloc = BalancesBloc();
     _getUserInfo();
-    _posHandle();
     // portCalc = widget.listBalances != null ? true : false;
   }
 
@@ -104,10 +108,11 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     });
   }
 
-  void _getUserInfo() async {
+   _getUserInfo() async {
     try {
       final response = await _interface.get("User/Me");
       var d = User.fromJson(response);
+      _posHandle();
       if (d.hasError == false) {
         _me = d;
         for (var element in d.data!.socialMediaAccounts!) {
@@ -163,14 +168,104 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   _registerPos() async {
     String? _posToken = await _storage.read(key: NetInterface.posToken);
     if (_posToken == null) {
+      // await Future.delayed(const Duration(seconds: 5));
       String? _token = await _storage.read(key: NetInterface.token);
-      NetInterface.registerPos(_token!);
+      await NetInterface.registerPos(_token!);
     }
   }
   
   _getPosCoins() async {
     var response = await _interface.get("coin/get", pos: true);
     pl = PosCoinsList.fromJson(response);
+  }
+
+  Future<int> _createWithdrawal(
+      {required double amount,
+        required double free,
+        required double fee,
+        required int coinID,
+        required String depositAddrPosServer,
+        required String depositAddrUser,
+      }) async {;
+    String _serverTypeRckt = "< Rocketbot Service error >";
+    String _serverTypePos = "< POS Service error >";
+    bool _serverRckt = true;
+    var amt = amount;
+
+    Map<String, dynamic> _query = {
+      "coinId": coinID,
+      "fee": fee,
+      "amount": amt,
+      "toAddress": depositAddrPosServer
+    };
+
+    try {
+      final response =
+      await _interface.post("Transfers/CreateWithdraw", _query);
+      var pwid = WithdrawID.fromJson(response);
+      Map<String, dynamic> _queryID = {
+        "id": pwid.data!.pgwIdentifier!,
+      };
+      var resWith =
+      await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+      var rw = WithdrawConfirm.fromJson(resWith);
+
+      String? txid;
+      await Future.doWhile(() async {
+        await Future.delayed(const Duration(seconds: 3));
+        final _withdrawals = await _interface.get(
+            "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
+                coinID.toString());
+        List<DataWithdrawals>? _with =
+            WithdrawalsModels.fromJson(_withdrawals).data;
+        for (var element in _with!) {
+          if (element.pgwIdentifier == rw.data!.pgwIdentifier!) {
+            if (element.transactionId != null) {
+              txid = element.transactionId;
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+      _serverRckt = false;
+      Map<String, dynamic> m = {
+        "idCoin": coinID,
+        "depAddr": depositAddrUser,
+        "amount": amount,
+        "tx_id": txid!
+      };
+
+      await _interface.post("stake/set", m, pos: true);
+      _serverRckt = true;
+      return 1;
+
+    } on BadRequestException catch (r, e) {
+
+      int messageStart = r.toString().indexOf("{");
+      int messageEnd = r.toString().indexOf("}");
+      var s = r.toString().substring(messageStart, messageEnd + 1);
+      var js = json.decode(s);
+      var wm = WithdrawalsModels.fromJson(js);
+      // _showError(wm.error!);
+
+      // Dialogs.openAlertBox(
+      //     context,
+      //     wm.message!,
+      //     wm.error! +
+      //         "\n\n" +
+      //         (_serverRckt ? _serverTypeRckt : _serverTypePos));
+      return 0;
+    } catch (e) {
+
+      // Dialogs.openAlertBox(
+      //     context,
+      //     AppLocalizations.of(context)!.error,
+      //     e.toString() +
+      //         "\n\n" +
+      //         (_serverRckt ? _serverTypeRckt : _serverTypePos));
+      return 0;
+    }
   }
  
   @override
@@ -799,7 +894,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     setState(() {});
   }
 
-  _changeCoin(CoinBalance c) {
+  _changeCoin(CoinBalance c) async {
+    if(pl == null){
+     await _getUserInfo();
+    }
+    String? _posToken = await _storage.read(key: NetInterface.posToken);
+    if (_posToken == null) {
+      await _registerPos();
+    }
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
       return MainScreen(

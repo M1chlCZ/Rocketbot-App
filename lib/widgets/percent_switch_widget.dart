@@ -32,11 +32,14 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                   opacity: _active == 4 ? 1.0 : 0.4,
                   duration: _duration,
                   child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _active = 4;
-                        });
+                      onPressed: () async {
                         widget.changePercent(0.25);
+                        await Future.delayed(const Duration(milliseconds: 300), () {
+                          setState(() {
+                            _active = 4;
+                          });
+                        });
+
                       },
                       child: AutoSizeText("25 %",
                           minFontSize: 12,
@@ -50,11 +53,13 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                   opacity: _active == 3 ? 1.0 : 0.4,
                   duration: _duration,
                   child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _active = 3;
-                        });
+                      onPressed: () async {
                         widget.changePercent(0.5);
+                        await Future.delayed(const Duration(milliseconds: 300), () {
+                          setState(() {
+                            _active = 3;
+                          });
+                        });
                       },
                       child: AutoSizeText(
                           "50 %",
@@ -69,12 +74,13 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                   opacity: _active == 2 ? 1.0 : 0.4,
                   duration: _duration,
                   child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _active = 2;
-                        });
-                        var _time = 24;
+                      onPressed: () async {
                         widget.changePercent(0.75);
+                          await Future.delayed(const Duration(milliseconds: 300), () {
+                            setState(() {
+                              _active = 2;
+                            });
+                          });
                       },
                       child: AutoSizeText("75 %",
                           minFontSize: 6,
@@ -88,11 +94,13 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                   opacity: _active == 1 ? 1.0 : 0.4,
                   duration: _duration,
                   child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _active = 1;
-                        });
+                      onPressed: () async {
                         widget.changePercent(1.0);
+                        await Future.delayed(const Duration(milliseconds: 300), () {
+                          setState(() {
+                            _active = 1;
+                          });
+                        });
                       },
                       child: AutoSizeText(
                         "MAX",

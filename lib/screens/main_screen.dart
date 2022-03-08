@@ -20,7 +20,16 @@ class MainScreen extends StatefulWidget {
   final List<CoinBalance>? listCoins;
   final PosCoinsList? posCoinsList;
   final VoidCallback refreshList;
-  const MainScreen({Key? key, required this.coinBalance, this.listCoins, this.posCoinsList, required this.refreshList}) : super(key: key);
+
+
+
+  const MainScreen(
+      {Key? key,
+      required this.coinBalance,
+      this.listCoins,
+      this.posCoinsList,
+      required this.refreshList,})
+      : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -67,19 +76,19 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _checkPosCoin(Coin? c) {
-    final indexPos = widget.posCoinsList!.coins!.indexWhere((element) => element.idCoin! == c?.id!);
+    final indexPos = widget.posCoinsList!.coins!
+        .indexWhere((element) => element.idCoin! == c?.id!);
     indexPos != -1 ? _posCoin = true : _posCoin = false;
-    if(indexPos != -1) {
+    if (indexPos != -1) {
       _posDepositAddr = widget.posCoinsList!.coins![indexPos].depositAddr!;
-    }else{
+    } else {
       _posDepositAddr = null;
     }
     setState(() {});
   }
 
   void _setActiveCoin(Coin? c) {
-    final index = _lc!.indexWhere((element) =>
-                                      element.coin == c);
+    final index = _lc!.indexWhere((element) => element.coin == c);
     _free = _lc![index].free!;
     _coinActive = c!;
     _checkPosCoin(_coinActive);
@@ -96,7 +105,6 @@ class _MainScreenState extends State<MainScreen> {
     widget.refreshList();
   }
 
-
   void changeCoinName(Coin? s) {
     _lc = _portfolioKey.currentState!.getList();
     setState(() {
@@ -111,7 +119,7 @@ class _MainScreenState extends State<MainScreen> {
     };
     try {
       final response =
-      await _interface.post("Transfers/CreateDepositAddress", _request);
+          await _interface.post("Transfers/CreateDepositAddress", _request);
       var d = DepositAddress.fromJson(response);
       setState(() {
         _depositAddr = d.data!.address!;
@@ -134,15 +142,18 @@ class _MainScreenState extends State<MainScreen> {
               });
             },
             children: <Widget>[
-              DepositPage(coin: _coinActive, free: _free, depositAddr: _depositAddr,),
-               CoinScreen(
+              DepositPage(
+                coin: _coinActive,
+                free: _free,
+                depositAddr: _depositAddr,
+              ),
+              CoinScreen(
                   setActiveCoin: _setActiveCoin,
-                        activeCoin: _coinActive,
-                        allCoins: _lc,
-                        goBack: goBack,
+                  activeCoin: _coinActive,
+                  allCoins: _lc,
+                  goBack: goBack,
                   blockTouch: _blockTouch,
-                 free: _free
-                      ),
+                  free: _free),
               StakingPage(
                 setActiveCoin: _setActiveCoin,
                 changeFree: _changeFree,
@@ -157,12 +168,13 @@ class _MainScreenState extends State<MainScreen> {
               SendPage(
                 changeFree: _changeFree,
                 coinActive: _coinActive,
-                free: _free,),
+                free: _free,
+              ),
             ]),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
+          border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
         ),
         child: Theme(
           data: Theme.of(context).copyWith(
@@ -252,7 +264,7 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    if(_posCoin) {
+                    if (_posCoin) {
                       _onTappedBar(2);
                     }
                   },
@@ -271,7 +283,7 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    if(_posCoin) {
+                    if (_posCoin) {
                       _onTappedBar(2);
                     }
                   },
@@ -338,7 +350,8 @@ class _MainScreenState extends State<MainScreen> {
       _selectedPageIndex = value;
     });
     _pageController.animateToPage(value,
-    duration: const Duration(milliseconds: 300), curve: Curves.easeInOutCirc);
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCirc);
     // _pageController.jumpToPage(value);
   }
 }
