@@ -76,15 +76,19 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _checkPosCoin(Coin? c) {
-    final indexPos = widget.posCoinsList!.coins!
-        .indexWhere((element) => element.idCoin! == c?.id!);
-    indexPos != -1 ? _posCoin = true : _posCoin = false;
-    if (indexPos != -1) {
-      _posDepositAddr = widget.posCoinsList!.coins![indexPos].depositAddr!;
-    } else {
-      _posDepositAddr = null;
+    try {
+      final indexPos = widget.posCoinsList!.coins!
+          .indexWhere((element) => element.idCoin! == c?.id!);
+      indexPos != -1 ? _posCoin = true : _posCoin = false;
+      if (indexPos != -1) {
+        _posDepositAddr = widget.posCoinsList!.coins![indexPos].depositAddr!;
+      } else {
+        _posDepositAddr = null;
+      }
+      setState(() {});
+    }catch(e){
+      debugPrint(e.toString());
     }
-    setState(() {});
   }
 
   void _setActiveCoin(Coin? c) {
