@@ -27,6 +27,14 @@ const String APP_NOT = 'showMessages';
 const List<String> LANGUAGES = ['English','Finnish','Czech'];
 const List<String> LANGUAGES_CODES = ['en', 'fi_FI', 'cs_CZ'];
 
+const String TABLE_STAKE = "tableStake";
+const String TS_ID = "id";
+const String TS_PWG = "pwg";
+const String TS_FINISHED = "txFinish";
+const String TS_COINID = "idCoin";
+const String TS_ADDR = "depAddr";
+const String TS_AMOUNT = "amount";
+
 // ['English', 'Bosnian', 'Croatian', 'Czech', 'Finnish', 'German', 'Hindi', 'Japanese', 'Russian', 'Serbian Latin', 'Serbian Цyриллиц', 'Spanish', 'Panjabi'];
 // ['en', 'bs_BA', 'hr_HR', 'cs_CZ', 'fi_FI', 'de_DE', 'hi_IN', 'ja_JP', 'ru_RU', 'sr_Latn_RS', 'sr_Cyrl_RS', 'es_ES' 'pa_IN'];
 bool reloadData = false;

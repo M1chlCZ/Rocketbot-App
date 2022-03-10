@@ -66,7 +66,6 @@ class FCM {
   }
 
   void _tokenUpload(String? token) {
-    print(token);
     Map <String, dynamic> _req = {
       "token" : token,
     };

@@ -16,8 +16,11 @@ import 'package:rocketbot/models/withdraw_confirm.dart';
 import 'package:rocketbot/models/withdraw_pwid.dart';
 import 'package:rocketbot/netInterface/app_exception.dart';
 import 'package:rocketbot/netInterface/interface.dart';
+import 'package:rocketbot/screens/portfolio_page.dart';
+import 'package:rocketbot/storage/app_database.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/gradient_text.dart';
+import 'package:rocketbot/support/life_cycle_watcher.dart';
 import 'package:rocketbot/support/utils.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
 import 'package:rocketbot/widgets/percent_switch_widget.dart';
@@ -55,15 +58,14 @@ class StakingPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _StakingPageState createState() => _StakingPageState();
+  StakingPageState createState() => StakingPageState();
 }
 
-class _StakingPageState extends State<StakingPage>
-    with SingleTickerProviderStateMixin {
+class StakingPageState extends LifecycleWatcherState<StakingPage> {
   final _storage = const FlutterSecureStorage();
   final NetInterface _interface = NetInterface();
   final _graphKey = GlobalKey<CoinPriceGraphState>();
-  final _percentageKey= GlobalKey<PercentSwitchWidgetState>();
+  final _percentageKey = GlobalKey<PercentSwitchWidgetState>();
   final GlobalKey<SlideActionState> _keyStake = GlobalKey();
   final TextEditingController _amountController = TextEditingController();
   List<Stakes>? _stakeData;
@@ -76,8 +78,9 @@ class _StakingPageState extends State<StakingPage>
   bool _staking = false;
   bool _loadingReward = false;
   bool _loadingCoins = false;
+  bool _paused = false;
 
-  double _amountStaked = 0.0;
+  String _amountStaked = "0.0";
   double _unconfirmedAmount = 0.0;
   String _amountReward = "0.0";
   double _free = 0.0;
@@ -128,7 +131,7 @@ class _StakingPageState extends State<StakingPage>
       _staking = false;
       setState(() {});
     } else {
-      _amountStaked = sc.amount!;
+      _amountStaked = sc.amount!.toString();
       _unconfirmedAmount = sc.unconfirmed!;
       _amountReward = _formatDecimal(Decimal.parse(sc.stakesAmount.toString()));
       _staking = true;
@@ -136,7 +139,7 @@ class _StakingPageState extends State<StakingPage>
     }
   }
 
-  void _getStakeData() async {
+  Future<void> _getStakeData() async {
     Map<String, dynamic> m = {
       "idCoin": _coinActive.id!,
       // "dateTime": "2022-03-04 23:00:00"
@@ -180,7 +183,8 @@ class _StakingPageState extends State<StakingPage>
                   const SizedBox(
                     width: 20.0,
                   ),
-                  Text(AppLocalizations.of(context)!.stake_label, style: Theme.of(context).textTheme.headline4),
+                  Text(AppLocalizations.of(context)!.stake_label,
+                      style: Theme.of(context).textTheme.headline4),
                   const SizedBox(
                     width: 60,
                   ),
@@ -265,7 +269,7 @@ class _StakingPageState extends State<StakingPage>
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1!
-                      .copyWith(fontSize: 24.0, color: Colors.white70),
+                      .copyWith(fontSize: 24.0, color: Colors.white),
                 ),
               ),
             ),
@@ -340,7 +344,7 @@ class _StakingPageState extends State<StakingPage>
                 child: Row(
                   children: [
                     GradientText(
-                      AppLocalizations.of(context)!.stake_staked_amount +  ":",
+                      AppLocalizations.of(context)!.stake_staked_amount + ":",
                       gradient: const LinearGradient(colors: [
                         Colors.white70,
                         Colors.white54,
@@ -355,8 +359,7 @@ class _StakingPageState extends State<StakingPage>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8.0, top: 1.0),
                         child: AutoSizeText(
-                          _formatDecimal(
-                                  Decimal.parse(_amountStaked.toString())) +
+                                  _formatPriceString(_amountStaked) +
                               " " +
                               _coinActive.cryptoId!,
                           maxLines: 1,
@@ -383,7 +386,8 @@ class _StakingPageState extends State<StakingPage>
                         child: Row(
                           children: [
                             GradientText(
-                              AppLocalizations.of(context)!.stake_unconfirmed + ":",
+                              AppLocalizations.of(context)!.stake_unconfirmed +
+                                  ":",
                               gradient: const LinearGradient(colors: [
                                 Colors.white70,
                                 Colors.white54,
@@ -497,6 +501,8 @@ class _StakingPageState extends State<StakingPage>
                 controller: _amountController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.black26,
                   contentPadding: const EdgeInsets.only(left: 4.0, right: 4.0),
                   hintStyle: Theme.of(context)
                       .textTheme
@@ -513,14 +519,24 @@ class _StakingPageState extends State<StakingPage>
               ),
             ),
             PercentSwitchWidget(
-                key: _percentageKey,
-                changePercent: _changePercentage,
+              key: _percentageKey,
+              changePercent: _changePercentage,
             ),
+            Container(
+              decoration: const BoxDecoration(
+                border:
+                Border(top: BorderSide(color: Colors.white12, width: 0.5)),
+              ),
+            ),
+            const SizedBox(height: 5.0,),
             SizedBox(
               width: double.infinity,
               child: Center(
                   child: Text(
-                      AppLocalizations.of(context)!.min_withdraw + " " + _min.toString(),
+                AppLocalizations.of(context)!.min_withdraw +
+                    " " +
+                    _min.toString() + " \n" + AppLocalizations.of(context)!.staking_lock_coins,
+                textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1!
@@ -538,7 +554,7 @@ class _StakingPageState extends State<StakingPage>
                 borderRadius: 5.0,
                 text: AppLocalizations.of(context)!.stake_swipe,
                 innerColor: Colors.white.withOpacity(0.02),
-                outerColor: Colors.white.withOpacity(0.02),
+                outerColor: Colors.black.withOpacity(0.12),
                 elevation: 0.5,
                 // submittedIcon: const Icon(Icons.check, size: 30.0, color: Colors.lightGreenAccent,),
                 submittedIcon: const CircularProgressIndicator(
@@ -566,7 +582,7 @@ class _StakingPageState extends State<StakingPage>
               width: double.infinity,
               child: Center(
                   child: Text(
-                    AppLocalizations.of(context)!.stake_wait,
+                AppLocalizations.of(context)!.stake_wait,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1!
@@ -579,36 +595,45 @@ class _StakingPageState extends State<StakingPage>
             _staking
                 ? Column(
                     children: [
-                      Padding(
-                          padding: const EdgeInsets.only(left: 2.0, right: 2.0),
-                          child: FlatCustomButton(
-                            child: SizedBox(
-                                height: 40.0,
-                                child: Center(
-                                    child: _loadingReward
-                                        ? const Padding(
-                                            padding: EdgeInsets.all(3.0),
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2.0,
-                                              color: Colors.white70,
-                                            ),
-                                          )
-                                        : Text(
-                                      AppLocalizations.of(context)!.stake_get_reward,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyText2!
-                                                .copyWith(
-                                                    fontSize: 18.0,
-                                                    color: Colors.white70,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                          ))),
-                            onTap: () {
-                              _unStake(1);
-                            },
-                            color: const Color(0xb26cb30b),
-                          )),
+                      IgnorePointer(
+                        ignoring: _amountReward == "0.0" ? true : false,
+                        child: Opacity(
+                          opacity: _amountReward == "0.0" ? 0.6 : 1.0,
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                              child: FlatCustomButton(
+                                child: SizedBox(
+                                    height: 40.0,
+                                    child: Center(
+                                        child: _loadingReward
+                                            ? const Padding(
+                                                padding: EdgeInsets.all(3.0),
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2.0,
+                                                  color: Colors.white70,
+                                                ),
+                                              )
+                                            : Text(
+                                                AppLocalizations.of(context)!
+                                                    .stake_get_reward,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText2!
+                                                    .copyWith(
+                                                        fontSize: 18.0,
+                                                        color: Colors.white70,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                              ))),
+                                onTap: () {
+                                  if (!_loadingReward) {
+                                    _unStake(1);
+                                  }
+                                },
+                                color: const Color(0xb26cb30b),
+                              )),
+                        ),
+                      ),
                       const SizedBox(
                         height: 20.0,
                       ),
@@ -627,7 +652,8 @@ class _StakingPageState extends State<StakingPage>
                                             ),
                                           )
                                         : Text(
-                                      AppLocalizations.of(context)!.stake_get_all,
+                                            AppLocalizations.of(context)!
+                                                .stake_get_all,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText2!
@@ -638,7 +664,9 @@ class _StakingPageState extends State<StakingPage>
                                                         FontWeight.w600),
                                           ))),
                             onTap: () {
-                              _unStake(0);
+                              if (!_loadingCoins) {
+                                _unStake(0);
+                              }
                             },
                             color: const Color(0xb20b8cb3),
                           )),
@@ -701,6 +729,21 @@ class _StakingPageState extends State<StakingPage>
     }
   }
 
+  String _formatPriceString(String d) {
+    try {
+      var _split = d.toString().split('.');
+      var _decimal = _split[1];
+      if (_decimal.length >= 9) {
+        var _sub = _decimal.substring(0, 8);
+        return (_split[0] + "." + _sub).trim();
+      } else {
+        return d.toString().trim();
+      }
+    } catch (e) {
+      return "0";
+    }
+  }
+
   _getFees() async {
     try {
       // _free = widget.free;
@@ -721,72 +764,45 @@ class _StakingPageState extends State<StakingPage>
 
   _createWithdrawal() async {
     Dialogs.openWaitBox(context);
-    String _serverTypeRckt = "< Rocketbot Service error >";
-    String _serverTypePos= "< POS Service error >";
+    String _serverTypeRckt = "<Rocketbot Service error>";
+    String _serverTypePos = "<Rocketbot POS Service error>";
     bool _serverRckt = true;
-
+    WithdrawConfirm? rw;
     var amt = double.parse(_amountController.text);
 
-    if(amt > _free) {
+    if (amt > _free) {
       Navigator.of(context).pop();
-      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error, "Not enough enough coins to complete the operation!");
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
+          AppLocalizations.of(context)!.staking_not_enough);
       return;
     }
 
-    Map<String, dynamic> _query = {
-      "coinId": _coinActive.id!,
-      "fee": _fee,
-      "amount": amt,
-      "toAddress": widget.depositPosAddress
-    };
+    try {
+      await _getStakingDetails();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     try {
+      Map<String, dynamic> _query = {
+        "coinId": _coinActive.id!,
+        "fee": _fee,
+        "amount": amt,
+        "toAddress": widget.depositPosAddress
+      };
+
       final response =
-      await _interface.post("Transfers/CreateWithdraw", _query);
+          await _interface.post("Transfers/CreateWithdraw", _query);
       var pwid = WithdrawID.fromJson(response);
       Map<String, dynamic> _queryID = {
         "id": pwid.data!.pgwIdentifier!,
       };
-      var resWith = await _interface.post("Transfers/ConfirmWithdraw", _queryID);
-      var rw = WithdrawConfirm.fromJson(resWith);
-
-      String? txid;
-      await Future.doWhile(() async {
-        await Future.delayed(const Duration(seconds: 3));
-        final _withdrawals = await _interface.get("Transfers/GetWithdraws?page=1&pageSize=10&coinId=" + _coinActive.id!.toString());
-        List<DataWithdrawals>? _with = WithdrawalsModels.fromJson(_withdrawals).data;
-        for (var element in _with!) {
-          if(element.pgwIdentifier == rw.data!.pgwIdentifier!) {
-            if(element.transactionId != null) {
-              txid = element.transactionId;
-              return false;
-            }
-          }
-        }
-        return true;
-      });
-      _serverRckt = false;
-      Map<String, dynamic> m = {
-        "idCoin": _coinActive.id!,
-        "depAddr": widget.depositAddress,
-        "amount": double.parse(_amountController.text),
-        "tx_id" : txid!
-      };
-
-      await _interface.post("stake/set", m, pos: true);
-      _amountController.clear();
-      _serverRckt = true;
-      var preFree = 0.0;
-      var resB =
-      await _interface.get("User/GetBalance?coinId=" + _coinActive.id!.toString());
-      var rs = BalancePortfolio.fromJson(resB);
-      preFree = rs.data!.free!;
-      _free = preFree;
-      widget.changeFree(preFree);
-      _keyStake.currentState!.reset();
-      _getPos();
-      Navigator.of(context).pop();
+      var resWith =
+          await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+      rw = WithdrawConfirm.fromJson(resWith);
+      await AppDatabase().addTX(rw.data!.pgwIdentifier!, _coinActive.id!, double.parse(_amountController.text), widget.depositAddress!);
     } on BadRequestException catch (r, e) {
+      Navigator.of(context).pop();
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
       var s = r.toString().substring(messageStart, messageEnd + 1);
@@ -794,17 +810,86 @@ class _StakingPageState extends State<StakingPage>
       var wm = WithdrawalsModels.fromJson(js);
       // _showError(wm.error!);
       _keyStake.currentState!.reset();
-      Navigator.of(context).pop();
-      Dialogs.openAlertBox(context, wm.message!, wm.error! + "\n\n" +(_serverRckt ? _serverTypeRckt : _serverTypePos));
+      Dialogs.openAlertBox(
+          context, wm.message!, wm.error! + "\n\n" + _serverTypeRckt);
     } catch (e) {
+      Navigator.of(context).pop();
+      _keyStake.currentState!.reset();
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
+          e.toString() + "\n\n" + _serverTypeRckt);
+    }
+
+    if (rw == null) {
       _keyStake.currentState!.reset();
       Navigator.of(context).pop();
       Dialogs.openAlertBox(
-          context, AppLocalizations.of(context)!.error, e.toString()  + "\n\n" +(_serverRckt ? _serverTypeRckt : _serverTypePos));
+          context,
+          AppLocalizations.of(context)!.error,
+          "Couldn't send coins for Staking \n\n" + _serverTypeRckt);
     }
+
+
+    String? txid;
+    await Future.doWhile(() async {
+      try {
+        await Future.delayed(const Duration(seconds: 3));
+        final _withdrawals = await _interface.get(
+            "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
+                _coinActive.id!.toString());
+        List<DataWithdrawals>? _with =
+            WithdrawalsModels.fromJson(_withdrawals).data;
+        for (var element in _with!) {
+          if (element.pgwIdentifier == rw!.data!.pgwIdentifier!) {
+            if (element.transactionId != null) {
+              txid = element.transactionId;
+              return false;
+            }
+          }
+        }
+      } catch (e) {
+        return true;
+      }
+      return true;
+    });
+    _serverRckt = false;
+
+    try {
+      Map<String, dynamic> m = {
+        "idCoin": _coinActive.id!,
+        "depAddr": widget.depositAddress,
+        "amount": double.parse(_amountController.text),
+        "tx_id": txid,
+      };
+      await _interface.post("stake/set", m, pos: true);
+      await AppDatabase().finishTX(rw!.data!.pgwIdentifier!);
+    } catch (e) {
+      debugPrint(e.toString());
+      _keyStake.currentState!.reset();
+      Navigator.of(context).pop();
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
+          e.toString() + "\n\n" + _serverTypePos);
+    }
+    _amountController.clear();
+    _serverRckt = true;
+    var preFree = 0.0;
+    var resB = await _interface
+        .get("User/GetBalance?coinId=" + _coinActive.id!.toString());
+    var rs = BalancePortfolio.fromJson(resB);
+    preFree = rs.data!.free!;
+    _free = preFree;
+    widget.changeFree(preFree);
+    _keyStake.currentState!.reset();
+    await _getStakingDetails();
+    await _getStakeData();
+    setState(() {});
+    Navigator.of(context).pop();
   }
 
   _unStake(int rewardParam) async {
+    if (_loadingReward || _loadingCoins) {
+      return;
+    }
+    Dialogs.openWaitBox(context);
     if (rewardParam == 1) {
       _loadingReward = true;
     } else {
@@ -818,7 +903,6 @@ class _StakingPageState extends State<StakingPage>
       };
 
       await _interface.post("stake/withdraw", m, pos: true);
-      await Future.delayed(const Duration(seconds: 10));
       var preFree = 0.0;
       var resB = await _interface
           .get("User/GetBalance?coinId=" + _coinActive.id!.toString());
@@ -826,21 +910,56 @@ class _StakingPageState extends State<StakingPage>
       preFree = rs.data!.free!;
       _free = preFree;
       widget.changeFree(preFree);
-      _getPos();
+      await _getStakingDetails();
+      await _getStakeData();
+      var conf = _coinActive.requiredConfirmations;
       if (rewardParam == 1) {
         _loadingReward = false;
       } else {
         _loadingCoins = false;
       }
       setState(() {});
+      Navigator.of(context).pop();
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.alert,
+          AppLocalizations.of(context)!.staking_with_info.replaceAll("{1}", conf.toString()));
     } catch (e) {
+      Navigator.of(context).pop();
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, e.toString());
     }
   }
 
   _changePercentage(double d) {
-    _amountController.text = (_free * d).toString();
-    setState(() { });
+    _amountController.text = _formatPriceString((_free * d).toString());
+    setState(() {});
+  }
+
+  @override
+  void onDetached() {
+    if (!_paused) {
+      _paused = true;
+    }
+  }
+
+  @override
+  void onInactive() {
+    if (!_paused) {
+      _paused = true;
+    }
+  }
+
+  @override
+  void onPaused() {
+    if (!_paused) {
+      _paused = true;
+    }
+  }
+
+  @override
+  void onResumed() {
+    if(_paused) {
+      _getPos();
+      _paused = false;
+    }
   }
 }

@@ -119,7 +119,7 @@
   "socials_info_add": "RocketBot.pro & Merge need to be linked to web",
   "unlink" : "Unlink {1}",
   "stake_get_all" : "Remove all Tokens",
-  "stake_get_reward": "Withdraw Rewads",
+  "stake_get_reward": "Withdraw Rewards",
   "stake_swipe": "Swipe to stake",
   "stake_amount" : "Amount to stake",
   "stake_wait": "Might take a while!",
@@ -127,5 +127,9 @@
   "stake_unconfirmed": "Unconfirmed stake amount",
   "stake_staked_amount" : "Staked amount",
   "stake_available" : "Available amount",
-  "stake_label" : "Staking"
+  "stake_label" : "Staking",
+  "staking_not_enough": "Not enough enough coins to complete the operation!",
+  "staking_with_info" : "Your tokens have been sent, please allow {1} confirmation before they become available",
+  "staking_lock_coins" : "Coins will be locked for 24 hours",
+  "dl_not_close" : "Do not exit the app!"
 }

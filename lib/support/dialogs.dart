@@ -214,8 +214,10 @@ class Dialogs {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    Text("This going to take a while", style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.white70, fontSize: 12.0),),
-                    Text("Do not exit the app!", style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.white70, fontSize: 12.0),),
+                    Text(AppLocalizations.of(context)!
+                        .stake_wait, style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.white70, fontSize: 12.0),),
+                    Text(AppLocalizations.of(context)!
+                        .dl_not_close, style: Theme.of(context).textTheme.bodyText2!.copyWith(color: Colors.white70, fontSize: 12.0),),
                     const SizedBox(height: 8.0,),
                     SizedBox(
                         width: 120,

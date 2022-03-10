@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _getToken(String key, String code) async {
-    Navigator.of(context).pop();
+
     String? res = await NetInterface.getToken(key, code);
       if (res != null) {
         await _storage.write(key: NetInterface.token, value: res);

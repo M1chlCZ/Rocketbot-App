@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
@@ -49,9 +50,9 @@ class NetInterface {
           'User-Agent': _userAgent.toLowerCase(),
           "Authorization": " Bearer $_token",
         });
-        responseJson = _returnResponse(res);
+        responseJson = await compute (_returnResponse,res);
       } else {
-        responseJson = _returnResponse(response);
+        responseJson = await compute (_returnResponse,response);
       }
       // print(responseJson.toString());
     } on SocketException {
@@ -80,7 +81,7 @@ class NetInterface {
             "Authorization": " Bearer $_token",
           },
           body: _query);
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 403 || response.statusCode == 401) {
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
@@ -92,9 +93,9 @@ class NetInterface {
               "Authorization": " Bearer $_token",
             },
             body: _query);
-        responseJson = _returnResponse(res);
+        responseJson = await compute (_returnResponse,res);
       } else {
-        responseJson = _returnResponse(response);
+        responseJson = await compute (_returnResponse,response);
       }
       // // print(responseJson.toString());
     } on SocketException {
@@ -103,7 +104,7 @@ class NetInterface {
     return responseJson;
   }
 
-  dynamic _returnResponse(http.Response response) async {
+  static dynamic _returnResponse(http.Response response) async {
     // // print(response.statusCode);
     // print(response.body.toString());
     switch (response.statusCode) {
@@ -361,7 +362,7 @@ class NetInterface {
         // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
-          print(res.data!.token.toString());
+          // print(res.data!.token.toString());
           await const FlutterSecureStorage()
               .write(key: NetInterface.token, value: res.data!.token);
           await const FlutterSecureStorage().write(
