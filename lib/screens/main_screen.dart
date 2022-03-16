@@ -87,6 +87,7 @@ class _MainScreenState extends State<MainScreen> {
       }
       setState(() {});
     }catch(e){
+      _posDepositAddr = null;
       debugPrint(e.toString());
     }
   }
@@ -350,6 +351,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onTappedBar(int value) {
+    if(value == 2 && _posCoin == false) {
+      return;
+    }
     setState(() {
       _selectedPageIndex = value;
     });

@@ -362,7 +362,7 @@ class NetInterface {
         // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
-          // print(res.data!.token.toString());
+          print(res.data!.token.toString());
           await const FlutterSecureStorage()
               .write(key: NetInterface.token, value: res.data!.token);
           await const FlutterSecureStorage().write(

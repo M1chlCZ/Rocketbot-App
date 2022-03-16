@@ -384,13 +384,6 @@ packages:
       url: "https://github.com/M1chlCZ/flutter_user_agent.git"
     source: git
     version: "2.0.1"
-  flutter_web_auth:
-    dependency: transitive
-    description:
-      name: flutter_web_auth
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -487,13 +480,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  oauth2_client:
-    dependency: "direct main"
-    description:
-      name: oauth2_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.3.2"
   octo_image:
     dependency: transitive
     description:
@@ -683,13 +669,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1+1"
-  random_string:
-    dependency: transitive
-    description:
-      name: random_string
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.3.1"
   rational:
     dependency: transitive
     description:

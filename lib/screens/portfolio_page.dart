@@ -163,10 +163,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     return _listCoins!;
   }
 
-  _posHandle() {
-     _registerPos();
-     _getPosCoins();
-     _lostPosTX();
+  _posHandle() async {
+     await _registerPos();
+     await _getPosCoins();
+     await _lostPosTX();
   }
 
   _registerPos() async {
@@ -183,57 +183,56 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     pl = PosCoinsList.fromJson(response);
   }
 
-  _lostPosTX() async {
-    print("TXLOST");
-    // List<PGWIdentifier> l = await AppDatabase().getUnfinishedTX();
-    // for (var element in l) {
-    //   var coindID = element.getCoinID();
-    //   var pgwid = element.getPGW();
-    //   var depAddr = element.getAddr();
-    //   var amount = element.getAmount();
-    //
-    //   if (element.getStatus() == 0) {
-    //     String? txid;
-    //     await Future.doWhile(() async {
-    //       try {
-    //         await Future.delayed(const Duration(seconds: 3));
-    //         final _withdrawals = await _interface.get(
-    //             "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
-    //                 coindID.toString());
-    //         List<DataWithdrawals>? _with =
-    //             WithdrawalsModels.fromJson(_withdrawals).data;
-    //         for (var el in _with!) {
-    //           if (el.pgwIdentifier! == pgwid) {
-    //             log(el.toJson().toString());
-    //             // print("YEP");
-    //             // print(el.transactionId!);
-    //             if (el.transactionId != null) {
-    //               // print(txid);
-    //               txid = el.transactionId;
-    //               return false;
-    //             }
-    //           }
-    //         }
-    //       } catch (e) {
-    //         return true;
-    //       }
-    //       return true;
-    //     });
-    //
-    //     try {
-    //       Map<String, dynamic> m = {
-    //         "idCoin": coindID,
-    //         "depAddr": depAddr,
-    //         "amount": amount,
-    //         "tx_id": txid,
-    //       };
-    //       await _interface.post("stake/set", m, pos: true);
-    //       await AppDatabase().finishTX(pgwid!);
-    //     } catch (e) {
-    //       debugPrint(e.toString());
-    //     }
-    //   }
-    // }
+  _lostPosTX() async {;
+    List<PGWIdentifier> l = await AppDatabase().getUnfinishedTX();
+    for (var element in l) {
+      var coindID = element.getCoinID();
+      var pgwid = element.getPGW();
+      var depAddr = element.getAddr();
+      var amount = element.getAmount();
+
+      if (element.getStatus() == 0) {
+        String? txid;
+        await Future.doWhile(() async {
+          try {
+            await Future.delayed(const Duration(seconds: 3));
+            final _withdrawals = await _interface.get(
+                "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
+                    coindID.toString());
+            List<DataWithdrawals>? _with =
+                WithdrawalsModels.fromJson(_withdrawals).data;
+            for (var el in _with!) {
+              if (el.pgwIdentifier! == pgwid) {
+                log(el.toJson().toString());
+                // print("YEP");
+                // print(el.transactionId!);
+                if (el.transactionId != null) {
+                  // print(txid);
+                  txid = el.transactionId;
+                  return false;
+                }
+              }
+            }
+          } catch (e) {
+            return true;
+          }
+          return true;
+        });
+
+        try {
+          Map<String, dynamic> m = {
+            "idCoin": coindID,
+            "depAddr": depAddr,
+            "amount": amount,
+            "tx_id": txid,
+          };
+          await _interface.post("stake/set", m, pos: true);
+          await AppDatabase().finishTX(pgwid!);
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+      }
+    }
   }
 
   @override

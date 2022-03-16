@@ -35,6 +35,29 @@ const String TS_COINID = "idCoin";
 const String TS_ADDR = "depAddr";
 const String TS_AMOUNT = "amount";
 
+const String TABLE_COIN = "tableCoin";
+const String TC_ID = "id";
+const String TC_RANK = "rank";
+const String TC_NAME = "name";
+const String TC_TICKER = "ticker";
+const String TC_CRYPTO_ID = "cryptoId";
+const String TC_IS_TOKEN = "isToken";
+const String TC_CONTRACT_ADDR = "contractAddress";
+const String TC_FEE_PERCENT = "feePercent";
+const String TC_BLOCKCHAIN = "blockchain";
+const String TC_MIN_WITHDRAW = "minWithdraw";
+const String TC_IMAGE_BIG = "imageBig";
+const String TC_IMAGE_SMALL = "imageSmall";
+const String TC_IS_ACTIVE = "isActive";
+const String TC_EXPLORER_URL = "explorerUrl";
+const String TC_REQUIRED_CONF = "requiredConfirmations";
+const String TC_FULL_NAME = "fullName";
+const String TC_TOKEN_STANDARD = "tokenStandart";
+const String TC_ALLOW_WITH = "allowWithdraws";
+const String TC_ALLOW_DEP = "allowDeposits";
+
+
+
 // ['English', 'Bosnian', 'Croatian', 'Czech', 'Finnish', 'German', 'Hindi', 'Japanese', 'Russian', 'Serbian Latin', 'Serbian Цyриллиц', 'Spanish', 'Panjabi'];
 // ['en', 'bs_BA', 'hr_HR', 'cs_CZ', 'fi_FI', 'de_DE', 'hi_IN', 'ja_JP', 'ru_RU', 'sr_Latn_RS', 'sr_Cyrl_RS', 'es_ES' 'pa_IN'];
 bool reloadData = false;
