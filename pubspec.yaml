@@ -1,7 +1,7 @@
 name: rocketbot
 description: Rocketbot
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.83+83
 
@@ -22,7 +22,7 @@ dependencies:
   auto_size_text: ^3.0.0
   auto_size_text_field: ^1.0.1
   intl: ^0.17.0
-  fl_chart: ^0.45.1
+  fl_chart: ^0.46.0
   cached_network_image: ^3.2.0
   animations: ^2.0.2
   progress_indicators: ^1.0.0
@@ -43,6 +43,7 @@ dependencies:
   flutter_displaymode: ^0.3.2
   flutter_local_notifications: ^9.4.0
   sqflite: ^2.0.2
+  jiffy: ^5.0.0
   sprintf: any
   slide_to_act: any
   flutter_user_agent:

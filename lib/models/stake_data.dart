@@ -57,7 +57,7 @@ class Stakes {
 }
 
   Stakes.fromJson(dynamic json) {
-    _hour = json['hour'];
+    _hour = json['hour'] ?? 0;
     _amount = json['amount'];
     _day = json['day'];
   }

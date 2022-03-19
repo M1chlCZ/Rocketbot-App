@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -14,7 +13,6 @@ import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/fees.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
-import 'package:rocketbot/models/withdraw_confirm.dart';
 import 'package:rocketbot/models/withdraw_pwid.dart';
 import 'package:rocketbot/netinterface/app_exception.dart';
 import 'package:rocketbot/netinterface/interface.dart';
@@ -23,6 +21,7 @@ import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/qr_code_scanner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:slide_to_act/slide_to_act.dart';
 
 class SendPage extends StatefulWidget {
   final Coin? coinActive;
@@ -40,6 +39,7 @@ class SendPage extends StatefulWidget {
 class _SendPageState extends State<SendPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  final GlobalKey<SlideActionState> _keyStake = GlobalKey();
   final NetInterface _interface = NetInterface();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -117,21 +117,35 @@ class _SendPageState extends State<SendPage> {
   }
 
   _createWithdrawal() async {
-    Map<String, dynamic> _query = {
-      "coinId": widget.coinActive!.id!,
-      "fee": _fee,
-      "amount": double.parse(_amountController.text),
-      "toAddress": _addressController.text
-    };
+    if(_amountController.text.isEmpty) {
+      _keyStake.currentState!.reset();
+      Dialogs.openAlertBox(
+          context, AppLocalizations.of(context)!.error, "Invalid amount!");
+      return;
+    }
+    if(_addressController.text.isEmpty) {
+      _keyStake.currentState!.reset();
+      Dialogs.openAlertBox(
+          context, AppLocalizations.of(context)!.error, "Invalid address!");
+      return;
+    }
     try {
+      Map<String, dynamic> _query = {
+        "coinId": widget.coinActive!.id!,
+        "fee": _fee,
+        "amount": double.parse(_amountController.text),
+        "toAddress": _addressController.text
+      };
+
       final response =
           await _interface.post("Transfers/CreateWithdraw", _query);
       var pwid = WithdrawID.fromJson(response);
       Map<String, dynamic> _queryID = {
         "id": pwid.data!.pgwIdentifier!,
       };
-     var resWith = await _interface.post("Transfers/ConfirmWithdraw", _queryID);
-     // var rw = WithdrawConfirm.fromJson(resWith);
+      var resWith =
+          await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+      // var rw = WithdrawConfirm.fromJson(resWith);
 
       _addressController.clear();
       _amountController.clear();
@@ -142,7 +156,7 @@ class _SendPageState extends State<SendPage> {
       var rs = BalancePortfolio.fromJson(res);
       preFree = rs.data!.free!;
       widget.changeFree(preFree);
-
+      _keyStake.currentState!.reset();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: SizedBox(
             height: 50,
@@ -157,6 +171,7 @@ class _SendPageState extends State<SendPage> {
         elevation: 5.0,
       ));
     } on BadRequestException catch (r, e) {
+      _keyStake.currentState!.reset();
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
       var s = r.toString().substring(messageStart, messageEnd + 1);
@@ -166,6 +181,7 @@ class _SendPageState extends State<SendPage> {
 
       Dialogs.openAlertBox(context, wm.message!, wm.error!);
     } catch (e) {
+      _keyStake.currentState!.reset();
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, e.toString());
     }
@@ -223,113 +239,9 @@ class _SendPageState extends State<SendPage> {
                       const SizedBox(
                         width: 50,
                       ),
-                      // SizedBox(
-                      //   width: 90.0,
-                      //   child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
-                      //     stream: _bloc!.coinsListStream,
-                      //     builder: (context, snapshot) {
-                      //       if (snapshot.hasData) {
-                      //         switch (snapshot.data!.status) {
-                      //           case Status.LOADING:
-                      //             listCoins = null;
-                      //             Future.delayed(Duration(milliseconds: 100), () {
-                      //               setState(() {
-                      //                 _finished = true;
-                      //               });
-                      //             });
-                      //             return Padding(
-                      //               padding: const EdgeInsets.only(top: 30.0),
-                      //               child: SizedBox(
-                      //                 child: _finished
-                      //                     ? Container()
-                      //                     : const CircularProgressIndicator(),
-                      //               ),
-                      //             );
-                      //           case Status.COMPLETED:
-                      //             Future.delayed(Duration(milliseconds: 500), () {
-                      //               setState(() {
-                      //                 _finished = false;
-                      //               });
-                      //             });
-                      //             if (listCoins == null) {
-                      //               listCoins = snapshot.data!.data!;
-                      //               widget.passBalances(listCoins);
-                      //               if(_coinActive == null) {
-                      //                 _coinActive = listCoins![0].coin!;
-                      //                 _free = listCoins![0].free!;
-                      //               };
-                      //               // _calculatePortfolio();
-                      //             }
-                      //             return SizedBox(
-                      //               height: 30,
-                      //               child: NeuContainer(
-                      //                   child: Padding(
-                      //                     padding: const EdgeInsets.only(left: 8.0),
-                      //                     child: Center(
-                      //                       child: DropdownButtonHideUnderline(
-                      //                         child: DropdownButton<Coin>(
-                      //                           value: _coinActive,
-                      //                           isDense: true,
-                      //                           onChanged: (Coin? coin) {
-                      //                             setState(() {
-                      //                               _coinActive = coin!;
-                      //                               final index = listCoins!.indexWhere((element) =>
-                      //                               element.coin == coin);
-                      //                               _free = listCoins![index].free!;
-                      //                               // _priceBlock!.changeCoin(coin.coinGeckoId!);
-                      //                               // _coinNameOpacity = 0.0;
-                      //                               // _txBloc!.changeCoin(coin);
-                      //                             });
-                      //                             // _calculatePortfolio();
-                      //                           },
-                      //                           items: listCoins!
-                      //                               .map((e) => DropdownMenuItem(
-                      //                               value: e.coin!,
-                      //                               child: SizedBox(
-                      //                                   width: 50,
-                      //                                   child: Text(e.coin!.cryptoId!))))
-                      //                               .toList(),
-                      //                         ),
-                      //                       ),
-                      //                     ),
-                      //                   )),
-                      //             );
-                      //           case Status.ERROR:
-                      //             Future.delayed(Duration(milliseconds: 500), () {
-                      //               setState(() {
-                      //                 _finished = false;
-                      //               });
-                      //             });
-                      //             print("error");
-                      //             break;
-                      //         }
-                      //       }
-                      //       return Container();
-                      //     },
-                      //   ),
-                      // ),
                       const SizedBox(
                         width: 50,
                       ),
-                      // Expanded(
-                      //   child: Align(
-                      //     alignment: Alignment.centerRight,
-                      //     child: Padding(
-                      //       padding: const EdgeInsets.only(right: 8.0),
-                      //       child: SizedBox(
-                      //         height: 30,
-                      //         width: 25,
-                      //         child: NeuButton(
-                      //           onTap: () async {},
-                      //           icon: const Icon(
-                      //             Icons.more_vert,
-                      //             color: Colors.white70,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // )
                     ],
                   ),
                 ),
@@ -610,20 +522,35 @@ class _SendPageState extends State<SendPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.red.withOpacity(0.5)),
                       )
-                    : NeuButton(
-                        height: 40.0,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        color: Colors.green.withOpacity(0.4),
-                        child: Text(
-                          AppLocalizations.of(context)!.send.toUpperCase(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline4!
-                              .copyWith(fontWeight: FontWeight.bold),
+                    : Padding(
+                        padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+                        child: SlideAction(
+                          height: 50.0,
+                          sliderButtonIconPadding: 4.0,
+                          sliderButtonIconSize: 40.0,
+                          borderRadius: 5.0,
+                          text: AppLocalizations.of(context)!.send,
+                          innerColor: Colors.black.withOpacity(0.52),
+                          outerColor: Colors.lightGreenAccent.withOpacity(0.35),
+                          elevation: 0.5,
+                          // submittedIcon: const Icon(Icons.check, size: 30.0, color: Colors.lightGreenAccent,),
+                          submittedIcon: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            color: Colors.black.withOpacity(0.52),
+                          ),
+                          sliderButtonIcon: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.white70,
+                            size: 25.0,
+                          ),
+                          sliderRotate: false,
+                          textStyle: const TextStyle(
+                              color: Colors.white54, fontSize: 24.0),
+                          key: _keyStake,
+                          onSubmit: () {
+                            _handlePIN();
+                          },
                         ),
-                        onTap: () {
-                          _handlePIN();
-                        },
                       ),
                 const SizedBox(
                   height: 20.0,

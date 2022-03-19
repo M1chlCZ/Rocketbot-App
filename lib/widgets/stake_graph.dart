@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/models/coin_graph.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/models/graph_stake_data.dart';
 import 'package:rocketbot/support/duration_extension.dart';
@@ -14,24 +13,22 @@ import '../models/stake_data.dart';
 
 
 class CoinStakeGraph extends StatefulWidget {
-  final List<Stakes>? stake;
+  final StakingData? stake;
   final Coin? activeCoin;
-  final int? time;
+  final int type;
   final Function (bool touch) blockTouch;
 
-  const CoinStakeGraph({Key? key, this.stake, this.time, this.activeCoin, required this.blockTouch}) : super(key: key);
+  const CoinStakeGraph({Key? key, this.stake, required this.type, this.activeCoin, required this.blockTouch}) : super(key: key);
 
   @override
   CoinStakeGraphState createState() => CoinStakeGraphState();
 }
 
 class CoinStakeGraphState extends State<CoinStakeGraph> {
-  double _divider = 0.1;
-  final int _leftLabelsCount = 6;
-  final _time = 24;
   var _touch = false;
-  List<Stakes>? _stakes;
+  StakingData? _stakes;
   int _dropdownValue = 0;
+  String? _date;
 
   final List<FlSpot> _values = [];
 
@@ -39,13 +36,21 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
   double _maxX = 0;
   double _minY = 0;
   double _maxY = 0;
-  double _leftTitlesInterval = 0;
+  // double _leftTitlesInterval = 0;
 
   @override
   void initState() {
     super.initState();
+    _dropdownValue = widget.type;
     _stakes = widget.stake;
+    _getDate();
     _prepareStakeData();
+  }
+
+  void _getDate() {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    _date = formatter.format(now);
   }
 
 
@@ -54,7 +59,14 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
     super.dispose();
   }
 
-   DateTime _dateParse(String? day, int hour) {
+   DateTime _dateParse(String? day, int hour, int type) {
+    if (type == 1 || type == 2) {
+      return DateTime.parse(day!);
+    }
+    if (type == 3) {
+     List<String> dt = day!.split("-");
+      return DateTime(int.parse(dt[0]),int.parse(dt[1]));
+    }
     var _timeDifference = DateTime.now().timeZoneOffset.inHours;
     var _datetime = DateTime.parse(day!);
     DateTime newTime = DateTime.now();
@@ -71,10 +83,10 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
       List<StakeData>? _data;
       if (_stakes != null) {
         var _amount = 0.0;
-        List<StakeData>? _dataPrep = List.generate(_stakes!.length, (i) {
+        List<StakeData>? _dataPrep = List.generate(_stakes!.stakes!.length, (i) {
           return StakeData(
-            date: _dateParse(_stakes![i].day!, _stakes![i].hour!),
-            amount: _stakes![i].amount!,
+            date: _dateParse(_stakes!.stakes![i].day!, _stakes!.stakes![i].hour!, _dropdownValue),
+            amount: _stakes!.stakes![i].amount!,
           );
         });
         _dataPrep.sort((a, b) => a.date.compareTo(b.date));
@@ -85,42 +97,94 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
             amount: _amount,
           );
         });
-
-
-        _maxX = const Duration(minutes: 00, hours: 24).inMinutes.toDouble();
-        // _maxY = await compute(_getMaxY, _data);
+        if(_dropdownValue == 0) {
+          _maxX = const Duration(minutes: 00, hours: 24).inMinutes.toDouble();
+          _minX = 0.0;
+        } else if(_dropdownValue == 1) {
+          _maxX = const Duration(days: 7).inDays.toDouble();
+          _minX = 1.0;
+        }else if(_dropdownValue == 2) {
+          _maxX = Duration(days: Jiffy().daysInMonth).inDays.toDouble();
+          _minX = 0.0;
+        }else if(_dropdownValue == 3) {
+          _maxX = 12.0;
+          _minX = 0.0;
+        }
         _maxY = _getMaxY(_data);
-        // print(_maxY);
-
-        _leftTitlesInterval = (_maxY / 2.0);
-        _minX = 0;
-        _minY = 0;
+        _minY = 0.0;
       }
-      // FlSpot firstSpot;
-      // _values.clear();
-      // firstSpot = const FlSpot(0, 0);
-      //
-      // if (_data!.isEmpty) {
-      //   _values.add(firstSpot);
-      // }
 
       if (_data!.isNotEmpty) {
         List<FlSpot>? _valuesData;
-        _valuesData = _data
-            .map((stakeData) {
-          var d = Duration(minutes: 0, hours: stakeData.date.hour);
-          return FlSpot(
-            d.inMinutes.toDouble(),
-            stakeData.amount,
-          );
-        }).cast<FlSpot>()
-            .toList();
-        _values.addAll(_valuesData);
+        if(_dropdownValue == 0) {
+          _valuesData = _data
+              .map((stakeData) {
+            var d = Duration(minutes: 0, hours: stakeData.date.hour);
+            return FlSpot(
+              d.inMinutes.toDouble(),
+              stakeData.amount,
+            );
+          }).cast<FlSpot>()
+              .toList();
+          _values.addAll(_valuesData);
+        }else if(_dropdownValue == 1) {
+          List<StakeData> _dt = [];
+          var add = false;
+          var subst = 0.0;
+          for (var element in _data) {
+            if(element.date.weekday == 1) {
+              add = true;
+            }
+            if(add) {
+              var k = element.amount - subst;
+              _dt.add(
+                StakeData(date: element.date, amount: k)
+              );
+            }else{
+              subst = element.amount;
+            }
+          }
+          var i = 1;
+          List<FlSpot> _valuesData = _dt
+              .map((stakeData) {
+            var d = Duration(days: i);
+            i++;
+            return FlSpot(
+              d.inDays.toDouble(),
+              stakeData.amount,
+            );
+
+          }).cast<FlSpot>()
+              .toList();
+          _values.addAll(_valuesData);
+        } else if (_dropdownValue == 2) {
+          _valuesData = _data
+              .map((stakeData) {
+            var d = Duration(days: stakeData.date.day);
+            return FlSpot(
+              d.inDays.toDouble(),
+              stakeData.amount,
+            );
+          }).cast<FlSpot>()
+              .toList();
+          _values.addAll(_valuesData);
+        } else if (_dropdownValue == 3) {
+          _valuesData = _data
+              .map((stakeData) {
+            // var d = Duration(days: stakeData.date.month);
+            return FlSpot(
+              stakeData.date.month.toDouble(),
+              stakeData.amount,
+            );
+          }).cast<FlSpot>()
+              .toList();
+          _values.addAll(_valuesData);
+        }
       }
       setState(() {});
     } catch (e) {
       _values.clear();
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -155,7 +219,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
         return max;
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return max;
   }
@@ -186,70 +250,78 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
     }
   }
 
-  SideTitles _leftTitles() {
-    return SideTitles(
-      showTitles: true,
-      getTextStyles: (value, margin) => Theme.of(context)
-          .textTheme
-          .headline5!
-          .copyWith(color: Colors.white70, fontSize: 10.0),
-      getTitles: (value) {
-        return _formatTitles(value.toInt());
-      },
-      // NumberFormat.compactCurrency(symbol: '\$').format(value),
-      reservedSize: _dropdownValue == 0 ? 19 : 27,
-      margin: 7,
-      interval: _leftTitlesInterval,
-    );
+  // SideTitles _leftTitles() {
+  //   return SideTitles(
+  //     showTitles: true,
+  //     getTextStyles: (value, margin) => Theme.of(context)
+  //         .textTheme
+  //         .headline5!
+  //         .copyWith(color: Colors.white70, fontSize: 10.0),
+  //     getTitles: (value) {
+  //       return _formatTitles(value.toInt());
+  //     },
+  //     // NumberFormat.compactCurrency(symbol: '\$').format(value),
+  //     reservedSize: _dropdownValue == 0 ? 19 : 27,
+  //     margin: 7,
+  //     interval: _leftTitlesInterval,
+  //   );
+  // }
+
+  // String _formatTitles(int i) {
+  //   if (i >= 1000) {
+  //     return (i / 1000).round().toString() + "k";
+  //   } else if (i >= 500) {
+  //     return (i / 1000).toString() + "k";
+  //   } else {
+  //     return i.toString();
+  //   }
+  // }
+
+  // SideTitles _bottomTitles() {
+  //   return SideTitles(
+  //     rotateAngle: 0.0,
+  //     showTitles: true,
+  //     getTextStyles: (value, margin) => Theme.of(context)
+  //         .textTheme
+  //         .headline5!
+  //         .copyWith(color: Colors.white54, fontSize: 10.0),
+  //     getTitles: (value) {
+  //       if (_dropdownValue == 0) {
+  //         String _d = Duration(minutes: value.toInt()).toHoursMinutes();
+  //         String _dd = _getMeTime("0000-00-00 " + _d);
+  //         List<String> _dateParts = _dd.toString().split(" ");
+  //         String _finalDate = "";
+  //         if (_dateParts.length == 1) {
+  //           _finalDate = _dd;
+  //         } else {
+  //           _finalDate = _dateParts[0] + _dateParts[1];
+  //         }
+  //         return _finalDate;
+  //       } else if (_dropdownValue == 1) {
+  //         Duration d = Duration(days: value.toInt());
+  //         return d.inDays.toString();
+  //       } else {
+  //         Duration d = Duration(days: value.toInt());
+  //         return d.inDays.toString();
+  //       }
+  //     },
+  //     margin: 8.0,
+  //     interval: (_maxX - _minX) / (4 + _dropdownValue * 4),
+  //   );
+  // }
+
+  String _getMeTime(String? d, String format) {
+    if (d == null) return "";
+    String languageCode = Localizations.localeOf(context).languageCode;
+    var date = DateTime.parse(d);
+    String dateTime = DateFormat(format, languageCode).format(date);
+    return dateTime;
   }
 
-  String _formatTitles(int i) {
-    if (i >= 1000) {
-      return (i / 1000).round().toString() + "k";
-    } else if (i >= 500) {
-      return (i / 1000).toString() + "k";
-    } else {
-      return i.toString();
-    }
-  }
-
-  SideTitles _bottomTitles() {
-    return SideTitles(
-      rotateAngle: 0.0,
-      showTitles: true,
-      getTextStyles: (value, margin) => Theme.of(context)
-          .textTheme
-          .headline5!
-          .copyWith(color: Colors.white54, fontSize: 10.0),
-      getTitles: (value) {
-        if (_dropdownValue == 0) {
-          String _d = Duration(minutes: value.toInt()).toHoursMinutes();
-          String _dd = _getMeTime("0000-00-00 " + _d);
-          List<String> _dateParts = _dd.toString().split(" ");
-          String _finalDate = "";
-          if (_dateParts.length == 1) {
-            _finalDate = _dd;
-          } else {
-            _finalDate = _dateParts[0] + _dateParts[1];
-          }
-          return _finalDate;
-        } else if (_dropdownValue == 1) {
-          Duration d = Duration(days: value.toInt());
-          return d.inDays.toString();
-        } else {
-          Duration d = Duration(days: value.toInt());
-          return d.inDays.toString();
-        }
-      },
-      margin: 8.0,
-      interval: (_maxX - _minX) / (4 + _dropdownValue * 4),
-    );
-  }
-
-  String _getMeTime(String? d) {
+  String _getMeDate(String? d) {
     if (d == null) return "";
     var date = DateTime.parse(d);
-    var format = DateFormat.Hm(Platform.localeName);
+    var format = DateFormat.yMd(Platform.localeName);
     return format.format(date);
   }
 
@@ -282,16 +354,26 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
   String _getToolTip(int time) {
     if (_dropdownValue == 0) {
       return _getMeTime("0000-00-00 " +
-          Duration(minutes: time).toHoursMinutes().toString()) +
+          Duration(minutes: time).toHoursMinutes().toString(), "HH:mm") +
           '\n';
-      // return '${Duration(minutes: time).toHoursMinutes().toString()} \n';
     } else if (_dropdownValue == 1) {
-      // print(_date);
-      // List<String> dateParts = _date.toString().split("-");
-      // String _tm = time < 10 ? "0" + time.toString() : time.toString();
-      // String _dt = dateParts[0] + "-" + dateParts[1] + "-" + _tm;
-      return "0" + '\n';
-      // return '${_formatCountdownTime(Duration(days: time).inDays.toInt()) + "." + dateParts[1] + "." + dateParts[0]} \n';
+      DateTime date = DateTime.parse("1970-00-00");
+      DateTime d = Jiffy(date)
+          .add(duration: Duration(days: time))
+          .dateTime;
+      return DateFormat('EEEE').format(d) + '\n';
+    }else if (_dropdownValue == 2) {
+      List<String> dateParts = _date.toString().split("-");
+      String _tm = time < 10 ? "0" + time.toString() : time.toString();
+      String _dt = dateParts[0] + "-" + dateParts[1] + "-" + _tm;
+      return _getMeDate(_dt) + '\n';
+    }else if (_dropdownValue == 3) {
+      List<String> dateParts = _date.toString().split("-");
+      String _tm = time < 10 ? "0" + time.toString() : time.toString();
+      String _dt = dateParts[0] + "-" + dateParts[1] + "-" + _tm;
+      var date = DateTime.parse(_dt);
+      var format = DateFormat.yM(Platform.localeName);
+      return format.format(date) + '\n';
     } else {
       return '${Duration(days: time * 31).inDays.toString()} \n';
     }

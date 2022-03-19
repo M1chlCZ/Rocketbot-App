@@ -165,6 +165,8 @@ class _MainScreenState extends State<MainScreen> {
                 depositAddress: _depositAddr,
                 depositPosAddress: _posDepositAddr,
                 activeCoin: _coinActive,
+                coinBalance: _lc!
+                    .singleWhere((element) => element.coin!.id! == _coinActive.id!),
                 allCoins: _lc,
                 free: _free,
                 goBack: goBack,

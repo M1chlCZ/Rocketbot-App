@@ -5,9 +5,11 @@ import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rocketbot/bloc/stake_graph_bloc.dart';
+import 'package:rocketbot/models/stake_data.dart';
+import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/fees.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -16,12 +18,10 @@ import 'package:rocketbot/models/withdraw_confirm.dart';
 import 'package:rocketbot/models/withdraw_pwid.dart';
 import 'package:rocketbot/netInterface/app_exception.dart';
 import 'package:rocketbot/netInterface/interface.dart';
-import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/storage/app_database.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/gradient_text.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
-import 'package:rocketbot/support/utils.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
 import 'package:rocketbot/widgets/percent_switch_widget.dart';
 import 'package:rocketbot/widgets/stake_graph.dart';
@@ -31,10 +31,11 @@ import '../models/balance_list.dart';
 import '../models/coin.dart';
 import '../models/stake_data.dart';
 import '../widgets/coin_price_graph.dart';
-import '../widgets/time_range_switch.dart';
+import '../widgets/time_stake_range_switch.dart';
 
 class StakingPage extends StatefulWidget {
   final Coin activeCoin;
+  final CoinBalance coinBalance;
   final String? depositAddress;
   final String? depositPosAddress;
   final Function(double free) changeFree;
@@ -47,6 +48,7 @@ class StakingPage extends StatefulWidget {
   const StakingPage({
     Key? key,
     required this.activeCoin,
+    required this.coinBalance,
     required this.changeFree,
     this.depositAddress,
     this.depositPosAddress,
@@ -58,52 +60,61 @@ class StakingPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  StakingPageState createState() => StakingPageState();
+  _StakingPageState createState() => _StakingPageState();
 }
 
-class StakingPageState extends LifecycleWatcherState<StakingPage> {
-  final _storage = const FlutterSecureStorage();
+class _StakingPageState extends LifecycleWatcherState<StakingPage> {
+  // final _storage = const FlutterSecureStorage();
   final NetInterface _interface = NetInterface();
   final _graphKey = GlobalKey<CoinPriceGraphState>();
   final _percentageKey = GlobalKey<PercentSwitchWidgetState>();
   final GlobalKey<SlideActionState> _keyStake = GlobalKey();
   final TextEditingController _amountController = TextEditingController();
-  List<Stakes>? _stakeData;
+  AnimationController? _animationController;
+  Animation<double>? _animation;
+  StakeGraphBloc? _stakeBloc;
   late Coin _coinActive;
 
-  Decimal totalCoins = Decimal.zero;
-  Decimal totalUSD = Decimal.zero;
-  Decimal usdCost = Decimal.zero;
-  bool portCalc = false;
   bool _staking = false;
   bool _loadingReward = false;
   bool _loadingCoins = false;
   bool _paused = false;
+  bool _detailsExtended = false;
 
   String _amountStaked = "0.0";
   double _unconfirmedAmount = 0.0;
   String _amountReward = "0.0";
+  double _estimated = 0.0;
+  double _percentage = 0.0;
+  double _inPoolTotal = 0.0;
+  double _price = 0.0;
   double _free = 0.0;
 
   double? _fee;
   double? _min;
+  int _typeGraph = 0;
 
   @override
   void initState() {
     super.initState();
+    _price = widget.coinBalance.priceData!.prices!.usd!.toDouble();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _animation =  Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _animationController!, curve: Curves.fastLinearToSlowEaseIn));
     _coinActive = widget.activeCoin;
     _free = widget.free;
     _amountController.addListener(() {
       _percentageKey.currentState!.deActivate();
     });
-
+    _stakeBloc = StakeGraphBloc();
+    _stakeBloc!.stakeBloc();
     _getPos();
     _getFees();
   }
 
   @override
   void dispose() {
-    // _listCoins.clear();
     super.dispose();
   }
 
@@ -115,7 +126,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
   }
 
   void _getPos() {
-    _getStakeData();
+    _stakeBloc!.fetchStakeData(_coinActive.id!, _typeGraph);
     _getStakingDetails();
   }
 
@@ -131,27 +142,15 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       _staking = false;
       setState(() {});
     } else {
+      _estimated = sc.estimated ?? 0.0;
+      _percentage = sc.contribution ?? 0.0;
+      _inPoolTotal = sc.inPoolTotal ?? 0.0;
       _amountStaked = sc.amount!.toString();
       _unconfirmedAmount = sc.unconfirmed!;
       _amountReward = _formatDecimal(Decimal.parse(sc.stakesAmount.toString()));
       _staking = true;
       setState(() {});
     }
-  }
-
-  Future<void> _getStakeData() async {
-    Map<String, dynamic> m = {
-      "idCoin": _coinActive.id!,
-      // "dateTime": "2022-03-04 23:00:00"
-      "datetime": Utils.getUTC()
-    };
-    var rs = await _interface.post("stake/list", m, pos: true);
-    if (rs == null) return;
-    StakingData st = StakingData.fromJson(rs);
-    // if (st.stakes == null) return;
-    _stakeData = st.stakes;
-    _stakeData ??= [];
-    setState(() {});
   }
 
   @override
@@ -190,17 +189,8 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                   ),
                   SizedBox(
                       height: 30,
-                      child: IgnorePointer(
-                        child: Stack(
-                          children: [
-                            Opacity(
-                              opacity: 0.5,
-                              child: TimeRangeSwitcher(
-                                changeTime: _changeTime,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: StakeTimeRangeSwitcher(
+                        changeTime: _changeTime,
                       )),
                 ],
               ),
@@ -229,24 +219,63 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                   ),
                 ),
                 SizedBox(
-                    width: double.infinity,
-                    height: 240,
-                    child: _stakeData != null
-                        ? CoinStakeGraph(
-                            key: _graphKey,
-                            stake: _stakeData,
-                            activeCoin: _coinActive,
-                            time: 24,
-                            blockTouch: _blockSwipe,
-                          )
-                        : HeartbeatProgressIndicator(
-                            startScale: 0.01,
-                            endScale: 0.4,
-                            child: const Image(
-                              image: AssetImage('images/rocketbot_logo.png'),
-                              color: Colors.white30,
-                            ),
-                          )),
+                  width: double.infinity,
+                  height: 240,
+                  child: RefreshIndicator(
+                    onRefresh: () =>
+                        _stakeBloc!.fetchStakeData(_coinActive.id!, 0),
+                    child: StreamBuilder<ApiResponse<StakingData>>(
+                        stream: _stakeBloc!.coinsListStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            switch (snapshot.data!.status) {
+                              case Status.COMPLETED:
+                                return CoinStakeGraph(
+                                  key: _graphKey,
+                                  stake: snapshot.data?.data,
+                                  activeCoin: _coinActive,
+                                  type: _typeGraph,
+                                  blockTouch: _blockSwipe,
+                                );
+                              case Status.LOADING:
+                                return Center(
+                                  child: HeartbeatProgressIndicator(
+                                    startScale: 0.01,
+                                    endScale: 0.4,
+                                    child: const Image(
+                                      image: AssetImage(
+                                          'images/rocketbot_logo.png'),
+                                      color: Colors.white30,
+                                    ),
+                                  ),
+                                );
+                              case Status.ERROR:
+                                return Container(
+                                  color: Colors.transparent,
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .graph_no_data,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2!
+                                            .copyWith(color: Colors.red),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              default:
+                                return Container();
+                            }
+                          } else {
+                            return Container();
+                          }
+                        }),
+                  ),
+                ),
               ],
             ),
             Container(
@@ -359,7 +388,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8.0, top: 1.0),
                         child: AutoSizeText(
-                                  _formatPriceString(_amountStaked) +
+                          _formatPriceString(_amountStaked) +
                               " " +
                               _coinActive.cryptoId!,
                           maxLines: 1,
@@ -471,6 +500,226 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
             Container(
               decoration: const BoxDecoration(
                 border:
+                Border(top: BorderSide(color: Colors.white12, width: 0.5)),
+              ),
+            ),
+            SizeTransition(
+              sizeFactor: _animation!,
+              child: Container(
+                color: Colors.black12,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, left: 10.0),
+                        child: Row(
+                          children: [
+                            GradientText(
+                              "Total tokens in the pool:",
+                              gradient: const LinearGradient(colors: [
+                                Colors.white70,
+                                Colors.white54,
+                              ]),
+                              // textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontSize: 12.0, color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0, top: 1.0),
+                                child: AutoSizeText(
+                                  _inPoolTotal.toStringAsFixed(1) + " " + _coinActive.cryptoId!,
+                                  maxLines: 1,
+                                  minFontSize: 8.0,
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(fontSize: 14.0, color: Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, left: 10.0),
+                        child: Row(
+                          children: [
+                            GradientText(
+                              "Monetary value:",
+                              gradient: const LinearGradient(colors: [
+                                Colors.white70,
+                                Colors.white54,
+                              ]),
+                              // textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontSize: 12.0, color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0, top: 1.0),
+                                child: AutoSizeText(
+                                    (_inPoolTotal * _price).toStringAsFixed(2) + " " + "USD",
+                                  maxLines: 1,
+                                  minFontSize: 8.0,
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(fontSize: 14.0, color: Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, left: 10.0),
+                        child: Row(
+                          children: [
+                            GradientText(
+                              "Your contribution:",
+                              gradient: const LinearGradient(colors: [
+                                Colors.white70,
+                                Colors.white54,
+                              ]),
+                              // textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontSize: 12.0, color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0, top: 1.0),
+                                child: AutoSizeText(
+                                  _percentage.toStringAsFixed(3) + "%",
+                                  maxLines: 1,
+                                  minFontSize: 8.0,
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(fontSize: 14.0, color: Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, left: 10.0),
+                        child: Row(
+                          children: [
+                            GradientText(
+                              "Your estimated reward:",
+                              gradient: const LinearGradient(colors: [
+                                Colors.white70,
+                                Colors.white54,
+                              ]),
+                              // textAlign: TextAlign.end,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontSize: 12.0, color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0, top: 1.0),
+                                child: AutoSizeText(
+                                  _estimated.toStringAsFixed(3) + " " +_coinActive.cryptoId! + "/DAY" ,
+                                  maxLines: 1,
+                                  minFontSize: 8.0,
+                                  textAlign: TextAlign.end,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(fontSize: 14.0, color: Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10.0,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                border:
+                Border(top: BorderSide(color: Colors.white12, width: 0.5)),
+              ),
+            ),
+      GestureDetector(
+        onTap: () {
+          if(_detailsExtended) {
+            _animationController!.reverse();
+            _detailsExtended = false;
+          }else{
+            _animationController!.forward();
+            _detailsExtended = true;
+          }
+          setState(() { });
+        },
+        child: Container(
+          color: Colors.transparent,
+          child: Align(
+            alignment: Alignment.center,
+            child:
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 5.0,
+                    ),
+                    GradientText(
+                      _detailsExtended ? "Show less details": "Show more details",
+                      gradient: const LinearGradient(colors: [
+                        Colors.white70,
+                        Colors.white54,
+                      ]),
+                      // textAlign: TextAlign.end,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(fontSize: 12.0, color: Colors.white70),
+                    ),
+                    RotatedBox(
+                      quarterTurns: _detailsExtended ? 2 : 0,
+                      child: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white54,
+                        size: 18.0,
+                      ),
+                    ),
+                  ],
+                ),
+          ),
+        ),
+      ),
+
+            Container(
+              decoration: const BoxDecoration(
+                border:
                     Border(top: BorderSide(color: Colors.white12, width: 0.5)),
               ),
             ),
@@ -487,7 +736,9 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                       final text = newValue.text;
                       if (text.isNotEmpty) double.parse(text);
                       return newValue;
-                    } catch (e) {}
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
                     return oldValue;
                   }),
                 ],
@@ -525,17 +776,21 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
             Container(
               decoration: const BoxDecoration(
                 border:
-                Border(top: BorderSide(color: Colors.white12, width: 0.5)),
+                    Border(top: BorderSide(color: Colors.white12, width: 0.5)),
               ),
             ),
-            const SizedBox(height: 5.0,),
+            const SizedBox(
+              height: 5.0,
+            ),
             SizedBox(
               width: double.infinity,
               child: Center(
                   child: Text(
                 AppLocalizations.of(context)!.min_withdraw +
                     " " +
-                    _min.toString() + " \n" + AppLocalizations.of(context)!.staking_lock_coins,
+                    _min.toString() +
+                    " \n" +
+                    AppLocalizations.of(context)!.staking_lock_coins,
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
@@ -600,7 +855,8 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                         child: Opacity(
                           opacity: _amountReward == "0.0" ? 0.6 : 1.0,
                           child: Padding(
-                              padding: const EdgeInsets.only(left: 2.0, right: 2.0),
+                              padding:
+                                  const EdgeInsets.only(left: 2.0, right: 2.0),
                               child: FlatCustomButton(
                                 child: SizedBox(
                                     height: 40.0,
@@ -608,7 +864,8 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                                         child: _loadingReward
                                             ? const Padding(
                                                 padding: EdgeInsets.all(3.0),
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   strokeWidth: 2.0,
                                                   color: Colors.white70,
                                                 ),
@@ -680,9 +937,9 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
   }
 
   _changeTime(int time) {
-    setState(() {
-      _graphKey.currentState!.changeTime(time);
-    });
+    _typeGraph = 0;
+    _typeGraph = time;
+    _stakeBloc!.fetchStakeData(_coinActive.id!, _typeGraph);
   }
 
   _blockSwipe(bool b) {
@@ -758,7 +1015,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       setState(() {
         // _error = true;
       });
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -766,7 +1023,6 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
     Dialogs.openWaitBox(context);
     String _serverTypeRckt = "<Rocketbot Service error>";
     String _serverTypePos = "<Rocketbot POS Service error>";
-    bool _serverRckt = true;
     WithdrawConfirm? rw;
     var amt = double.parse(_amountController.text);
 
@@ -800,15 +1056,15 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       var resWith =
           await _interface.post("Transfers/ConfirmWithdraw", _queryID);
       rw = WithdrawConfirm.fromJson(resWith);
-      await AppDatabase().addTX(rw.data!.pgwIdentifier!, _coinActive.id!, double.parse(_amountController.text), widget.depositAddress!);
-    } on BadRequestException catch (r, e) {
+      await AppDatabase().addTX(rw.data!.pgwIdentifier!, _coinActive.id!,
+          double.parse(_amountController.text), widget.depositAddress!);
+    } on BadRequestException catch (r, _) {
       Navigator.of(context).pop();
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
       var s = r.toString().substring(messageStart, messageEnd + 1);
       var js = json.decode(s);
       var wm = WithdrawalsModels.fromJson(js);
-      // _showError(wm.error!);
       _keyStake.currentState!.reset();
       Dialogs.openAlertBox(
           context, wm.message!, wm.error! + "\n\n" + _serverTypeRckt);
@@ -822,12 +1078,9 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
     if (rw == null) {
       _keyStake.currentState!.reset();
       Navigator.of(context).pop();
-      Dialogs.openAlertBox(
-          context,
-          AppLocalizations.of(context)!.error,
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
           "Couldn't send coins for Staking \n\n" + _serverTypeRckt);
     }
-
 
     String? txid;
     await Future.doWhile(() async {
@@ -851,7 +1104,6 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       }
       return true;
     });
-    _serverRckt = false;
 
     try {
       Map<String, dynamic> m = {
@@ -870,7 +1122,6 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
           e.toString() + "\n\n" + _serverTypePos);
     }
     _amountController.clear();
-    _serverRckt = true;
     var preFree = 0.0;
     var resB = await _interface
         .get("User/GetBalance?coinId=" + _coinActive.id!.toString());
@@ -880,7 +1131,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
     widget.changeFree(preFree);
     _keyStake.currentState!.reset();
     await _getStakingDetails();
-    await _getStakeData();
+    _stakeBloc!.fetchStakeData(_coinActive.id!, _typeGraph);
     setState(() {});
     Navigator.of(context).pop();
   }
@@ -911,7 +1162,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       _free = preFree;
       widget.changeFree(preFree);
       await _getStakingDetails();
-      await _getStakeData();
+      _stakeBloc!.fetchStakeData(_coinActive.id!, _typeGraph);
       var conf = _coinActive.requiredConfirmations;
       if (rewardParam == 1) {
         _loadingReward = false;
@@ -920,8 +1171,12 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
       }
       setState(() {});
       Navigator.of(context).pop();
-      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.alert,
-          AppLocalizations.of(context)!.staking_with_info.replaceAll("{1}", conf.toString()));
+      Dialogs.openAlertBox(
+          context,
+          AppLocalizations.of(context)!.alert,
+          AppLocalizations.of(context)!
+              .staking_with_info
+              .replaceAll("{1}", conf.toString()));
     } catch (e) {
       Navigator.of(context).pop();
       Dialogs.openAlertBox(
@@ -957,7 +1212,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
 
   @override
   void onResumed() {
-    if(_paused) {
+    if (_paused) {
       _getPos();
       _paused = false;
     }
