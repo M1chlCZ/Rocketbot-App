@@ -206,7 +206,8 @@ class Dialogs {
           return WillPopScope(
             onWillPop: () async => false,
             child: DialogBody(
-              header: "Please wait...",
+              header: AppLocalizations.of(context)!
+                  .dl_pls_wait + "...",
               buttonLabel: '',
               noButtons: true,
               onTap: () {},

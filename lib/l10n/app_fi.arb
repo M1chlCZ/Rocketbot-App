@@ -121,7 +121,7 @@
   "stake_get_reward": "Nosta palkkio",
   "stake_swipe": "Pyyhkäise panostaaksesi",
   "stake_amount" : "Panostettava määrä",
-  "stake_wait": "Voi kestää hetken!",
+  "stake_wait": "Tämä voi kestää hetken!",
   "stake_reward" : "Palkkio",
   "stake_unconfirmed": "Vahvistamaton panostusmäärä",
   "stake_staked_amount" : "Panostettu määrä",
@@ -130,5 +130,13 @@
   "staking_not_enough": "Ei tarpeeksi varoja toimenpiteen suorittamiseen!",
   "staking_with_info" : "Tokenisi on lähetetty ja ne ovat {1} vahvistuksen jälkeen saatavilla",
   "staking_lock_coins" : "Kolikot lukitaan 24 tunniksi",
-  "dl_not_close" : "Älä sulje sovellusta!"
+  "dl_not_close" : "Älä sulje sovellusta!",
+  "dl_pls_wait" : "Odota hetki",
+  "staking_total_tokens" : "Yhteensä kolikoita poolissa",
+  "staking_monetary_value" : "Rahallinen arvo",
+  "staking_contrib" : "Sinun osuutesi",
+  "staking_est" : "Arvioitu palkkiosi",
+  "staking_day" : "päivä",
+  "st_less" : "Näytä vähemmän tietoja",
+  "st_more" : "Näytä lisää tietoja"
 }

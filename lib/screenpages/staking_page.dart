@@ -516,7 +516,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                         child: Row(
                           children: [
                             GradientText(
-                              "Total tokens in the pool:",
+                              AppLocalizations.of(context)!.staking_total_tokens +":",
                               gradient: const LinearGradient(colors: [
                                 Colors.white70,
                                 Colors.white54,
@@ -553,7 +553,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                         child: Row(
                           children: [
                             GradientText(
-                              "Monetary value:",
+                              AppLocalizations.of(context)!.staking_monetary_value + ":",
                               gradient: const LinearGradient(colors: [
                                 Colors.white70,
                                 Colors.white54,
@@ -590,7 +590,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                         child: Row(
                           children: [
                             GradientText(
-                              "Your contribution:",
+                              AppLocalizations.of(context)!.staking_contrib +":",
                               gradient: const LinearGradient(colors: [
                                 Colors.white70,
                                 Colors.white54,
@@ -627,7 +627,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                         child: Row(
                           children: [
                             GradientText(
-                              "Your estimated reward:",
+                              AppLocalizations.of(context)!.staking_est +":",
                               gradient: const LinearGradient(colors: [
                                 Colors.white70,
                                 Colors.white54,
@@ -642,7 +642,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 8.0, top: 1.0),
                                 child: AutoSizeText(
-                                  _estimated.toStringAsFixed(3) + " " +_coinActive.cryptoId! + "/DAY" ,
+                                  _estimated.toStringAsFixed(3) + " " +_coinActive.cryptoId! + "/" + AppLocalizations.of(context)!.staking_day.toString().toUpperCase(),
                                   maxLines: 1,
                                   minFontSize: 8.0,
                                   textAlign: TextAlign.end,
@@ -692,7 +692,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                       height: 5.0,
                     ),
                     GradientText(
-                      _detailsExtended ? "Show less details": "Show more details",
+                      _detailsExtended ? AppLocalizations.of(context)!.st_less : AppLocalizations.of(context)!.st_more,
                       gradient: const LinearGradient(colors: [
                         Colors.white70,
                         Colors.white54,

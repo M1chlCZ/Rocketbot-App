@@ -131,18 +131,25 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
           List<StakeData> _dt = [];
           var add = false;
           var subst = 0.0;
-          for (var element in _data) {
-            if(element.date.weekday == 1) {
-              add = true;
+          var firstMon = _data.first.date.weekday == 1 ? true : false;
+          if(!firstMon) {
+            for (var element in _data) {
+              if (element.date.weekday == 1) {
+                add = true;
+              }
+              if (add) {
+                var k = element.amount - subst;
+                _dt.add(
+                    StakeData(date: element.date, amount: k)
+                );
+              } else {
+                subst = element.amount;
+              }
             }
-            if(add) {
-              var k = element.amount - subst;
-              _dt.add(
-                StakeData(date: element.date, amount: k)
-              );
-            }else{
-              subst = element.amount;
-            }
+          }else{
+            _dt.add(
+                StakeData(date: _data.last.date, amount: _data.last.amount)
+            );
           }
           var i = 1;
           List<FlSpot> _valuesData = _dt

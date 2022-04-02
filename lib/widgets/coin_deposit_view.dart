@@ -150,8 +150,8 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
-                                      // widget.free!.toString(),
-                                      "+" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD",
+                                        widget.price != null ?
+                                      "+" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD" : "No Price Data",
                                       style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xff1AD37A)),
                                       minFontSize: 8,
                                       maxLines: 1,
@@ -171,8 +171,6 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                   child: SizedBox(
                                     width: 150,
                                     child: AutoSizeText(
-                                      // widget.coin.priceData!.prices!.usd!.toStringAsFixed(2) + "\$",
-                                      // widget.coin.free!.toStringAsFixed(3),
                                       widget.data.amount.toString() + " " + widget.data.coin!.name!,
                                       style: Theme.of(context).textTheme.headline3,
                                       maxLines: 1,
@@ -185,10 +183,6 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                 const SizedBox(
                                   width: 4.0,
                                 ),
-                                // Padding(
-                                //   padding: const EdgeInsets.only(top: 2.0),
-                                //   child: PriceBadge(percentage:widget.coin.priceData!.priceChange24HPercent!.usd!,),
-                                // ),
                               ],
                             ),
                           ],

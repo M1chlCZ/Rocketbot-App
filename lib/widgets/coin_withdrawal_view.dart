@@ -143,7 +143,8 @@ class _CoinWithdrawalViewState extends State<CoinWithdrawalView> {
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
                                       // widget.free!.toString(),
-                                      "-" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD",
+                                      widget.price != null ?
+                                      "-" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD": "No Price Data",
                                       style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xffEA3913)),
                                       minFontSize: 8,
                                       maxLines: 1,

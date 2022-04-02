@@ -450,6 +450,7 @@ class NetInterface {
         await const FlutterSecureStorage()
             .write(key: NetInterface.posTokenRefresh, value: res.refreshToken);
       } else {
+        print(response.body);
         debugPrint("Fuck");
       }
     } catch (e) {

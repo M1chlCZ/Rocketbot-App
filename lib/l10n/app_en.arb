@@ -131,5 +131,15 @@
   "staking_not_enough": "Not enough enough coins to complete the operation!",
   "staking_with_info" : "Your tokens have been sent, please allow {1} confirmation before they become available",
   "staking_lock_coins" : "Coins will be locked for 24 hours",
-  "dl_not_close" : "Do not exit the app!"
+  "dl_not_close" : "Do not exit the app!",
+  "dl_pls_wait" : "Please wait",
+  "staking_total_tokens" : "Total tokens in the pool",
+  "staking_monetary_value" : "Monetary value",
+  "staking_contrib" : "Your contribution",
+  "staking_est" : "Your estimated reward",
+  "staking_day" : "day",
+  "st_less" : "Show less details",
+  "st_more" : "Show more details"
+
+
 }
