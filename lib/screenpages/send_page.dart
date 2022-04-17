@@ -55,7 +55,7 @@ class _SendPageState extends State<SendPage> {
   @override
   void initState() {
     super.initState();
-    _coinActive = widget.coinActive!;
+    _coinActive = widget.coinActive ?? Coin(id: 0);
     _getFees();
     _addressController.text = '';
     _addressController.addListener(() {
@@ -117,13 +117,13 @@ class _SendPageState extends State<SendPage> {
   }
 
   _createWithdrawal() async {
-    if(_amountController.text.isEmpty) {
+    if (_amountController.text.isEmpty) {
       _keyStake.currentState!.reset();
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, "Invalid amount!");
       return;
     }
-    if(_addressController.text.isEmpty) {
+    if (_addressController.text.isEmpty) {
       _keyStake.currentState!.reset();
       Dialogs.openAlertBox(
           context, AppLocalizations.of(context)!.error, "Invalid address!");

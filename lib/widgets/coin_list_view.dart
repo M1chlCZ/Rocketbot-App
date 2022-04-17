@@ -1,16 +1,18 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/models/balance_list.dart';
-import 'package:rocketbot/models/pos_coins_list.dart';
 
 import 'price_badge.dart';
 
 class CoinListView extends StatefulWidget {
   final CoinBalance coin;
   final String? customLocale;
+  final bool? staking;
   final Function(CoinBalance h) coinSwitch;
   final Decimal? free;
 
@@ -19,6 +21,7 @@ class CoinListView extends StatefulWidget {
       required this.coin,
       this.customLocale,
       this.free,
+      this.staking,
       required this.coinSwitch})
       : super(key: key);
 
@@ -27,9 +30,34 @@ class CoinListView extends StatefulWidget {
 }
 
 class _CoinListViewState extends State<CoinListView> {
+  Timer? _timer;
+  bool _crossfade = true;
+
   @override
   void initState() {
     super.initState();
+    if (widget.staking! == true) {
+      startTimer();
+    }
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(
+      const Duration(seconds: 3),
+      (Timer timer) {
+        setState(() {
+          _crossfade ? _crossfade = false : _crossfade = true;
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    super.dispose();
   }
 
   @override
@@ -64,34 +92,66 @@ class _CoinListViewState extends State<CoinListView> {
                         flex: 2,
                         child: Row(
                           children: [
-                            Column(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.fromLTRB(5, 3, 5, 5),
-                                  child: Center(
-                                      child: SizedBox(
-                                          height: 30,
-                                          width: 30.0,
-                                          child: CachedNetworkImage(
-                                            imageUrl:
-                                                'https://app.rocketbot.pro/coins/' +
-                                                    widget
-                                                        .coin.coin!.imageSmall!,
-                                            // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                            //     CircularProgressIndicator(value: downloadProgress.progress),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                            fit: BoxFit.scaleDown,
-                                          ))),
+                            AnimatedCrossFade(
+                              layoutBuilder: (Widget topChild, Key topChildKey,
+                                  Widget bottomChild, Key bottomChildKey) {
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: <Widget>[
+                                    Positioned(
+                                      key: bottomChildKey,
+                                      child: bottomChild,
+                                    ),
+                                    Positioned(
+                                      key: topChildKey,
+                                      child: topChild,
+                                    ),
+                                  ],
+                                );
+                              },
+                              duration: const Duration(milliseconds: 1000),
+                              secondChild: Padding(
+                                padding: const EdgeInsets.fromLTRB(10, 8, 5, 5),
+                                child: Image.asset(
+                                  "images/staking_icon.png",
+                                  color: const Color(0xFFFDCB29),
+                                  width: 38,
+                                  fit: BoxFit.fitWidth,
                                 ),
-                                Transform.scale(
-                                    scale: 0.85,
-                                    child: PriceBadge(
-                                      percentage: widget.coin.priceData
-                                          ?.priceChange24HPercent?.usd,
-                                    )),
-                              ],
+                              ),
+                              crossFadeState: _crossfade
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              firstChild: Column(
+                                children: [
+                                  Container(
+                                    margin:
+                                        const EdgeInsets.fromLTRB(5, 3, 5, 5),
+                                    child: Center(
+                                        child: SizedBox(
+                                            height: 30,
+                                            width: 30.0,
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  'https://app.rocketbot.pro/coins/' +
+                                                      widget.coin.coin!
+                                                          .imageSmall!,
+                                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                              //     CircularProgressIndicator(value: downloadProgress.progress),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                              fit: BoxFit.scaleDown,
+                                            ))),
+                                  ),
+                                  Transform.scale(
+                                      scale: 0.85,
+                                      child: PriceBadge(
+                                        percentage: widget.coin.priceData
+                                            ?.priceChange24HPercent?.usd,
+                                      )),
+                                ],
+                              ),
                             ),
                             Container(
                               height: 50,

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/bloc/stake_graph_bloc.dart';
+import 'package:rocketbot/models/pgwid.dart';
 import 'package:rocketbot/models/stake_data.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/models/balance_portfolio.dart';
@@ -140,6 +141,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
     if (sc.hasError == true) return;
     if (sc.active == 0) {
       _staking = false;
+      _inPoolTotal = sc.inPoolTotal ?? 0.0;
       setState(() {});
     } else {
       _estimated = sc.estimated ?? 0.0;
@@ -1023,13 +1025,25 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
     Dialogs.openWaitBox(context);
     String _serverTypeRckt = "<Rocketbot Service error>";
     String _serverTypePos = "<Rocketbot POS Service error>";
+    String _problem = _serverTypeRckt;
     WithdrawConfirm? rw;
     var amt = double.parse(_amountController.text);
+    bool _minAmount = amt < _min!;
 
-    if (amt > _free) {
+    await _interface.get("User/Me");
+    if (amt > _free || _amountController.text.isEmpty) {
       Navigator.of(context).pop();
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
           AppLocalizations.of(context)!.staking_not_enough);
+      _keyStake.currentState!.reset();
+      return;
+    }
+    if (_minAmount) {
+      Navigator.of(context).pop();
+      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
+          AppLocalizations.of(context)!.staking_not_min.replaceAll(
+              "{1}", _min!.toString()).replaceAll("{2}", _coinActive.cryptoId!));
+      _keyStake.currentState!.reset();
       return;
     }
 
@@ -1058,6 +1072,15 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
       rw = WithdrawConfirm.fromJson(resWith);
       await AppDatabase().addTX(rw.data!.pgwIdentifier!, _coinActive.id!,
           double.parse(_amountController.text), widget.depositAddress!);
+      _problem = _serverTypePos;
+      Map<String, dynamic> m = {
+        "idCoin": _coinActive.id!,
+        "depAddr": widget.depositAddress,
+        "amount": double.parse(_amountController.text),
+        "pwd_id": rw.data!.pgwIdentifier!,
+      };
+      await _interface.post("stake/set", m, pos: true);
+      _lostPosTX();
     } on BadRequestException catch (r, _) {
       Navigator.of(context).pop();
       int messageStart = r.toString().indexOf("{");
@@ -1067,12 +1090,12 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
       var wm = WithdrawalsModels.fromJson(js);
       _keyStake.currentState!.reset();
       Dialogs.openAlertBox(
-          context, wm.message!, wm.error! + "\n\n" + _serverTypeRckt);
+          context, wm.message!, wm.error! + "\n\n" + _problem);
     } catch (e) {
       Navigator.of(context).pop();
       _keyStake.currentState!.reset();
       Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
-          e.toString() + "\n\n" + _serverTypeRckt);
+          e.toString() + "\n\n" + _problem);
     }
 
     if (rw == null) {
@@ -1082,45 +1105,6 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
           "Couldn't send coins for Staking \n\n" + _serverTypeRckt);
     }
 
-    String? txid;
-    await Future.doWhile(() async {
-      try {
-        await Future.delayed(const Duration(seconds: 3));
-        final _withdrawals = await _interface.get(
-            "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
-                _coinActive.id!.toString());
-        List<DataWithdrawals>? _with =
-            WithdrawalsModels.fromJson(_withdrawals).data;
-        for (var element in _with!) {
-          if (element.pgwIdentifier == rw!.data!.pgwIdentifier!) {
-            if (element.transactionId != null) {
-              txid = element.transactionId;
-              return false;
-            }
-          }
-        }
-      } catch (e) {
-        return true;
-      }
-      return true;
-    });
-
-    try {
-      Map<String, dynamic> m = {
-        "idCoin": _coinActive.id!,
-        "depAddr": widget.depositAddress,
-        "amount": double.parse(_amountController.text),
-        "tx_id": txid,
-      };
-      await _interface.post("stake/set", m, pos: true);
-      await AppDatabase().finishTX(rw!.data!.pgwIdentifier!);
-    } catch (e) {
-      debugPrint(e.toString());
-      _keyStake.currentState!.reset();
-      Navigator.of(context).pop();
-      Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error,
-          e.toString() + "\n\n" + _serverTypePos);
-    }
     _amountController.clear();
     var preFree = 0.0;
     var resB = await _interface
@@ -1135,6 +1119,52 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
     setState(() {});
     Navigator.of(context).pop();
   }
+
+  _lostPosTX() async {
+    List<PGWIdentifier> l = await AppDatabase().getUnfinishedTX();
+    for (var element in l) {
+      var coindID = element.getCoinID();
+      var pgwid = element.getPGW();
+      if (element.getStatus() == 0) {
+        String? txid;
+        await Future.doWhile(() async {
+          try {
+            await Future.delayed(const Duration(seconds: 3));
+            final _withdrawals = await _interface.get(
+                "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
+                    coindID.toString());
+            List<DataWithdrawals>? _with =
+                WithdrawalsModels.fromJson(_withdrawals).data;
+            for (var el in _with!) {
+              if (el.pgwIdentifier! == pgwid) {
+                if (el.transactionId != null) {
+                  txid = el.transactionId;
+                  return false;
+                }
+              }
+            }
+          } catch (e) {
+            return true;
+          }
+          return true;
+        });
+
+        try {
+          Map<String, dynamic> m = {
+            "pwd_id": pgwid,
+            "tx_id": txid,
+          };
+          await _interface.post("stake/confirm", m, pos: true);
+          await AppDatabase().finishTX(pgwid!);
+          await Future.delayed(const Duration(seconds: 3));
+          _getPos();
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+      }
+    }
+  }
+
 
   _unStake(int rewardParam) async {
     if (_loadingReward || _loadingCoins) {

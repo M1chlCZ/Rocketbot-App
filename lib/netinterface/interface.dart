@@ -82,6 +82,7 @@ class NetInterface {
           },
           body: _query);
       // print(response.body);
+      // print(response.statusCode);
       if (response.statusCode == 403 || response.statusCode == 401) {
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
@@ -97,7 +98,7 @@ class NetInterface {
       } else {
         responseJson = await compute (_returnResponse,response);
       }
-      // // print(responseJson.toString());
+      // print(responseJson.toString());
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }

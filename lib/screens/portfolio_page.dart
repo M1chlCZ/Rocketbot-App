@@ -183,13 +183,11 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     pl = PosCoinsList.fromJson(response);
   }
 
-  _lostPosTX() async {;
+  _lostPosTX() async {
     List<PGWIdentifier> l = await AppDatabase().getUnfinishedTX();
     for (var element in l) {
       var coindID = element.getCoinID();
       var pgwid = element.getPGW();
-      var depAddr = element.getAddr();
-      var amount = element.getAmount();
 
       if (element.getStatus() == 0) {
         String? txid;
@@ -203,11 +201,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                 WithdrawalsModels.fromJson(_withdrawals).data;
             for (var el in _with!) {
               if (el.pgwIdentifier! == pgwid) {
-                log(el.toJson().toString());
-                // print("YEP");
-                // print(el.transactionId!);
                 if (el.transactionId != null) {
-                  // print(txid);
                   txid = el.transactionId;
                   return false;
                 }
@@ -221,12 +215,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
         try {
           Map<String, dynamic> m = {
-            "idCoin": coindID,
-            "depAddr": depAddr,
-            "amount": amount,
+            "pwd_id": pgwid,
             "tx_id": txid,
           };
-          await _interface.post("stake/set", m, pos: true);
+          await _interface.post("stake/confirm", m, pos: true);
           await AppDatabase().finishTX(pgwid!);
         } catch (e) {
           debugPrint(e.toString());
@@ -434,10 +426,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       value: _dropValue,
                                       isDense: true,
                                       onChanged: (String? val) async {
+                                        _bloc!.showWait();
                                         setState(() {
                                           _dropValue = val!;
                                           _listCoins = null;
                                         });
+                                        await Future.delayed(const Duration(milliseconds: 100), () {});
                                         int sort = _dropValues.indexWhere(
                                             (element) => element == _dropValue);
                                         await _storage.write(
@@ -488,7 +482,9 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 1.0),
                                     child: FlatCustomButton(
-                                      onTap: () {
+                                      onTap: () async {
+                                        _bloc!.showWait();
+                                        await Future.delayed(const Duration(milliseconds: 100), () {});
                                         setState(() {
                                           _listCoins = null;
                                           if (_hideZero) {
@@ -580,9 +576,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                             const NeverScrollableScrollPhysics(),
                                         itemCount: snapshot.data!.data!.length,
                                         itemBuilder: (ctx, index) {
+                                          final indexPos = pl!.coins!
+                                              .indexWhere((element) => element.idCoin == snapshot.data!.data![index].coin!.id);
                                           return CoinListView(
                                             key: ValueKey(snapshot
                                                 .data!.data![index].coin!.id!),
+                                            staking: indexPos != -1 ? true : false,
                                             coin: snapshot.data!.data![index],
                                             free: Decimal.parse(snapshot
                                                 .data!.data![index].free

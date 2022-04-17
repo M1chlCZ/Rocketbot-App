@@ -9,7 +9,7 @@ class CoinBalances {
   Future<List<CoinBalance>?> fetchAllBalances() async {
     final response = await _helper.get("User/GetBalances");
     final priceData = await _helper.get(
-        "Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=true&IncludeMarketcap=true&IncludeChange=true");
+        "Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
 
     Map<String, dynamic> m = {"response": response, "priceData": priceData};
     List<CoinBalance> _finalList = await compute(doJob, m);

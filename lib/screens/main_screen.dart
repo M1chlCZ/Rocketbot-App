@@ -21,15 +21,13 @@ class MainScreen extends StatefulWidget {
   final PosCoinsList? posCoinsList;
   final VoidCallback refreshList;
 
-
-
-  const MainScreen(
-      {Key? key,
-      required this.coinBalance,
-      this.listCoins,
-      this.posCoinsList,
-      required this.refreshList,})
-      : super(key: key);
+  const MainScreen({
+    Key? key,
+    required this.coinBalance,
+    this.listCoins,
+    this.posCoinsList,
+    required this.refreshList,
+  }) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -86,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
         _posDepositAddr = null;
       }
       setState(() {});
-    }catch(e){
+    } catch (e) {
       _posDepositAddr = null;
       debugPrint(e.toString());
     }
@@ -130,6 +128,7 @@ class _MainScreenState extends State<MainScreen> {
         _depositAddr = d.data!.address!;
       });
     } catch (e) {
+      _depositAddr = "";
       print(e);
     }
   }
@@ -159,19 +158,21 @@ class _MainScreenState extends State<MainScreen> {
                   goBack: goBack,
                   blockTouch: _blockTouch,
                   free: _free),
-              StakingPage(
-                setActiveCoin: _setActiveCoin,
-                changeFree: _changeFree,
-                depositAddress: _depositAddr,
-                depositPosAddress: _posDepositAddr,
-                activeCoin: _coinActive,
-                coinBalance: _lc!
-                    .singleWhere((element) => element.coin!.id! == _coinActive.id!),
-                allCoins: _lc,
-                free: _free,
-                goBack: goBack,
-                blockTouch: _blockTouch,
-              ),
+              _posDepositAddr == null
+                  ? Container()
+                  : StakingPage(
+                      setActiveCoin: _setActiveCoin,
+                      changeFree: _changeFree,
+                      depositAddress: _depositAddr,
+                      depositPosAddress: _posDepositAddr,
+                      activeCoin: _coinActive,
+                      coinBalance: _lc!.singleWhere(
+                          (element) => element.coin!.id! == _coinActive.id!),
+                      allCoins: _lc,
+                      free: _free,
+                      goBack: goBack,
+                      blockTouch: _blockTouch,
+                    ),
               SendPage(
                 changeFree: _changeFree,
                 coinActive: _coinActive,
@@ -353,7 +354,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onTappedBar(int value) {
-    if(value == 2 && _posCoin == false) {
+    if (value == 2 && _posCoin == false) {
       return;
     }
     setState(() {

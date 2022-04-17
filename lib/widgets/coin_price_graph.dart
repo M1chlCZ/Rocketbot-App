@@ -108,7 +108,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       setState(() {});
     } catch (e) {
       _values.clear();
-      print(e);
+      // print(e);
     }
   }
 

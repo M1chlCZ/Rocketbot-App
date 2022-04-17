@@ -129,6 +129,7 @@
   "stake_available" : "Available amount",
   "stake_label" : "Staking",
   "staking_not_enough": "Not enough enough coins to complete the operation!",
+  "staking_not_min": "Fail! \n Minimal amount to send:\n{1} {2}",
   "staking_with_info" : "Your tokens have been sent, please allow {1} confirmation before they become available",
   "staking_lock_coins" : "Coins will be locked for 24 hours",
   "dl_not_close" : "Do not exit the app!",

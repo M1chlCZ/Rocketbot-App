@@ -129,6 +129,7 @@
   "stake_available" : "Dostupné mince",
   "stake_label" : "Staking",
   "staking_not_enough": "Nedostatek mincí na dokončení operace!",
+  "staking_not_min": "Chyba! \n Minimum k odeslaní je:\n{1} {2}",
   "staking_with_info" : "Vaše mince byly odeslány, prosím počkejte {1} potvrzení než budou připsány na Váš účet",
   "staking_lock_coins" : "Mince budou zamknuty na 24 hodin",
   "dl_not_close" : "Prosím nezavírejte aplikaci!",
@@ -138,6 +139,6 @@
   "staking_contrib" : "Váš podíl",
   "staking_est" : "Odhad vaší odměny",
   "staking_day" : "den",
-  "st_less" : "Zobrazit více",
-  "st_more" : "Zobrazit méně"
+  "st_less" : "Zobrazit méně",
+  "st_more" : "Zobrazit více"
 }
