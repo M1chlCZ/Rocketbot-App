@@ -1,21 +1,24 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/registration_errors.dart';
-import 'package:rocketbot/models/registration_succ.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/firebase_service.dart';
 import 'package:rocketbot/support/gradient_text.dart';
+import 'package:rocketbot/widgets/button_apple.dart';
 import 'package:rocketbot/widgets/login_register.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/signin_code.dart';
@@ -61,7 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     });
-
   }
 
   void _initPackageInfo() async {
@@ -127,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String? res = await NetInterface.getKey(login, pass);
     if (res != null) {
       bool code = await NetInterface.getEmailCode(res);
-      if(code) {
+      if (code) {
         Dialogs.open2FAbox(context, res, _getToken);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -161,31 +163,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _getToken(String key, String code) async {
-
     String? res = await NetInterface.getToken(key, code);
-      if (res != null) {
-        await _storage.write(key: NetInterface.token, value: res);
-        String? wer = await _storage.read(key: NetInterface.token);
-        if(wer != null) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const PortfolioScreen()));
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-              "Bad code entered!",
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.fixed,
-            elevation: 5.0,
-          ));
-        }
-        setState(() {
-          _curtain = false;
-        });
+    if (res != null) {
+      await _storage.write(key: NetInterface.token, value: res);
+      String? wer = await _storage.read(key: NetInterface.token);
+      if (wer != null) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const PortfolioScreen()));
       }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+            "Bad code entered!",
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.fixed,
+          elevation: 5.0,
+        ));
+      }
+      setState(() {
+        _curtain = false;
+      });
+    }
   }
 
   _nextPage() async {
@@ -310,655 +311,662 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Stack(
-            children: [
-
-              Align(
-                alignment: Alignment.topRight,
-                child: SafeArea(
-                    child: Padding(
-                  padding: const EdgeInsets.only(right: 15.0, top: 17.0),
-                  child: Text(
-                    'v ' + _appVersion,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4!
-                        .copyWith(color: Colors.white70, fontSize: 12.0),
-                  ),
-                )),
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: SafeArea(
+                child: Padding(
+              padding: const EdgeInsets.only(right: 15.0, top: 17.0),
+              child: Text(
+                'v ' + _appVersion,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline4!
+                    .copyWith(color: Colors.white70, fontSize: 12.0),
               ),
-              IgnorePointer(
-                ignoring: _page == 1 ? true : false,
-                child: AnimatedOpacity(
-                  opacity: _page == 0 ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Align(
-                      alignment: Alignment.topCenter,
-                      child: SafeArea(
-                        child: SingleChildScrollView(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 150,
-                                ),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: SizedBox(
-                                    width: 280,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        SizedBox(
-                                          width: 280,
-                                          child: NeuContainer(
-                                              child: TextField(
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1!
-                                                      .copyWith(
-                                                          color: Colors.white,
-                                                          fontSize: 18.0),
-                                                  autocorrect: false,
-                                                  controller: loginController,
-                                                  textAlign: TextAlign.center,
-                                                  decoration: InputDecoration(
-                                                    isDense: false,
-                                                    contentPadding:
-                                                        const EdgeInsets.only(
-                                                            left: 10.0,
-                                                            bottom: 5.0),
-                                                    hintStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1!
-                                                        .copyWith(
-                                                            color:
-                                                                Colors.white54,
-                                                            fontSize: 14.0),
-                                                    hintText:
-                                                        AppLocalizations.of(
-                                                                context)!
-                                                            .e_mail,
-                                                    enabledBorder:
-                                                        const UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors
-                                                              .transparent),
-                                                    ),
-                                                    focusedBorder:
-                                                        const UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors
-                                                              .transparent),
-                                                    ),
-                                                  ))),
-                                        ),
-                                        const SizedBox(
-                                          height: 30.0,
-                                        ),
-                                        SizedBox(
-                                          width: 280,
-                                          child: NeuContainer(
-                                              child: TextField(
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText1!
-                                                      .copyWith(
-                                                          color: Colors.white,
-                                                          fontSize: 18.0),
-                                                  obscureText: true,
-                                                  enableSuggestions: false,
-                                                  autocorrect: false,
-                                                  controller:
-                                                      passwordController,
-                                                  textAlign: TextAlign.center,
-                                                  decoration: InputDecoration(
-                                                    isDense: false,
-                                                    contentPadding:
-                                                        const EdgeInsets.only(
-                                                            left: 10.0,
-                                                            bottom: 5.0),
-                                                    hintStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1!
-                                                        .copyWith(
-                                                            color:
-                                                                Colors.white54,
-                                                            fontSize: 14.0),
-                                                    hintText:
-                                                        AppLocalizations.of(
-                                                                context)!
-                                                            .password,
-                                                    enabledBorder:
-                                                        const UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors
-                                                              .transparent),
-                                                    ),
-                                                    focusedBorder:
-                                                        const UnderlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Colors
-                                                              .transparent),
-                                                    ),
-                                                  ))),
-                                        ),
-                                        const SizedBox(
-                                          height: 30.0,
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 55.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                AppLocalizations.of(context)!
-                                                    .forgot_pass,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .subtitle1,
-                                              ),
-                                              const SizedBox(
-                                                width: 20.0,
-                                              ),
-                                              SizedBox(
-                                                height: 30,
-                                                width: 25,
-                                                child: NeuButton(
-                                                  onTap: () {
-                                                    _forgotDialog();
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    size: 20.0,
-                                                    color: Colors.white70,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                  child: NeuButton(
-                                    onTap: () {
-                                      _loginUser(loginController.text,
-                                          passwordController.text);
-                                    },
-                                    splashColor: Colors.purple,
-                                    child: Container(
-                                      width: 200,
-                                      height: 50,
-                                      color: Colors.transparent,
-                                      child: Center(
-                                          child: Text(
-                                        AppLocalizations.of(context)!.sign_in,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1!
-                                            .copyWith(
-                                                fontSize: 22.0,
-                                                color: Colors.white),
-                                      )),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20.0,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context)!.or,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1!
-                                      .copyWith(
-                                          fontSize: 16.0, color: Colors.white),
-                                ),
-                                const SizedBox(
-                                  height: 20.0,
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                  height: 50,
-                                  child: NeuButton(
-                                      onTap: () async {
-                                        FirebaseService service =
-                                            FirebaseService();
-                                        try {
-                                          String? tokenID =
-                                              await service.signInwithGoogle();
-                                          setState(() {
-                                            _curtain = true;
-                                          });
-                                          if (tokenID != null) {
-                                            var asdf = await NetInterface.getTokenGoogle(tokenID);
-                                            if(asdf != null) {
-                                              _nextPage();
-                                            }else{
-                                              Dialogs.openAlertBox(context, "Error", "Error Sign in with Google");
-                                              setState(() {
-                                                _curtain = false;
-                                              });
-                                            }
-                                          }
-                                        } catch (e) {
-                                          // print("======HOVNO=======");
-                                          // print(e);
-                                          // if (e is FirebaseAuthException) {
-                                          //   print(e.message!);
-                                          // }
-                                          Dialogs.openAlertBox(context, "Error", "Error Sign in with Google");
-                                        }
-                                        setState(() {
-                                          // isLoading = false;
-                                        });
-                                      },
-                                      splashColor: Colors.purple,
-                                      child: Wrap(
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 25,
-                                              child: Image.asset(
-                                                  'images/google_icon.png')),
-                                          const SizedBox(
-                                            width: 10.0,
-                                          ),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .sign_in_google,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    fontSize: 14.0,
-                                                    color: Colors.white),
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                              ]),
-                        ),
-                      )),
-                ),
-              ),
-              IgnorePointer(
-                ignoring: _page == 0 ? true : false,
-                child: AnimatedOpacity(
-                  opacity: _page == 1 ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Align(
-                      alignment: Alignment.topCenter,
-                      child: SafeArea(
-                        child: SingleChildScrollView(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 150,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0),
-                                          autocorrect: false,
-                                          controller: emailRegController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText:
-                                                AppLocalizations.of(context)!
-                                                    .e_mail,
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0),
-                                          autocorrect: false,
-                                          controller: firstNameController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText:
-                                                AppLocalizations.of(context)!
-                                                    .name,
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0),
-                                          autocorrect: false,
-                                          controller: secondNameController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText:
-                                                AppLocalizations.of(context)!
-                                                    .surname,
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0),
-                                          obscureText: true,
-                                          enableSuggestions: false,
-                                          autocorrect: false,
-                                          controller: passwordRegController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText:
-                                                AppLocalizations.of(context)!
-                                                    .password,
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: 280,
-                                  child: NeuContainer(
-                                      child: TextField(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 18.0),
-                                          obscureText: true,
-                                          enableSuggestions: false,
-                                          autocorrect: false,
-                                          controller:
-                                              passwordRegConfirmController,
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            isDense: false,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 10.0, bottom: 5.0),
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    color: Colors.white54,
-                                                    fontSize: 14.0),
-                                            hintText:
-                                                AppLocalizations.of(context)!
-                                                    .conf_password,
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.transparent),
-                                            ),
-                                          ))),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+            )),
+          ),
+          IgnorePointer(
+            ignoring: _page == 1 ? true : false,
+            child: AnimatedOpacity(
+              opacity: _page == 0 ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 150,
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 280,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: AppLocalizations.of(context)!
-                                                    .agreed_to +
-                                                ' ',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1,
-                                          ),
-                                          TextSpan(
-                                            text: AppLocalizations.of(context)!
-                                                .terms,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(color: Colors.blue),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                _launchURL(
-                                                    'https://rocketbot.pro/terms');
-                                              },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    Container(
-                                      height: 25,
-                                      width: 25,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.05),
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(5.0)),
-                                      ),
-                                      child: Checkbox(
-                                          checkColor: Colors.lightGreen,
-                                          activeColor: Colors.white12,
-                                          value: _termsAgreed,
-                                          onChanged: _onTermsChanged),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 45,
-                                ),
-                                SizedBox(
-                                    width: 250,
-                                    height: 50,
-                                    child: _registerButton
-                                        ? NeuButton(
-                                            onTap: () {
-                                              _registerUser();
-                                            },
-                                            splashColor: Colors.purple,
-                                            child: GradientText(
-                                              AppLocalizations.of(context)!
-                                                  .register_button,
-                                              gradient:
-                                                  const LinearGradient(colors: [
-                                                Color(0xFFF05523),
-                                                Color(0xFF812D88),
-                                              ]),
+                                    SizedBox(
+                                      width: 280,
+                                      child: NeuContainer(
+                                          child: TextField(
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyText1!
                                                   .copyWith(
-                                                      fontSize: 22.0,
-                                                      color: Colors.white),
-                                            ))
-                                        : const Center(
-                                            child: CircularProgressIndicator(
-                                            strokeWidth: 2.0,
-                                            color: Color(0xFFAA3B63),
-                                          ))),
-                              ]),
-                        ),
-                      )),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: SizedBox(
-                        width: 100,
-                        height: 50,
-                        child: Image.asset("images/logo_big.png")),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topCenter,
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      LoginRegisterSwitcher(changeType: _switchPage),
-                    ],
-                  ),
-                ),
-              ),
-              IgnorePointer(
-                ignoring: true,
-                child: Visibility(
-                    visible: _curtain,
-                    child: Container(
-                      width: double.infinity,
-                      height: double.maxFinite,
-                      color: const Color(0xFF1B1B1B),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Image.asset('images/logo_big.png', width: 128.0,),
-                        ),
-                      ),
-                    )
-                ),
-              ),
-            ],
+                                                      color: Colors.white,
+                                                      fontSize: 18.0),
+                                              autocorrect: false,
+                                              controller: loginController,
+                                              textAlign: TextAlign.center,
+                                              decoration: InputDecoration(
+                                                isDense: false,
+                                                contentPadding:
+                                                    const EdgeInsets.only(
+                                                        left: 10.0,
+                                                        bottom: 5.0),
+                                                hintStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .subtitle1!
+                                                    .copyWith(
+                                                        color: Colors.white54,
+                                                        fontSize: 14.0),
+                                                hintText: AppLocalizations.of(
+                                                        context)!
+                                                    .e_mail,
+                                                enabledBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                                focusedBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                              ))),
+                                    ),
+                                    const SizedBox(
+                                      height: 30.0,
+                                    ),
+                                    SizedBox(
+                                      width: 280,
+                                      child: NeuContainer(
+                                          child: TextField(
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1!
+                                                  .copyWith(
+                                                      color: Colors.white,
+                                                      fontSize: 18.0),
+                                              obscureText: true,
+                                              enableSuggestions: false,
+                                              autocorrect: false,
+                                              controller: passwordController,
+                                              textAlign: TextAlign.center,
+                                              decoration: InputDecoration(
+                                                isDense: false,
+                                                contentPadding:
+                                                    const EdgeInsets.only(
+                                                        left: 10.0,
+                                                        bottom: 5.0),
+                                                hintStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .subtitle1!
+                                                    .copyWith(
+                                                        color: Colors.white54,
+                                                        fontSize: 14.0),
+                                                hintText: AppLocalizations.of(
+                                                        context)!
+                                                    .password,
+                                                enabledBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                                focusedBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                              ))),
+                                    ),
+                                    const SizedBox(
+                                      height: 30.0,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 55.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .forgot_pass,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1,
+                                          ),
+                                          const SizedBox(
+                                            width: 20.0,
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                            width: 25,
+                                            child: NeuButton(
+                                              onTap: () {
+                                                _forgotDialog();
+                                              },
+                                              icon: const Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 20.0,
+                                                color: Colors.white70,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 50,
+                            ),
+                            SizedBox(
+                              width: 250,
+                              child: NeuButton(
+                                onTap: () {
+                                  _loginUser(loginController.text,
+                                      passwordController.text);
+                                },
+                                splashColor: Colors.purple,
+                                child: Container(
+                                  width: 200,
+                                  height: 50,
+                                  color: Colors.transparent,
+                                  child: Center(
+                                      child: Text(
+                                    AppLocalizations.of(context)!.sign_in,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                            fontSize: 22.0,
+                                            color: Colors.white),
+                                  )),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.or,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1!
+                                  .copyWith(
+                                      fontSize: 16.0, color: Colors.white),
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            SizedBox(
+                              width: 250,
+                              height: 50,
+                              child: NeuButton(
+                                  onTap: () async {
+                                    FirebaseService service = FirebaseService();
+                                    try {
+                                      String? tokenID =
+                                          await service.signInwithGoogle();
+                                      setState(() {
+                                        _curtain = true;
+                                      });
+                                      if (tokenID != null) {
+                                        var asdf =
+                                            await NetInterface.getTokenGoogle(
+                                                tokenID);
+                                        if (asdf != null) {
+                                          _nextPage();
+                                        } else {
+                                          Dialogs.openAlertBox(context, "Error",
+                                              "Error Sign in with Google");
+                                          setState(() {
+                                            _curtain = false;
+                                          });
+                                        }
+                                      }
+                                    } catch (e) {
+                                      // print("======HOVNO=======");
+                                      // print(e);
+                                      // if (e is FirebaseAuthException) {
+                                      //   print(e.message!);
+                                      // }
+                                      Dialogs.openAlertBox(context, "Error",
+                                          "Error Sign in with Google");
+                                    }
+                                    setState(() {
+                                      // isLoading = false;
+                                    });
+                                  },
+                                  splashColor: Colors.purple,
+                                  child: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                          height: 25,
+                                          child: Image.asset(
+                                              'images/google_icon.png')),
+                                      const SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .sign_in_google,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                fontSize: 14.0,
+                                                color: Colors.white),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Platform.isIOS
+                                ? AppleSignInButton(
+                                    onSignIn: (AuthorizationCredentialAppleID
+                                        value) async {
+                                      var asdf =
+                                          await NetInterface.getTokenApple(
+                                              value.authorizationCode);
+                                      if (asdf != null) {
+                                        _nextPage();
+                                      } else {
+                                        Dialogs.openAlertBox(context, "Error",
+                                            "Error Sign in with Apple");
+                                        setState(() {
+                                          _curtain = false;
+                                        });
+                                      }
+                                    },
+                                  )
+                                : Container(),
+                          ]),
+                    ),
+                  )),
+            ),
           ),
-
-
+          IgnorePointer(
+            ignoring: _page == 0 ? true : false,
+            child: AnimatedOpacity(
+              opacity: _page == 1 ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 150,
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: NeuContainer(
+                                  child: TextField(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18.0),
+                                      autocorrect: false,
+                                      controller: emailRegController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        isDense: false,
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 10.0, bottom: 5.0),
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                        hintText: AppLocalizations.of(context)!
+                                            .e_mail,
+                                        enabledBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: NeuContainer(
+                                  child: TextField(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18.0),
+                                      autocorrect: false,
+                                      controller: firstNameController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        isDense: false,
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 10.0, bottom: 5.0),
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                        hintText:
+                                            AppLocalizations.of(context)!.name,
+                                        enabledBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: NeuContainer(
+                                  child: TextField(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18.0),
+                                      autocorrect: false,
+                                      controller: secondNameController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        isDense: false,
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 10.0, bottom: 5.0),
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                        hintText: AppLocalizations.of(context)!
+                                            .surname,
+                                        enabledBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: NeuContainer(
+                                  child: TextField(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18.0),
+                                      obscureText: true,
+                                      enableSuggestions: false,
+                                      autocorrect: false,
+                                      controller: passwordRegController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        isDense: false,
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 10.0, bottom: 5.0),
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                        hintText: AppLocalizations.of(context)!
+                                            .password,
+                                        enabledBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            SizedBox(
+                              width: 280,
+                              child: NeuContainer(
+                                  child: TextField(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18.0),
+                                      obscureText: true,
+                                      enableSuggestions: false,
+                                      autocorrect: false,
+                                      controller: passwordRegConfirmController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        isDense: false,
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 10.0, bottom: 5.0),
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                color: Colors.white54,
+                                                fontSize: 14.0),
+                                        hintText: AppLocalizations.of(context)!
+                                            .conf_password,
+                                        enabledBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder:
+                                            const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.transparent),
+                                        ),
+                                      ))),
+                            ),
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: AppLocalizations.of(context)!
+                                                .agreed_to +
+                                            ' ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1,
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            AppLocalizations.of(context)!.terms,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(color: Colors.blue),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            _launchURL(
+                                                'https://rocketbot.pro/terms');
+                                          },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.05),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(5.0)),
+                                  ),
+                                  child: Checkbox(
+                                      checkColor: Colors.lightGreen,
+                                      activeColor: Colors.white12,
+                                      value: _termsAgreed,
+                                      onChanged: _onTermsChanged),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 45,
+                            ),
+                            SizedBox(
+                                width: 250,
+                                height: 50,
+                                child: _registerButton
+                                    ? NeuButton(
+                                        onTap: () {
+                                          _registerUser();
+                                        },
+                                        splashColor: Colors.purple,
+                                        child: GradientText(
+                                          AppLocalizations.of(context)!
+                                              .register_button,
+                                          gradient:
+                                              const LinearGradient(colors: [
+                                            Color(0xFFF05523),
+                                            Color(0xFF812D88),
+                                          ]),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  fontSize: 22.0,
+                                                  color: Colors.white),
+                                        ))
+                                    : const Center(
+                                        child: CircularProgressIndicator(
+                                        strokeWidth: 2.0,
+                                        color: Color(0xFFAA3B63),
+                                      ))),
+                          ]),
+                    ),
+                  )),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topLeft,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: SizedBox(
+                    width: 100,
+                    height: 50,
+                    child: Image.asset("images/logo_big.png")),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 60,
+                  ),
+                  LoginRegisterSwitcher(changeType: _switchPage),
+                ],
+              ),
+            ),
+          ),
+          IgnorePointer(
+            ignoring: true,
+            child: Visibility(
+                visible: _curtain,
+                child: Container(
+                  width: double.infinity,
+                  height: double.maxFinite,
+                  color: const Color(0xFF1B1B1B),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset(
+                        'images/logo_big.png',
+                        width: 128.0,
+                      ),
+                    ),
+                  ),
+                )),
+          ),
+        ],
+      ),
     );
   }
 

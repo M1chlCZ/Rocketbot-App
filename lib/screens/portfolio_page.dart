@@ -165,22 +165,31 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
   _posHandle() async {
      await _registerPos();
-     await _getPosCoins();
+     var succ = await _getPosCoins();
+     if(!succ) {
+       await _registerPos();
+       await _getPosCoins();
+     }
      await _lostPosTX();
   }
 
   _registerPos() async {
     String? _posToken = await _storage.read(key: NetInterface.posToken);
     if (_posToken == null) {
-      // await Future.delayed(const Duration(seconds: 5));
       String? _token = await _storage.read(key: NetInterface.token);
       await NetInterface.registerPos(_token!);
     }
   }
 
-  _getPosCoins() async {
-    var response = await _interface.get("coin/get", pos: true);
-    pl = PosCoinsList.fromJson(response);
+  Future<bool> _getPosCoins() async {
+    try {
+      var response = await _interface.get("coin/get", pos: true);
+      pl = PosCoinsList.fromJson(response);
+      return true;
+    } catch (e) {
+      return false;
+    }
+
   }
 
   _lostPosTX() async {
@@ -576,8 +585,14 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                             const NeverScrollableScrollPhysics(),
                                         itemCount: snapshot.data!.data!.length,
                                         itemBuilder: (ctx, index) {
-                                          final indexPos = pl!.coins!
-                                              .indexWhere((element) => element.idCoin == snapshot.data!.data![index].coin!.id);
+                                          var indexPos = -1;
+                                          if(pl != null) {
+                                            indexPos = pl!.coins!
+                                                .indexWhere((element) =>
+                                            element.idCoin ==
+                                                snapshot.data!.data![index]
+                                                    .coin!.id);
+                                          }
                                           return CoinListView(
                                             key: ValueKey(snapshot
                                                 .data!.data![index].coin!.id!),

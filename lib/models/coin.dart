@@ -35,7 +35,9 @@ class Coin {
       int? blockchain, 
       double? minWithdraw, 
       String? imageBig, 
-      String? imageSmall, 
+      String? imageSmall,
+    String? bigImageId,
+    String? smallImageId,
       bool? isActive, 
       String? explorerUrl, 
       int? requiredConfirmations, 
@@ -56,6 +58,8 @@ class Coin {
     _minWithdraw = minWithdraw;
     _imageBig = imageBig;
     _imageSmall = imageSmall;
+    _imageSmallid = smallImageId;
+    _imageBigid = bigImageId;
     _isActive = isActive;
     _explorerUrl = explorerUrl;
     _requiredConfirmations = requiredConfirmations;
@@ -79,6 +83,8 @@ class Coin {
     _minWithdraw = json['minWithdraw'];
     _imageBig = json['imageBig'];
     _imageSmall = json['imageSmall'];
+    _imageSmallid = json['smallImageId'];
+    _imageBigid = json['bigImageId'];
     _isActive = json['isActive'];
     _explorerUrl = json['explorerUrl'];
     _requiredConfirmations = json['requiredConfirmations'];
@@ -99,6 +105,8 @@ class Coin {
   double? _minWithdraw;
   String? _imageBig;
   String? _imageSmall;
+  String? _imageSmallid;
+  String? _imageBigid;
   bool? _isActive;
   String? _explorerUrl;
   int? _requiredConfirmations;
@@ -120,6 +128,8 @@ class Coin {
   double? get minWithdraw => _minWithdraw;
   String? get imageBig => _imageBig;
   String? get imageSmall => _imageSmall;
+  String? get imageBigid => _imageBigid;
+  String? get imageSmallid => _imageSmallid;
   bool? get isActive => _isActive;
   String? get explorerUrl => _explorerUrl;
   int? get requiredConfirmations => _requiredConfirmations;
@@ -142,6 +152,8 @@ class Coin {
     map['minWithdraw'] = _minWithdraw;
     map['imageBig'] = _imageBig;
     map['imageSmall'] = _imageSmall;
+    map['smallImageId'] = _imageSmallid;
+    map['bigImageId'] = _imageBigid;
     map['isActive'] = _isActive;
     map['explorerUrl'] = _explorerUrl;
     map['requiredConfirmations'] = _requiredConfirmations;

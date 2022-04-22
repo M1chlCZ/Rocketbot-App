@@ -16,6 +16,7 @@
   "or" : "nebo",
   "sign_in" : "Přihlásit",
   "sign_in_google": "Přihlásit s Google",
+  "sign_in_apple": "Přihlásit s Apple",
   "enter_code": "Prosím zadejte kód z e-mailu",
   "enter_code_hint": "E-mail kód",
   "name": "Jméno",

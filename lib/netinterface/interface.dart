@@ -252,6 +252,42 @@ class NetInterface {
     }
   }
 
+  static Future<String?> getTokenApple(String authorizationCode) async {
+    try {
+      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map _request = {
+        "authorizationCode": authorizationCode,
+      };
+      var _query = json.encoder.convert(_request);
+      final response = await http.post(
+          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithApple"),
+          body: _query,
+          headers: {
+            "accept": "application/json",
+            'User-Agent': _userAgent.toLowerCase(),
+            "content-type": "application/json"
+          });
+      if (response.statusCode == 200) {
+        SignCode? res = SignCode.fromJson(json.decode(response.body));
+        if (res.data!.token != null) {
+          await const FlutterSecureStorage()
+              .write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(
+              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          return res.data!.token!;
+        } else {
+          return null;
+        }
+      } else {
+        // await const FlutterSecureStorage().delete(key: NetInterface.token);
+        return null;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
   static Future<String?> registerUser(
       {required String email,
       required String pass,
@@ -363,7 +399,6 @@ class NetInterface {
         // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
-          print(res.data!.token.toString());
           await const FlutterSecureStorage()
               .write(key: NetInterface.token, value: res.data!.token);
           await const FlutterSecureStorage().write(
@@ -424,6 +459,12 @@ class NetInterface {
       }
       _refreshingToken = false;
     } catch (e) {
+      if (pos) {
+        await const FlutterSecureStorage()
+            .delete(key: NetInterface.posToken);
+        await const FlutterSecureStorage().delete(
+            key: NetInterface.posTokenRefresh);
+      }
       _refreshingToken = false;
       debugPrint(e.toString());
     }

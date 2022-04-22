@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -29,12 +30,10 @@ class Dialogs {
                       child: Container(
                         color: Colors.black38,
                         padding: const EdgeInsets.all(10.0),
-                        child: AutoSizeText(
+                        child: SelectableText(
                           message,
                           textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
                           maxLines: 8,
-                          minFontSize: 8.0,
                           style: Theme.of(context)
                               .textTheme
                               .headline6!

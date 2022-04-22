@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +30,7 @@ import '../component_widgets/button_neu.dart';
 import '../models/balance_list.dart';
 import '../models/coin.dart';
 import '../models/stake_data.dart';
+import '../support/auto_size_text_field.dart';
 import '../widgets/coin_price_graph.dart';
 import '../widgets/time_stake_range_switch.dart';
 
@@ -1215,9 +1215,11 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
   }
 
   _changePercentage(double d) {
-    _amountController.text = _formatPriceString((_free * d).toString());
+
+    _amountController.text = _formatPriceString(((_free - _fee!)  * d).toString());
     setState(() {});
   }
+
 
   @override
   void onDetached() {

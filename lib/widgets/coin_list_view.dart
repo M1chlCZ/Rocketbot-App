@@ -133,9 +133,9 @@ class _CoinListViewState extends State<CoinListView> {
                                             width: 30.0,
                                             child: CachedNetworkImage(
                                               imageUrl:
-                                                  'https://app.rocketbot.pro/coins/' +
+                                                  'https://app.rocketbot.pro/Image?imageId=' +
                                                       widget.coin.coin!
-                                                          .imageSmall!,
+                                                          .imageSmallid!,
                                               // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                               //     CircularProgressIndicator(value: downloadProgress.progress),
                                               errorWidget:

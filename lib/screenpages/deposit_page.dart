@@ -8,11 +8,10 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:rocketbot/models/deposit_address.dart';
-import 'package:rocketbot/netinterface/interface.dart';
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:share/share.dart';
 import 'package:vibration/vibration.dart';
+
+import '../support/auto_size_text_field.dart';
 
 class DepositPage extends StatefulWidget {
   final Coin? coin;
@@ -135,8 +134,8 @@ class _DepositPageState extends State<DepositPage> {
                               width: 50.0,
                               height: 50.0,
                               child: CachedNetworkImage(
-                                imageUrl: 'https://app.rocketbot.pro/coins/' +
-                                    widget.coin!.imageSmall!,
+                                imageUrl: 'https://app.rocketbot.pro/Image?imageId=' +
+                                widget.coin!.imageSmallid!,
                                 // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                 //     CircularProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) =>

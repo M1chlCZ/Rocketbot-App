@@ -15,6 +15,7 @@
   "or": "tai",
   "sign_in": "Kirjaudu sisään",
   "sign_in_google": "Kirjaudu sisään Googlella",
+  "sign_in_apple": "Kirjaudu sisään Apple",
   "enter_code": "Syötä koodi sähköpostista",
   "enter_code_hint": "Koodi sähköpostista",
   "name": "Nimi",

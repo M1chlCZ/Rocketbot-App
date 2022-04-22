@@ -16,6 +16,7 @@
   "or" : "or",
   "sign_in" : "Sign in",
   "sign_in_google": "Sign in with Google",
+  "sign_in_apple": "Sign in with Apple",
   "enter_code": "Please enter code from the e-mail",
   "enter_code_hint": "E-mail code",
   "name": "Name",

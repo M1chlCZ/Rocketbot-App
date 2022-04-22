@@ -265,8 +265,8 @@ class _SendPageState extends State<SendPage> {
                               width: 50.0,
                               height: 50.0,
                               child: CachedNetworkImage(
-                                imageUrl: 'https://app.rocketbot.pro/coins/' +
-                                    _coinActive!.imageSmall!,
+                                imageUrl: 'https://app.rocketbot.pro/Image?imageId=' +
+                                    _coinActive!.imageSmallid!,
                                 // progressIndicatorBuilder: (context, url, downloadProgress) =>
                                 //     CircularProgressIndicator(value: downloadProgress.progress),
                                 errorWidget: (context, url, error) =>
