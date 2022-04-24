@@ -3,7 +3,7 @@ description: Rocketbot
 
 publish_to: 'none'
 
-version: 1.0.96+96
+version: 1.0.97+97
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -14,7 +14,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^1.0.3
-  flutter_secure_storage: ^5.0.2
+  flutter_secure_storage: ^4.2.1
   firebase_messaging: any
   firebase_core: any
   firebase_auth: any
@@ -25,7 +25,7 @@ dependencies:
   cached_network_image: ^3.2.0
   animations: ^2.0.2
   progress_indicators: ^1.0.0
-  url_launcher: ^6.0.20
+  url_launcher: ^6.1.0
   qr_flutter: ^4.0.0
   share: any
   decimal: ^2.2.0
@@ -40,7 +40,7 @@ dependencies:
   google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
   flutter_displaymode: ^0.4.0
-  flutter_local_notifications: ^9.4.0
+  flutter_local_notifications: ^9.4.1
   sqflite: ^2.0.2+1
   jiffy: ^5.0.0
   sprintf: any

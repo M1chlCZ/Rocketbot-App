@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
@@ -52,7 +51,15 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _handleStuff();
+  }
 
+  void _handleStuff() async {
+    String? s = await _storage.read(key: "nextgen");
+    if (s == null) {
+      await _storage.deleteAll();
+      await _storage.write(key: "nextgen", value: "1");
+    }
     _initPackageInfo();
     Future.delayed(const Duration(milliseconds: 50), () async {
       bool b = await _loggedIN();
@@ -551,11 +558,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     } catch (e) {
-                                      // print("======HOVNO=======");
-                                      // print(e);
-                                      // if (e is FirebaseAuthException) {
-                                      //   print(e.message!);
-                                      // }
+                                      print("======HOVNO=======");
+                                      print(e);
+                                      if (e is FirebaseAuthException) {
+                                        print(e.message!);
+                                      }
                                       Dialogs.openAlertBox(context, "Error",
                                           "Error Sign in with Google");
                                     }

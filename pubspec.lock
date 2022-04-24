@@ -266,7 +266,7 @@ packages:
       name: flutter_local_notifications
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.4.0"
+    version: "9.4.1"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -313,42 +313,7 @@ packages:
       name: flutter_secure_storage
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.2"
-  flutter_secure_storage_linux:
-    dependency: transitive
-    description:
-      name: flutter_secure_storage_linux
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
-  flutter_secure_storage_macos:
-    dependency: transitive
-    description:
-      name: flutter_secure_storage_macos
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
-  flutter_secure_storage_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_secure_storage_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
-  flutter_secure_storage_web:
-    dependency: transitive
-    description:
-      name: flutter_secure_storage_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
-  flutter_secure_storage_windows:
-    dependency: transitive
-    description:
-      name: flutter_secure_storage_windows
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.2"
+    version: "4.2.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -827,7 +792,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.20"
+    version: "6.1.0"
   url_launcher_android:
     dependency: transitive
     description:

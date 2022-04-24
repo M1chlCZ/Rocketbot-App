@@ -30,10 +30,12 @@ class Dialogs {
                       child: Container(
                         color: Colors.black38,
                         padding: const EdgeInsets.all(10.0),
-                        child: SelectableText(
+                        child: AutoSizeText(
                           message,
                           textAlign: TextAlign.center,
                           maxLines: 8,
+                          maxFontSize: 20.0,
+                          minFontSize: 8.0,
                           style: Theme.of(context)
                               .textTheme
                               .headline6!

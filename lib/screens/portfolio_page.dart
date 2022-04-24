@@ -75,6 +75,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
 
   @override
   void initState() {
+    _bloc = BalancesBloc();
     _initializeLocalNotifications();
     _firebaseMessaging.setNotifications();
     super.initState();
@@ -86,8 +87,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
       }
     });
     _fillSort();
-    _bloc = BalancesBloc();
     _getUserInfo();
+    _posHandle();
     // portCalc = widget.listBalances != null ? true : false;
   }
 
@@ -115,7 +116,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     try {
       final response = await _interface.get("User/Me");
       var d = User.fromJson(response);
-      _posHandle();
       if (d.hasError == false) {
         _me = d;
         for (var element in d.data!.socialMediaAccounts!) {
@@ -164,33 +164,10 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _posHandle() async {
-     await _registerPos();
-     var succ = await _getPosCoins();
-     if(!succ) {
-       await _registerPos();
-       await _getPosCoins();
-     }
      await _lostPosTX();
   }
 
-  _registerPos() async {
-    String? _posToken = await _storage.read(key: NetInterface.posToken);
-    if (_posToken == null) {
-      String? _token = await _storage.read(key: NetInterface.token);
-      await NetInterface.registerPos(_token!);
-    }
-  }
 
-  Future<bool> _getPosCoins() async {
-    try {
-      var response = await _interface.get("coin/get", pos: true);
-      pl = PosCoinsList.fromJson(response);
-      return true;
-    } catch (e) {
-      return false;
-    }
-
-  }
 
   _lostPosTX() async {
     List<PGWIdentifier> l = await AppDatabase().getUnfinishedTX();
@@ -585,18 +562,11 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                             const NeverScrollableScrollPhysics(),
                                         itemCount: snapshot.data!.data!.length,
                                         itemBuilder: (ctx, index) {
-                                          var indexPos = -1;
-                                          if(pl != null) {
-                                            indexPos = pl!.coins!
-                                                .indexWhere((element) =>
-                                            element.idCoin ==
-                                                snapshot.data!.data![index]
-                                                    .coin!.id);
-                                          }
                                           return CoinListView(
                                             key: ValueKey(snapshot
                                                 .data!.data![index].coin!.id!),
-                                            staking: indexPos != -1 ? true : false,
+                                            staking: snapshot
+                                                .data!.data![index].staking,
                                             coin: snapshot.data!.data![index],
                                             free: Decimal.parse(snapshot
                                                 .data!.data![index].free
@@ -876,13 +846,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _changeCoin(CoinBalance c) async {
-    if (pl == null) {
-      await _getUserInfo();
-    }
-    String? _posToken = await _storage.read(key: NetInterface.posToken);
-    if (_posToken == null) {
-      await _registerPos();
-    }
+    pl ??= await _getPosCoins();
     Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
       return MainScreen(
@@ -894,6 +858,15 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
     }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
       return FadeTransition(opacity: animation, child: child);
     })).then((value) => _lostPosTX());
+  }
+
+  Future<PosCoinsList?> _getPosCoins() async {
+    try {
+      var response = await _interface.get("coin/get", pos: true);
+      return PosCoinsList.fromJson(response);
+    } catch (e) {
+      return null;
+    }
   }
 
   String _formatPrice(double d) {

@@ -42,7 +42,7 @@ class NetInterface {
 
       // print(response.statusCode);
       // print(response.body.toString());
-      if (response.statusCode == 403 || response.statusCode == 401) {
+      if (response.statusCode >= 400) {
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
             .read(key: pos ? posToken : token);
@@ -83,7 +83,7 @@ class NetInterface {
           body: _query);
       // print(response.body);
       // print(response.statusCode);
-      if (response.statusCode == 403 || response.statusCode == 401) {
+      if (response.statusCode >= 400) {
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
             .read(key: pos ? posToken : token);
@@ -485,6 +485,8 @@ class NetInterface {
             "accept": "application/json",
             'User-Agent': _userAgent.toLowerCase(),
           });
+      // print(response.body);
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         PosTokenAuth? res = PosTokenAuth.fromJson(json.decode(response.body));
         await const FlutterSecureStorage()
@@ -492,8 +494,8 @@ class NetInterface {
         await const FlutterSecureStorage()
             .write(key: NetInterface.posTokenRefresh, value: res.refreshToken);
       } else {
-        print(response.body);
-        debugPrint("Fuck");
+        // print(response.body);
+        debugPrint("//// PoS TOKEN ERROR ////");
       }
     } catch (e) {
       debugPrint(e.toString());

@@ -36,7 +36,7 @@ class _CoinListViewState extends State<CoinListView> {
   @override
   void initState() {
     super.initState();
-    if (widget.staking! == true) {
+    if (widget.staking != null && widget.staking == true) {
       startTimer();
     }
   }
@@ -111,11 +111,11 @@ class _CoinListViewState extends State<CoinListView> {
                               },
                               duration: const Duration(milliseconds: 1000),
                               secondChild: Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 8, 5, 5),
+                                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                                 child: Image.asset(
                                   "images/staking_icon.png",
                                   color: const Color(0xFFFDCB29),
-                                  width: 38,
+                                  width: 50,
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),

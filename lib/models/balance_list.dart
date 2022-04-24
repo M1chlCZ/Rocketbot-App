@@ -52,10 +52,12 @@ class CoinBalance {
       int? userId, 
       Coin? coin,
     PriceData? priceData,
+    bool? staking,
       double? free,}){
     _userId = userId;
     _coin = coin;
     _free = free;
+    _staking = staking;
 }
 
   CoinBalance.fromJson(dynamic json) {
@@ -67,11 +69,13 @@ class CoinBalance {
   Coin? _coin;
   double? _free;
   PriceData? _priceData;
+  bool? _staking;
 
   int? get userId => _userId;
   Coin? get coin => _coin;
   double? get free => _free;
   PriceData? get priceData => _priceData;
+  bool? get staking => _staking;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -85,6 +89,10 @@ class CoinBalance {
 
   void setPriceData(PriceData p) {
     _priceData = p;
+  }
+
+  void setStaking(bool b) {
+    _staking = b;
   }
 
 }

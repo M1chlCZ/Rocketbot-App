@@ -46,8 +46,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _precachedImg();
-    _getSetLang();
-    _setOptimalDisplayMode();
   }
 
   Locale? _locale;
@@ -70,11 +68,8 @@ class _MyAppState extends State<MyApp> {
     await precacheImage(const AssetImage('images/wave.png'), context);
     await precacheImage(const AssetImage('images/logo_big.png'), context);
     await precacheImage(const AssetImage('images/apple.png'), context);
-    String? s = await _storage.read(key: NetInterface.posToken);
-    if (s != null) {
-      // debugPrint("TOKEN///:");
-      // debugPrint(s);
-    }
+    _getSetLang();
+    _setOptimalDisplayMode();
   }
 
   void _getSetLang() async {

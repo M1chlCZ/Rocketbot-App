@@ -1,47 +1,53 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:rocketbot/cache/balances_cache.dart';
 import 'package:rocketbot/models/balance_list.dart';
-import 'package:rocketbot/models/coin_graph.dart';
+import 'package:rocketbot/models/pos_coins_list.dart';
 import 'package:rocketbot/netInterface/interface.dart';
 
+
 class CoinBalances {
-  final NetInterface _helper = NetInterface();
+  final _storage = const FlutterSecureStorage();
+  final NetInterface _interface = NetInterface();
+  PosCoinsList? pl;
 
   Future<List<CoinBalance>?> fetchAllBalances() async {
-    final response = await _helper.get("User/GetBalances");
-    final priceData = await _helper.get(
-        "Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
-
-    Map<String, dynamic> m = {"response": response, "priceData": priceData};
-    List<CoinBalance> _finalList = await compute(doJob, m);
-    return _finalList;
+    print("|FIRST| " + DateTime.now().toString());
+    pl = await _getPosCoins();
+    if (pl == null) {
+      await _registerPos();
+      pl = await _getPosCoins();
+    }
+    print("|SECOND| " + DateTime.now().toString());
+    List<CoinBalance> _list = await BalanceCache.getAllRecords();
+    print("|THIRD| " + DateTime.now().toString());
+    for (var i = 0; i < _list.length; i++) {
+      var coin = _list[i].coin!;
+      int index =  pl!.coins!.indexWhere((element) => element.idCoin == coin.id);
+      if(index != -1) {
+            _list[i].setStaking(true);
+          }else{
+            _list[i].setStaking(false);
+          }
+    }
+    print("|FIFTH| " + DateTime.now().toString());
+    return _list;
   }
 
-  static List<CoinBalance> doJob(Map<String, dynamic> m) {
-    dynamic response = m['response'];
-    dynamic priceData = m['priceData'];
 
-    List<CoinBalance>? r = BalanceList.fromJson(response).data;
-    List<CoinBalance> _finalList = [];
-
-    for (var item in r!) {
-      try {
-        var coinBal = item;
-        var coin = coinBal.coin;
-        var coinID = coin!.id;
-        final price = priceData['data'][coinID!.toString()];
-        if (price == null) {
-          // print("null");
-          _finalList.add(coinBal);
-        } else {
-          PriceData? p = PriceData.fromJson(price);
-          coinBal.setPriceData(p);
-          _finalList.add(coinBal);
-        }
-      } catch (e) {
-        var coinBal = item;
-        _finalList.add(coinBal);
-      }
+  _registerPos() async {
+    String? _posToken = await _storage.read(key: NetInterface.posToken);
+    if (_posToken == null) {
+      String? _token = await _storage.read(key: NetInterface.token);
+      await NetInterface.registerPos(_token!);
     }
-    return _finalList;
+  }
+
+  Future<PosCoinsList?> _getPosCoins() async {
+    try {
+      var response = await _interface.get("coin/get", pos: true);
+      return PosCoinsList.fromJson(response);
+    } catch (e) {
+      return null;
+    }
   }
 }
