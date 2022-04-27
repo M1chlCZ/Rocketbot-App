@@ -394,7 +394,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
       LineChartBarData(
         spots: _values,
         showingIndicators: showIndexes,
-        colors: [const Color(0xFF257DC1)],
+        color: const Color(0xFF257DC1),
         barWidth: 1,
 
         shadow: const Shadow(
@@ -406,10 +406,12 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
         dotData: FlDotData(show: false),
         belowBarData: BarAreaData(
           show: true,
-          colors: _gradientColors,
-          gradientColorStops: const [0, 0.5, 0.7, 0.95],
-          gradientFrom: const Offset(0.25, 0),
-          gradientTo: const Offset(0.25, 1),
+          gradient: LinearGradient(
+              colors: _gradientColors,
+              stops:  const [0.0, 0.8, 1.0],
+              begin: const Alignment(0.0, 0),
+              end: const Alignment(0.0, 1)
+          ),
         ),
       ),
     ];
@@ -419,10 +421,10 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
         gridData: _gridData(),
 
         titlesData: FlTitlesData(
-            bottomTitles: SideTitles(showTitles: false),
-            leftTitles: SideTitles(showTitles: false),
-            topTitles: SideTitles(showTitles: false),
-            rightTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: AxisTitles(sideTitles:SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles:SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles:SideTitles(showTitles: false))),
         borderData: FlBorderData(
           show: false,
           border: const Border(

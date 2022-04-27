@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -70,6 +71,10 @@ class _SendPageState extends State<SendPage> {
       }
     });
     _curtain = false;
+
+    if (kDebugMode) {
+      _addressController.text = 'MQCYLjuTPeSfKP4EwNkACERHXEhNNdXjMm';
+    }
   }
 
   _getFees() async {
@@ -140,6 +145,7 @@ class _SendPageState extends State<SendPage> {
       final response =
           await _interface.post("Transfers/CreateWithdraw", _query);
       var pwid = WithdrawID.fromJson(response);
+      print(response);
       Map<String, dynamic> _queryID = {
         "id": pwid.data!.pgwIdentifier!,
       };

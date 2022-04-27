@@ -113,6 +113,12 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _getUserInfo() async {
+    String? s = await _storage.read(key: NetInterface.posToken);
+    if (s != null) {
+      // await _storage.deleteAll();
+      // await _storage.write(key: "nextgen", value: "1");
+      print(s);
+    }
     try {
       final response = await _interface.get("User/Me");
       var d = User.fromJson(response);

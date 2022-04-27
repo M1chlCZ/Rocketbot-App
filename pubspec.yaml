@@ -3,7 +3,7 @@ description: Rocketbot
 
 publish_to: 'none'
 
-version: 1.0.97+97
+version: 1.0.99+99
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -21,7 +21,7 @@ dependencies:
   http: ^0.13.4
   auto_size_text: 3.0.0
   intl: ^0.17.0
-  fl_chart: ^0.46.0
+  fl_chart: ^0.50.1
   cached_network_image: ^3.2.0
   animations: ^2.0.2
   progress_indicators: ^1.0.0
@@ -33,7 +33,7 @@ dependencies:
   flutter_switch: ^0.3.2
   qr_code_scanner: ^0.7.0
   permission_handler: ^9.2.0
-  local_auth: ^1.1.11
+  local_auth: ^2.0.0
   flutter_phoenix: ^1.0.0
   package_info: any
   flutter_lock_screen: ^2.0.1

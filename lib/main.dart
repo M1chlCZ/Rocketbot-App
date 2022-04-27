@@ -46,6 +46,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _precachedImg();
+    _getSetLang();
+    _setOptimalDisplayMode();
   }
 
   Locale? _locale;
@@ -68,8 +70,7 @@ class _MyAppState extends State<MyApp> {
     await precacheImage(const AssetImage('images/wave.png'), context);
     await precacheImage(const AssetImage('images/logo_big.png'), context);
     await precacheImage(const AssetImage('images/apple.png'), context);
-    _getSetLang();
-    _setOptimalDisplayMode();
+
   }
 
   void _getSetLang() async {
@@ -118,6 +119,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       title: 'RocketBot',
+      debugShowCheckedModeBanner: false,
       locale: _locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeListResolutionCallback: (locales, supportedLocales) {

@@ -10,7 +10,7 @@ import '../models/balance_list.dart';
 class TransactionCache extends TransactionData {
   static Duration? _cacheValidDuration;
   static DateTime? _lastFetchTime;
-  static List<TransactionData>? _allRecords;
+  static final Map<String,List<TransactionData>> _allRecords = {};
 
   TransactionCache() : super();
 
@@ -72,12 +72,12 @@ class TransactionCache extends TransactionData {
       return B.compareTo(A);
     });
 
-    _allRecords = _finalList;
+    _allRecords['$coinID'] = _finalList;
     _lastFetchTime = DateTime.now();
   }
 
   static Future<List<TransactionData>?> getAllRecords(int coinID,{bool forceRefresh = false}) async {
-    bool shouldRefreshFromApi = (null == _allRecords ||
+    bool shouldRefreshFromApi = (null == _allRecords['$coinID'] ||
         null == _lastFetchTime ||
         _lastFetchTime!
             .isAfter(DateTime.now().subtract(_cacheValidDuration!)) ||
@@ -87,6 +87,6 @@ class TransactionCache extends TransactionData {
       _cacheValidDuration = const Duration(minutes: 5);
       _lastFetchTime = DateTime.fromMillisecondsSinceEpoch(0);
     }
-    return _allRecords;
+    return _allRecords['$coinID'];
   }
 }

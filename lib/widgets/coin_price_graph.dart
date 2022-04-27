@@ -117,9 +117,9 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       gridData: _gridData(),
       titlesData: FlTitlesData(
           bottomTitles: _bottomTitles(),
-          leftTitles: SideTitles(showTitles: false),
-          topTitles: SideTitles(showTitles: false),
-          rightTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles:SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles:SideTitles(showTitles: false))),
       borderData: FlBorderData(
         show: false,
         border: Border.all(color: Colors.white12, width: 1),
@@ -219,7 +219,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   LineChartBarData _lineBarData() {
     return LineChartBarData(
       spots: _values,
-      colors: [const Color(0xFF257DC1)],
+      color: const Color(0xFF257DC1),
       barWidth: 1,
       shadow: const Shadow(
           color: Color(0xFF257DC1),
@@ -229,10 +229,12 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
       dotData: FlDotData(show: false),
       belowBarData: BarAreaData(
         show: true,
-        colors: _gradientColors,
-        gradientColorStops: const [0.0, 0.8, 1.0],
-        gradientFrom: const Offset(0.0, 0),
-        gradientTo: const Offset(0.0, 1),
+        gradient: LinearGradient(
+          colors: _gradientColors,
+          stops:  const [0.0, 0.8, 1.0],
+          begin: const Alignment(0.0, 0),
+          end: const Alignment(0.0, 1)
+        ),
       ),
     );
   }
@@ -254,26 +256,27 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
   //   );
   // }
 
-  SideTitles _bottomTitles() {
-    return SideTitles(
+  AxisTitles _bottomTitles() {
+    return AxisTitles(sideTitles: SideTitles(
       showTitles: true,
-      getTextStyles: (context, value) {
-        return Theme.of(context)
-            .textTheme
-            .subtitle2!
-            .copyWith(color: Colors.white.withOpacity(0.2));
-      },
-      getTitles: (value) {
+      getTitlesWidget:
+          (value, meta) {
         final DateTime date =
             DateTime.fromMillisecondsSinceEpoch(value.toInt());
         if (_time == 24 * 7 || _time == 0) {
-          return DateFormat.yMd().format(date);
+          return Text(DateFormat.yMd().format(date), style: Theme.of(context)
+              .textTheme
+              .subtitle2!
+              .copyWith(color: Colors.white.withOpacity(0.2)),);
         } else {
-          return DateFormat.Hm().format(date);
+          return Text(DateFormat.Hm().format(date), style: Theme.of(context)
+              .textTheme
+              .subtitle2!
+              .copyWith(color: Colors.white.withOpacity(0.2)),);
         }
       },
-      margin: 8,
       interval: (_maxX - _minX) / 8,
+    )
     );
   }
 

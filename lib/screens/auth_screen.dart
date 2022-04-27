@@ -66,10 +66,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       authenticated = await auth.authenticate(
-          biometricOnly: true,
-          localizedReason: 'Scan your fingerprint to authenticate',
+        options: const AuthenticationOptions(
           useErrorDialogs: true,
-          stickyAuth: false);
+          stickyAuth: true,
+          sensitiveTransaction: true,
+          biometricOnly: true,
+        ),
+        localizedReason: 'Scan your fingerprint to authenticate',);
     } on PlatformException catch (e) {
       setState(() {
         _showFinger = false;

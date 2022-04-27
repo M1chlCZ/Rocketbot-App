@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
 import 'package:http/http.dart' as http;
@@ -170,7 +168,7 @@ class NetInterface {
           });
 
       if (response.statusCode == 200) {
-        var js = SignKey.fromJson(json.decode(response.body));
+        // var js = SignKey.fromJson(json.decode(response.body));
         return true;
       } else {
         // await const FlutterSecureStorage().delete(key: NetInterface.token);
