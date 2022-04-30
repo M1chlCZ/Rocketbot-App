@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/cache/balances_cache.dart';
 import 'package:rocketbot/models/balance_list.dart';
@@ -10,7 +11,7 @@ class CoinBalances {
   final NetInterface _interface = NetInterface();
   PosCoinsList? pl;
 
-  Future<List<CoinBalance>?> fetchAllBalances() async {
+  Future<List<CoinBalance>?> fetchAllBalances(bool force) async {
     print("|FIRST| " + DateTime.now().toString());
     pl = await _getPosCoins();
     if (pl == null) {
@@ -18,7 +19,7 @@ class CoinBalances {
       pl = await _getPosCoins();
     }
     print("|SECOND| " + DateTime.now().toString());
-    List<CoinBalance> _list = await BalanceCache.getAllRecords();
+    List<CoinBalance> _list = await BalanceCache.getAllRecords(forceRefresh: force);
     print("|THIRD| " + DateTime.now().toString());
     for (var i = 0; i < _list.length; i++) {
       var coin = _list[i].coin!;
@@ -39,6 +40,8 @@ class CoinBalances {
     if (_posToken == null) {
       String? _token = await _storage.read(key: NetInterface.token);
       await NetInterface.registerPos(_token!);
+    }else{
+      debugPrint(_posToken);
     }
   }
 

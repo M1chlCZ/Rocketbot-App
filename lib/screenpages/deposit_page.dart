@@ -8,6 +8,7 @@ import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:rocketbot/widgets/picture_cache.dart';
 import 'package:share/share.dart';
 import 'package:vibration/vibration.dart';
 
@@ -133,15 +134,7 @@ class _DepositPageState extends State<DepositPage> {
                           : SizedBox(
                               width: 50.0,
                               height: 50.0,
-                              child: CachedNetworkImage(
-                                imageUrl: 'https://app.rocketbot.pro/Image?imageId=' +
-                                widget.coin!.imageSmallid!,
-                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                //     CircularProgressIndicator(value: downloadProgress.progress),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                fit: BoxFit.fitWidth,
-                              ),
+                              child: PictureCacheWidget(coin: widget.coin!)
                             ),
                       const SizedBox(
                         width: 10.0,

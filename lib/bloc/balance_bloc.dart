@@ -49,7 +49,7 @@ class BalancesBloc {
 
         coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
         // print("1 |" + DateTime.now().toString());
-        _coins ??= await _balanceList.fetchAllBalances();
+        _coins ??= await _balanceList.fetchAllBalances(refresh);
         // print("2 |" + DateTime.now().toString());
         _sortedCoins = await _sortList(_coins, sort: _sort);
         // print("3 |" + DateTime.now().toString());

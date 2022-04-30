@@ -22,6 +22,7 @@ import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/qr_code_scanner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rocketbot/widgets/picture_cache.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
 class SendPage extends StatefulWidget {
@@ -73,7 +74,7 @@ class _SendPageState extends State<SendPage> {
     _curtain = false;
 
     if (kDebugMode) {
-      _addressController.text = 'MQCYLjuTPeSfKP4EwNkACERHXEhNNdXjMm';
+      _addressController.text = 'M7w5TAcwcYb16jfHtduLnuRSgrXL9kcKvN';
     }
   }
 
@@ -270,15 +271,7 @@ class _SendPageState extends State<SendPage> {
                           : SizedBox(
                               width: 50.0,
                               height: 50.0,
-                              child: CachedNetworkImage(
-                                imageUrl: 'https://app.rocketbot.pro/Image?imageId=' +
-                                    _coinActive!.imageSmallid!,
-                                // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                //     CircularProgressIndicator(value: downloadProgress.progress),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                fit: BoxFit.fitWidth,
-                              ),
+                              child: PictureCacheWidget(coin: widget.coinActive!)
                             ),
                       const SizedBox(
                         width: 10.0,

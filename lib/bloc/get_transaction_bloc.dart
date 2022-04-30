@@ -26,7 +26,7 @@ class TransactionBloc {
     fetchTransactionData(coin,list: list);
   }
 
-  Future <void> fetchTransactionData(Coin coin, {List<TransactionData>? list}) async {
+  Future <void> fetchTransactionData(Coin coin, {List<TransactionData>? list, bool force = false}) async {
     if (!_coinListController!.isClosed) {
       coinsListSink.add(ApiResponse.loading('Fetching Transactions'));
     }
@@ -34,7 +34,7 @@ class TransactionBloc {
       List<TransactionData>? _coins;
       if(list == null ) {
         _coins = await _coinBalances.fetchTransactions(
-            coin.id!);
+            coin.id!, force);
       }else{
         _coins = list;
       }

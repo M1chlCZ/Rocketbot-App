@@ -2,7 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:rocketbot/NetInterface/interface.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
+import 'package:rocketbot/models/balance_portfolio.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/widgets/coin_deposit_view.dart';
 import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
@@ -43,6 +45,7 @@ class CoinScreen extends StatefulWidget {
 class _CoinScreenState extends State<CoinScreen>
     with SingleTickerProviderStateMixin {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
+  final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
   CoinBalance? _balanceData;
   late Coin _coinActive;
@@ -56,12 +59,14 @@ class _CoinScreenState extends State<CoinScreen>
   Decimal usdCost = Decimal.zero;
 
   double _coinNameOpacity = 0.0;
+  double _free = 0.0;
 
   bool portCalc = false;
 
   @override
   void initState() {
     super.initState();
+    _free = widget.free!;
     _coinActive = widget.activeCoin;
     _listCoins = widget.allCoins!;
     _balanceData = _listCoins
@@ -280,7 +285,10 @@ class _CoinScreenState extends State<CoinScreen>
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => _txBloc!.fetchTransactionData(widget.activeCoin),
+              onRefresh: () {
+                _changeFree();
+               return _txBloc!.fetchTransactionData(widget.activeCoin, force: true);
+              },
               child: StreamBuilder<ApiResponse<List<TransactionData>>>(
                 stream: _txBloc!.coinsListStream,
                 builder: (context, snapshot) {
@@ -402,11 +410,22 @@ class _CoinScreenState extends State<CoinScreen>
     }
   }
 
+  _changeFree() async {
+    var preFree = 0.0;
+    var resB = await _interface.get("User/GetBalance?coinId=" + _coinActive.id!.toString());
+    var rs = BalancePortfolio.fromJson(resB);
+    preFree = rs.data!.free!;
+    setState(() {
+      _free = preFree;
+    });
+    _calculatePortfolio();
+  }
+
   _calculatePortfolio() async {
     setState(() {
       portCalc = false;
     });
-    Decimal? _freeCoins = Decimal.parse(widget.free!.toString());
+    Decimal? _freeCoins = Decimal.parse(_free.toString());
 
     try {
       for (var element in _listCoins) {

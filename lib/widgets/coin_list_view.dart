@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/models/balance_list.dart';
+import 'package:rocketbot/widgets/picture_cache.dart';
 
 import 'price_badge.dart';
 
@@ -16,14 +17,7 @@ class CoinListView extends StatefulWidget {
   final Function(CoinBalance h) coinSwitch;
   final Decimal? free;
 
-  const CoinListView(
-      {Key? key,
-      required this.coin,
-      this.customLocale,
-      this.free,
-      this.staking,
-      required this.coinSwitch})
-      : super(key: key);
+  const CoinListView({Key? key, required this.coin, this.customLocale, this.free, this.staking, required this.coinSwitch}) : super(key: key);
 
   @override
   State<CoinListView> createState() => _CoinListViewState();
@@ -93,8 +87,7 @@ class _CoinListViewState extends State<CoinListView> {
                         child: Row(
                           children: [
                             AnimatedCrossFade(
-                              layoutBuilder: (Widget topChild, Key topChildKey,
-                                  Widget bottomChild, Key bottomChildKey) {
+                              layoutBuilder: (Widget topChild, Key topChildKey, Widget bottomChild, Key bottomChildKey) {
                                 return Stack(
                                   clipBehavior: Clip.none,
                                   children: <Widget>[
@@ -119,36 +112,22 @@ class _CoinListViewState extends State<CoinListView> {
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),
-                              crossFadeState: _crossfade
-                                  ? CrossFadeState.showFirst
-                                  : CrossFadeState.showSecond,
+                              crossFadeState: _crossfade ? CrossFadeState.showFirst : CrossFadeState.showSecond,
                               firstChild: Column(
                                 children: [
                                   Container(
-                                    margin:
-                                        const EdgeInsets.fromLTRB(5, 3, 5, 5),
+                                    margin: const EdgeInsets.fromLTRB(5, 3, 5, 5),
                                     child: Center(
                                         child: SizedBox(
-                                            height: 30,
-                                            width: 30.0,
-                                            child: CachedNetworkImage(
-                                              imageUrl:
-                                                  'https://app.rocketbot.pro/Image?imageId=' +
-                                                      widget.coin.coin!
-                                                          .imageSmallid!,
-                                              // progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                              //     CircularProgressIndicator(value: downloadProgress.progress),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.error),
-                                              fit: BoxFit.scaleDown,
-                                            ))),
+                                      height: 30,
+                                      width: 30.0,
+                                      child: PictureCacheWidget(coin: widget.coin.coin!),
+                                    )),
                                   ),
                                   Transform.scale(
                                       scale: 0.85,
                                       child: PriceBadge(
-                                        percentage: widget.coin.priceData
-                                            ?.priceChange24HPercent?.usd,
+                                        percentage: widget.coin.priceData?.priceChange24HPercent?.usd,
                                       )),
                                 ],
                               ),
@@ -164,107 +143,84 @@ class _CoinListViewState extends State<CoinListView> {
                       flex: 10,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 5.0, top: 5.0),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    widget.coin.coin!.ticker!,
-                                    style:
-                                        Theme.of(context).textTheme.headline3,
+                              Text(
+                                widget.coin.coin!.ticker!,
+                                style: Theme.of(context).textTheme.headline3,
+                                maxLines: 1,
+                                textAlign: TextAlign.start,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(
+                                width: 4.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 1.0),
+                                child: SizedBox(
+                                  width: 70,
+                                  child: AutoSizeText(
+                                    widget.coin.coin!.name!,
+                                    style: Theme.of(context).textTheme.subtitle2!.copyWith(fontStyle: FontStyle.normal),
+                                    minFontSize: 8,
                                     maxLines: 1,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(
-                                    width: 4.0,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 1.0),
-                                    child: SizedBox(
-                                      width: 70,
-                                      child: AutoSizeText(
-                                        widget.coin.coin!.name!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .subtitle2!
-                                            .copyWith(
-                                                fontStyle: FontStyle.normal),
-                                        minFontSize: 8,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.start,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 0.0, right: 4.0),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: AutoSizeText(
+                                      _formatFree(widget.free!),
+                                      style: Theme.of(context).textTheme.headline3,
+                                      minFontSize: 8,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.end,
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 0.0, right: 4.0),
-                                      child: Align(
+                                ),
+                              ),
+                            ],
+                          ),
+                          widget.coin.priceData != null
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 12.0, right: 4.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          _formatValue(widget.coin.priceData!.prices!.usd!),
+                                          style: Theme.of(context).textTheme.headline3,
+                                          maxLines: 1,
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Align(
                                         alignment: Alignment.centerRight,
                                         child: AutoSizeText(
-                                          _formatFree(widget.free!),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline3,
+                                          "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                          style: Theme.of(context).textTheme.headline3,
                                           minFontSize: 8,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.end,
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              widget.coin.priceData != null
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 12.0, right: 4.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              _formatValue(widget.coin
-                                                  .priceData!.prices!.usd!),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline3,
-                                              maxLines: 1,
-                                              textAlign: TextAlign.start,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: AutoSizeText(
-                                              "\$" +
-                                                  _formatPrice(
-                                                      widget.coin.free! *
-                                                          widget.coin.priceData!
-                                                              .prices!.usd!
-                                                              .toDouble()),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline3,
-                                              minFontSize: 8,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.end,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : Container(),
-                            ]),
+                                )
+                              : Container(),
+                        ]),
                       ),
                     ),
                   ],

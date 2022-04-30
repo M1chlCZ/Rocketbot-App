@@ -6,9 +6,9 @@ import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 
 class TransactionList {
-  Future<List<TransactionData>?> fetchTransactions(int coinID) async {
+  Future<List<TransactionData>?> fetchTransactions(int coinID, bool force) async {
     Future<List<TransactionData>?> _finalList =
-        TransactionCache.getAllRecords(coinID);
+        TransactionCache.getAllRecords(coinID, forceRefresh: force);
     return _finalList;
   }
 }
