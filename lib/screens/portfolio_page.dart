@@ -184,7 +184,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
             final _withdrawals = await _interface.get(
                 "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
                     coindID.toString());
-            print(_withdrawals.toString());
             List<DataWithdrawals>? _with =
                 WithdrawalsModels.fromJson(_withdrawals).data;
             for (var el in _with!) {
@@ -226,13 +225,8 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
               onRefresh: _refreshData,
               child: SingleChildScrollView(
                 controller: _scrollController,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: _listHeight == 0.0
-                      ? MediaQuery.of(context).size.height
-                      : MediaQuery.of(context).size.height * 0.35 + _listHeight,
                   child: Column(
-                    mainAxisSize: MainAxisSize.max,
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
@@ -515,7 +509,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                           ),
                         ),
                       ),
-                      Expanded(
+                      Flexible(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 3.0),
                           child: StreamBuilder<ApiResponse<List<CoinBalance>>>(
@@ -568,8 +562,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                           return CoinListView(
                                             key: ValueKey(snapshot
                                                 .data!.data![index].coin!.id!),
-                                            staking: snapshot
-                                                .data!.data![index].staking,
                                             coin: snapshot.data!.data![index],
                                             free: Decimal.parse(snapshot
                                                 .data!.data![index].free
@@ -591,7 +583,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                   ),
                 ),
               ),
-            ),
+            // ),
             Visibility(
                 visible: false,
                 child: GestureDetector(

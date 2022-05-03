@@ -1,3 +1,5 @@
+import 'package:rocketbot/models/pos_coins_list.dart';
+
 import 'coin.dart';
 import 'coin_graph.dart';
 
@@ -51,31 +53,35 @@ class CoinBalance {
   CoinBalance({
       int? userId, 
       Coin? coin,
+    Coins? posCoin,
     PriceData? priceData,
     bool? staking,
       double? free,}){
     _userId = userId;
     _coin = coin;
     _free = free;
+    _posCoin = posCoin;
     _staking = staking;
 }
 
   CoinBalance.fromJson(dynamic json) {
     _userId = json['userId'];
     _coin = json['coin'] != null ? Coin.fromJson(json['coin']) : null;
-    _free = json['free'];
+    _free = double.parse(json['free'].toString());
   }
   int? _userId;
   Coin? _coin;
   double? _free;
   PriceData? _priceData;
   bool? _staking;
+  Coins? _posCoin;
 
   int? get userId => _userId;
   Coin? get coin => _coin;
   double? get free => _free;
   PriceData? get priceData => _priceData;
   bool? get staking => _staking;
+  Coins? get posCoin => _posCoin;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -93,6 +99,9 @@ class CoinBalance {
 
   void setStaking(bool b) {
     _staking = b;
+  }
+  void setPosCoin(Coins s) {
+    _posCoin = s;
   }
 
 }

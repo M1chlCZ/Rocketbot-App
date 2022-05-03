@@ -48,25 +48,31 @@ class PosCoinsList {
 class Coins {
   Coins({
       int? idCoin, 
-      String? depositAddr,}){
+      String? depositAddr,
+  double? amount}){
     _idCoin = idCoin;
     _depositAddr = depositAddr;
+    _amount = amount;
 }
 
   Coins.fromJson(dynamic json) {
     _idCoin = json['idCoin'];
     _depositAddr = json['depositAddr'];
+    _amount = double.parse(json['amount'].toString());
   }
   int? _idCoin;
   String? _depositAddr;
+  double? _amount;
 
   int? get idCoin => _idCoin;
   String? get depositAddr => _depositAddr;
+  double? get amount => _amount;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['idCoin'] = _idCoin;
     map['depositAddr'] = _depositAddr;
+    map['amount'] = _amount;
     return map;
   }
 

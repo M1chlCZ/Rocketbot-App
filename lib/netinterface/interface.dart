@@ -23,8 +23,7 @@ class NetInterface {
 
   Future<dynamic> get(String url, {bool pos = false}) async {
     String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-    var _token =
-        await const FlutterSecureStorage().read(key: pos ? posToken : token);
+    var _token = await const FlutterSecureStorage().read(key: pos ? posToken : token);
     // print(_token);
 // // print(_baseUrl + url);
     dynamic responseJson;
@@ -36,22 +35,26 @@ class NetInterface {
       final response = await http.get(Uri.parse(_curl), headers: {
         'User-Agent': _userAgent.toLowerCase(),
         "Authorization": " Bearer $_token",
-      });
+      }).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       // print(response.statusCode);
       // print(response.body.toString());
       if (response.statusCode >= 400) {
         print("SHIT");
         await refreshToken(pos: pos);
-        var _token = await const FlutterSecureStorage()
-            .read(key: pos ? posToken : token);
+        var _token = await const FlutterSecureStorage().read(key: pos ? posToken : token);
         final res = await http.get(Uri.parse(_curl), headers: {
           'User-Agent': _userAgent.toLowerCase(),
           "Authorization": " Bearer $_token",
         });
-        responseJson = await compute (_returnResponse,res);
+        responseJson = await compute(_returnResponse, res);
       } else {
-        responseJson = await compute (_returnResponse,response);
+        responseJson = await compute(_returnResponse, response);
       }
       // print(responseJson.toString());
     } on SocketException {
@@ -61,11 +64,9 @@ class NetInterface {
     return responseJson;
   }
 
-  Future<dynamic> post(String url, Map<String, dynamic> request,
-      {bool pos = false}) async {
+  Future<dynamic> post(String url, Map<String, dynamic> request, {bool pos = false}) async {
     String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-    var _token =
-        await const FlutterSecureStorage().read(key: pos ? posToken : token);
+    var _token = await const FlutterSecureStorage().read(key: pos ? posToken : token);
     dynamic responseJson;
     var _query = json.encoder.convert(request);
     // print(_query);
@@ -73,20 +74,26 @@ class NetInterface {
       var _curl = "";
       pos ? _curl = _posUrl + url : _curl = _baseUrl + url;
       // print(_curl);
-      final response = await http.post(Uri.parse(_curl),
-          headers: {
-            "content-type": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-            "Authorization": " Bearer $_token",
-          },
-          body: _query);
+      final response = await http
+          .post(Uri.parse(_curl),
+              headers: {
+                "content-type": "application/json",
+                'User-Agent': _userAgent.toLowerCase(),
+                "Authorization": " Bearer $_token",
+              },
+              body: _query)
+          .timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       // print(response.body);
       // print(response.statusCode);
       if (response.statusCode >= 400) {
         print("SHIT");
         await refreshToken(pos: pos);
-        var _token = await const FlutterSecureStorage()
-            .read(key: pos ? posToken : token);
+        var _token = await const FlutterSecureStorage().read(key: pos ? posToken : token);
         final res = await http.post(Uri.parse(_curl),
             headers: {
               "content-type": "application/json",
@@ -94,9 +101,9 @@ class NetInterface {
               "Authorization": " Bearer $_token",
             },
             body: _query);
-        responseJson = await compute (_returnResponse,res);
+        responseJson = await compute(_returnResponse, res);
       } else {
-        responseJson = await compute (_returnResponse,response);
+        responseJson = await compute(_returnResponse, response);
       }
       // print(responseJson.toString());
     } on SocketException {
@@ -115,15 +122,14 @@ class NetInterface {
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:
-          throw UnauthorisedException(response.body.toString());
+        throw UnauthorisedException(response.body.toString());
       case 403:
         await checkToken();
         break;
       // throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
+        throw FetchDataException('Error occured while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
 
@@ -132,14 +138,13 @@ class NetInterface {
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       Map _request = {"email": login, "password": pass};
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signin"),
-          body: _query,
-          headers: {
-            'User-Agent': _userAgent.toLowerCase(),
-            "accept": "application/json",
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signin"),
+          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       if (response.statusCode == 200) {
         var js = SignKey.fromJson(json.decode(response.body));
@@ -159,15 +164,13 @@ class NetInterface {
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       Map _request = {"key": key};
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse(
-              "https://app.rocketbot.pro/api/mobile/Auth/SendEmailCodeForSignin"),
-          body: _query,
-          headers: {
-            'User-Agent': _userAgent.toLowerCase(),
-            "accept": "application/json",
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SendEmailCodeForSignin"),
+          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       if (response.statusCode == 200) {
         // var js = SignKey.fromJson(json.decode(response.body));
@@ -190,21 +193,18 @@ class NetInterface {
         "emailCode": code,
       };
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ConfirmSignin"),
-          body: _query,
-          headers: {
-            "accept": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ConfirmSignin"),
+          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       if (response.statusCode == 200) {
         SignCode? res = SignCode.fromJson(json.decode(response.body));
-        await const FlutterSecureStorage()
-            .write(key: NetInterface.token, value: res.data!.token);
-        await const FlutterSecureStorage().write(
-            key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+        await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+        await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
         return res.data!.token!;
       } else {
         // await const FlutterSecureStorage().delete(key: NetInterface.token);
@@ -223,21 +223,18 @@ class NetInterface {
         "token": tokenID,
       };
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithGoogle"),
-          body: _query,
-          headers: {
-            "accept": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithGoogle"),
+          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       if (response.statusCode == 200) {
         SignCode? res = SignCode.fromJson(json.decode(response.body));
         if (res.data!.token != null) {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.token, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
           return res.data!.token!;
         } else {
           return null;
@@ -259,21 +256,18 @@ class NetInterface {
         "authorizationCode": authorizationCode,
       };
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithApple"),
-          body: _query,
-          headers: {
-            "accept": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithApple"),
+          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       if (response.statusCode == 200) {
         SignCode? res = SignCode.fromJson(json.decode(response.body));
         if (res.data!.token != null) {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.token, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
           return res.data!.token!;
         } else {
           return null;
@@ -297,24 +291,16 @@ class NetInterface {
       required bool agreed}) async {
     try {
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
-        "email": email,
-        "password": pass,
-        "confirmPassword": passConf,
-        "name": name,
-        "surname": surname,
-        "agreeToConditions": agreed
-      };
+      Map _request = {"email": email, "password": pass, "confirmPassword": passConf, "name": name, "surname": surname, "agreeToConditions": agreed};
       var _query = json.encoder.convert(_request);
       // // print(_query);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
-          body: _query,
-          headers: {
-            'User-Agent': _userAgent.toLowerCase(),
-            "accept": "application/json",
-            "content-type": "application/json"
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
+          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       // print(response.body);
       // print(response.headers);
@@ -322,10 +308,8 @@ class NetInterface {
       if (response.statusCode == 200) {
         SignCode? res = SignCode.fromJson(json.decode(response.body));
         if (res.data!.token != null) {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.token, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
         }
       }
       return response.body;
@@ -343,13 +327,15 @@ class NetInterface {
         "email": email,
       };
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ForgotPassword"),
-          body: _query,
-          headers: {
-            "accept": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-          });
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ForgotPassword"), body: _query, headers: {
+        "accept": "application/json",
+        'User-Agent': _userAgent.toLowerCase(),
+      }).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
 
       if (response.statusCode == 200) {
         return 1;
@@ -366,15 +352,16 @@ class NetInterface {
     try {
       // print("check token////");
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      String? encoded =
-          await const FlutterSecureStorage().read(key: NetInterface.token);
-      final response = await http.get(
-          Uri.parse(
-              "https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"),
-          headers: {
-            'User-Agent': _userAgent.toLowerCase(),
-            "Authorization": " Bearer $encoded",
-          });
+      String? encoded = await const FlutterSecureStorage().read(key: NetInterface.token);
+      final response = await http.get(Uri.parse("https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"), headers: {
+        'User-Agent': _userAgent.toLowerCase(),
+        "Authorization": " Bearer $encoded",
+      }).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       // // print(response.body);
       // // print(response.statusCode);
       // debugPrint(_userAgent.toLowerCase());
@@ -382,27 +369,21 @@ class NetInterface {
         return 0;
       } else {
         await const FlutterSecureStorage().delete(key: NetInterface.token);
-        String? enc = await const FlutterSecureStorage()
-            .read(key: NetInterface.tokenRefresh);
+        String? enc = await const FlutterSecureStorage().read(key: NetInterface.tokenRefresh);
         Map _request = {
           "token": enc,
         };
-        final resp = await http.post(
-            Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
-            body: json.encode(_request),
-            headers: {
-              'User-Agent': _userAgent.toLowerCase(),
-              "accept": "application/json",
-              "content-type": "application/json",
-            });
+        final resp = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"), body: json.encode(_request), headers: {
+          'User-Agent': _userAgent.toLowerCase(),
+          "accept": "application/json",
+          "content-type": "application/json",
+        });
         // // print(resp.body);
         // // print(resp.statusCode);
         TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
         if (res.data!.token != null) {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.token, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
           return 0;
         } else {
           return 1;
@@ -415,7 +396,6 @@ class NetInterface {
   }
 
   static Future<void> refreshToken({bool pos = false}) async {
-
     try {
       if (_refreshingToken) {
         return;
@@ -423,46 +403,40 @@ class NetInterface {
       _refreshingToken = true;
 
       String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      await const FlutterSecureStorage()
-          .delete(key: pos ? NetInterface.posToken : NetInterface.token);
-      String? enc = await const FlutterSecureStorage().read(
-          key: pos ? NetInterface.posTokenRefresh : NetInterface.tokenRefresh);
+      await const FlutterSecureStorage().delete(key: pos ? NetInterface.posToken : NetInterface.token);
+      String? enc = await const FlutterSecureStorage().read(key: pos ? NetInterface.posTokenRefresh : NetInterface.tokenRefresh);
       Map _request = {
         "token": enc,
       };
       final resp = await http.post(
-          pos
-              ? Uri.parse("http://51.195.168.17:7465/auth/refreshToken")
-              : Uri.parse(
-                  "https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
+          pos ? Uri.parse("http://51.195.168.17:7465/auth/refreshToken") : Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
           body: json.encode(_request),
           headers: {
             'User-Agent': _userAgent.toLowerCase(),
             "accept": "application/json",
             "content-type": "application/json",
-          });
+          }).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
       if (res.data!.token != null) {
         if (pos) {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.posToken, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.posTokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.posToken, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.posTokenRefresh, value: res.data!.refreshToken);
         } else {
-          await const FlutterSecureStorage()
-              .write(key: NetInterface.token, value: res.data!.token);
-          await const FlutterSecureStorage().write(
-              key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
+          await const FlutterSecureStorage().write(key: NetInterface.token, value: res.data!.token);
+          await const FlutterSecureStorage().write(key: NetInterface.tokenRefresh, value: res.data!.refreshToken);
         }
         _refreshingToken = false;
       }
       _refreshingToken = false;
     } catch (e) {
       if (pos) {
-        await const FlutterSecureStorage()
-            .delete(key: NetInterface.posToken);
-        await const FlutterSecureStorage().delete(
-            key: NetInterface.posTokenRefresh);
+        await const FlutterSecureStorage().delete(key: NetInterface.posToken);
+        await const FlutterSecureStorage().delete(key: NetInterface.posTokenRefresh);
       }
       _refreshingToken = false;
       debugPrint(e.toString());
@@ -476,22 +450,22 @@ class NetInterface {
         "token": token,
       };
       var _query = json.encoder.convert(_request);
-      final response = await http.post(
-          Uri.parse("http://51.195.168.17:7465/auth"),
-          body: _query,
-          headers: {
-            "Content-Type": "application/json",
-            "accept": "application/json",
-            'User-Agent': _userAgent.toLowerCase(),
-          });
+      final response = await http.post(Uri.parse("http://51.195.168.17:7465/auth"), body: _query, headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+        'User-Agent': _userAgent.toLowerCase(),
+      }).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
+        },
+      );
       // print(response.body);
       // print(response.statusCode);
       if (response.statusCode == 200) {
         PosTokenAuth? res = PosTokenAuth.fromJson(json.decode(response.body));
-        await const FlutterSecureStorage()
-            .write(key: NetInterface.posToken, value: res.token);
-        await const FlutterSecureStorage()
-            .write(key: NetInterface.posTokenRefresh, value: res.refreshToken);
+        await const FlutterSecureStorage().write(key: NetInterface.posToken, value: res.token);
+        await const FlutterSecureStorage().write(key: NetInterface.posTokenRefresh, value: res.refreshToken);
       } else {
         // print(response.body);
         debugPrint("//// PoS TOKEN ERROR ////");

@@ -27,7 +27,6 @@ class PriceGraphCache extends TransactionData {
     bool shouldRefreshFromApi =
         (_allRecords.isEmpty || null == _lastFetchTime || null == _cacheValidDuration || _lastFetchTime!.isAfter(DateTime.now().subtract(_cacheValidDuration!)) || forceRefresh);
     if (shouldRefreshFromApi) {
-      print("should");
       await refreshAllRecords(force: true);
       _cacheValidDuration = const Duration(minutes: 10);
       _lastFetchTime = DateTime.fromMillisecondsSinceEpoch(0);

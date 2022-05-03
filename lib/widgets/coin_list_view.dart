@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/widgets/picture_cache.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'price_badge.dart';
 
 class CoinListView extends StatefulWidget {
   final CoinBalance coin;
   final String? customLocale;
-  final bool? staking;
   final Function(CoinBalance h) coinSwitch;
   final Decimal? free;
 
-  const CoinListView({Key? key, required this.coin, this.customLocale, this.free, this.staking, required this.coinSwitch}) : super(key: key);
+  const CoinListView({Key? key, required this.coin, this.customLocale, this.free, required this.coinSwitch}) : super(key: key);
 
   @override
   State<CoinListView> createState() => _CoinListViewState();
@@ -29,8 +29,9 @@ class _CoinListViewState extends State<CoinListView> {
   @override
   void initState() {
     super.initState();
-    if (widget.staking != null && widget.staking == true) {
+    if (widget.coin.posCoin != null) {
       startTimer();
+      print(widget.coin.posCoin!.amount!);
     }
   }
 
@@ -173,51 +174,166 @@ class _CoinListViewState extends State<CoinListView> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 0.0, right: 4.0),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: AutoSizeText(
-                                      _formatFree(widget.free!),
-                                      style: Theme.of(context).textTheme.headline3,
-                                      minFontSize: 8,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.end,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          widget.coin.priceData != null
-                              ? Padding(
-                                  padding: const EdgeInsets.only(top: 12.0, right: 4.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          _formatValue(widget.coin.priceData!.prices!.usd!),
-                                          style: Theme.of(context).textTheme.headline3,
-                                          maxLines: 1,
-                                          textAlign: TextAlign.start,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: AutoSizeText(
-                                          "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                  child: widget.coin.posCoin != null
+                                      ? AnimatedCrossFade(
+                                          layoutBuilder: (Widget topChild, Key topChildKey, Widget bottomChild, Key bottomChildKey) {
+                                            return Stack(
+                                              alignment: AlignmentDirectional.centerEnd,
+                                              clipBehavior: Clip.none,
+                                              children: <Widget>[
+                                                Positioned(
+                                                  key: bottomChildKey,
+                                                  child: bottomChild,
+                                                ),
+                                                Positioned(
+                                                  key: topChildKey,
+                                                  child: topChild,
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                          duration: const Duration(milliseconds: 1000),
+                                          firstChild: AutoSizeText(
+                                            _formatFree(widget.free!),
+                                            style: Theme.of(context).textTheme.headline3,
+                                            minFontSize: 8,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.end,
+                                          ),
+                                          crossFadeState: _crossfade ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                                          secondChild: AutoSizeText(
+                                            AppLocalizations.of(context)!.stake_label +
+                                                ": " +
+                                                _formatFree(Decimal.parse(widget.coin.posCoin!.amount!.toStringAsFixed(4))),
+                                            style: Theme.of(context).textTheme.headline3,
+                                            minFontSize: 8,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.end,
+                                          ),
+                                        )
+                                      : AutoSizeText(
+                                          _formatFree(widget.free!),
                                           style: Theme.of(context).textTheme.headline3,
                                           minFontSize: 8,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.end,
                                         ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          widget.coin.priceData != null
+                              ? widget.coin.posCoin != null && widget.coin.posCoin!.amount! != 0.0
+                                  ? AnimatedCrossFade(
+                                      layoutBuilder: (Widget topChild, Key topChildKey, Widget bottomChild, Key bottomChildKey) {
+                                        return Stack(
+                                          alignment: AlignmentDirectional.centerEnd,
+                                          clipBehavior: Clip.none,
+                                          children: <Widget>[
+                                            Positioned(
+                                              key: bottomChildKey,
+                                              child: bottomChild,
+                                            ),
+                                            Positioned(
+                                              key: topChildKey,
+                                              child: topChild,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                      duration: const Duration(milliseconds: 1000),
+                                      firstChild: Padding(
+                                        padding: const EdgeInsets.only(top: 12.0, right: 4.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                _formatValue(widget.coin.priceData!.prices!.usd!),
+                                                style: Theme.of(context).textTheme.headline3,
+                                                maxLines: 1,
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: AutoSizeText(
+                                                "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                                style: Theme.of(context).textTheme.headline3,
+                                                minFontSize: 8,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.end,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                )
+                                      crossFadeState: _crossfade ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                                      secondChild: Padding(
+                                        padding: const EdgeInsets.only(top: 12.0, right: 4.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                _formatValue(widget.coin.priceData!.prices!.usd!),
+                                                style: Theme.of(context).textTheme.headline3,
+                                                maxLines: 1,
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: AutoSizeText(
+                                                "\$" + _formatPrice(widget.coin.posCoin!.amount! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                                style: Theme.of(context).textTheme.headline3,
+                                                minFontSize: 8,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.end,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.only(top: 12.0, right: 4.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              _formatValue(widget.coin.priceData!.prices!.usd!),
+                                              style: Theme.of(context).textTheme.headline3,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.start,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: AutoSizeText(
+                                              "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                              style: Theme.of(context).textTheme.headline3,
+                                              minFontSize: 8,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.end,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                               : Container(),
                         ]),
                       ),

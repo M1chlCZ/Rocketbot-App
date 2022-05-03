@@ -28,6 +28,7 @@ class CoinBalances {
       }
       if (index != -1) {
         _list[i].setStaking(true);
+        _list[i].setPosCoin(pl!.coins![index]);
       } else {
         _list[i].setStaking(false);
       }
