@@ -3,7 +3,7 @@ description: Rocketbot
 
 publish_to: 'none'
 
-version: 1.1.1+100
+version: 1.1.2+102
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -30,7 +30,6 @@ dependencies:
   decimal: ^2.2.0
   vibration: ^1.7.4-nullsafety.0
   flutter_switch: ^0.3.2
-  qr_code_scanner: ^0.7.0
   permission_handler: ^9.2.0
   local_auth: ^2.0.0
   flutter_phoenix: ^1.0.0
@@ -40,11 +39,12 @@ dependencies:
   google_sign_in: ^5.3.0
   sign_in_with_apple: ^3.3.0
   flutter_displaymode: ^0.4.0
-  flutter_local_notifications: ^9.4.1
+  flutter_local_notifications: ^9.5.0
   sqflite: ^2.0.2+1
   jiffy: ^5.0.0
   sprintf: any
   slide_to_act: any
+  qr_code_scanner:
   flutter_user_agent:
     git:
       url: https://github.com/M1chlCZ/flutter_user_agent.git

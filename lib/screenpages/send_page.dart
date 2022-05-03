@@ -73,7 +73,7 @@ class _SendPageState extends State<SendPage> {
     _curtain = false;
 
     if (kDebugMode) {
-      _addressController.text = 'M7w5TAcwcYb16jfHtduLnuRSgrXL9kcKvN';
+      _addressController.text = 'MC25qS3WywpeUQRxmLxM6Kgg4WtFcjnqc4';
     }
   }
 

@@ -186,40 +186,40 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                   const SizedBox(
                     width: 20.0,
                   ),
-                  // Text(AppLocalizations.of(context)!.stake_label, style: Theme.of(context).textTheme.headline4),
-                  SizedBox(
-                    height: 30,
-                    child: NeuContainer(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Center(
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _menuOptions[0],
-                                isDense: true,
-                                onChanged: (String? coin) {
-                                  setState(() {
-                                    if (_stakingUI) {
-                                      _stakingUI = false;
-                                    }else{
-                                      _stakingUI = true;
-                                    }
-                                  });
-                                },
-                                items: _menuOptions.map((String value) {
-                            return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value, style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12, color: Colors.white),),
-
-                            );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-                        )),
-                  ),
+                  Text(AppLocalizations.of(context)!.stake_label, style: Theme.of(context).textTheme.headline4),
+                  // SizedBox(
+                  //   height: 30,
+                  //   child: NeuContainer(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.only(left: 8.0),
+                  //         child: Center(
+                  //           child: DropdownButtonHideUnderline(
+                  //             child: DropdownButton<String>(
+                  //               value: _menuOptions[0],
+                  //               isDense: true,
+                  //               onChanged: (String? coin) {
+                  //                 setState(() {
+                  //                   if (_stakingUI) {
+                  //                     _stakingUI = false;
+                  //                   }else{
+                  //                     _stakingUI = true;
+                  //                   }
+                  //                 });
+                  //               },
+                  //               items: _menuOptions.map((String value) {
+                  //           return DropdownMenuItem<String>(
+                  //           value: value,
+                  //           child: Text(value, style: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 12, color: Colors.white),),
+                  //
+                  //           );
+                  //               }).toList(),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       )),
+                  // ),
                   const SizedBox(
-                    width: 20,
+                    width: 70,
                   ),
                   SizedBox(
                       height: 30,

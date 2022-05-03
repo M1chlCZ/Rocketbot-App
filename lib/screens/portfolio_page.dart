@@ -10,6 +10,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/bloc/balance_bloc.dart';
+import 'package:rocketbot/cache/price_graph_cache.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
@@ -113,12 +114,6 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _getUserInfo() async {
-    String? s = await _storage.read(key: NetInterface.posToken);
-    if (s != null) {
-      // await _storage.deleteAll();
-      // await _storage.write(key: "nextgen", value: "1");
-      print(s);
-    }
     try {
       final response = await _interface.get("User/Me");
       var d = User.fromJson(response);
@@ -170,7 +165,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   _posHandle() async {
-     await _lostPosTX();
+   await _lostPosTX();
   }
 
 
@@ -189,6 +184,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
             final _withdrawals = await _interface.get(
                 "Transfers/GetWithdraws?page=1&pageSize=10&coinId=" +
                     coindID.toString());
+            print(_withdrawals.toString());
             List<DataWithdrawals>? _with =
                 WithdrawalsModels.fromJson(_withdrawals).data;
             for (var el in _with!) {
@@ -546,6 +542,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                       ),
                                     );
                                   case Status.COMPLETED:
+                                    PriceGraphCache.refreshAllRecords();
                                     if (_listCoins == null) {
                                       _listCoins = snapshot.data!.data!;
                                       _listHeight = _hideZero

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/NetInterface/interface.dart';
 import 'package:rocketbot/bloc/get_transaction_bloc.dart';
+import 'package:rocketbot/cache/price_graph_cache.dart';
 import 'package:rocketbot/models/balance_portfolio.dart';
+import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/widgets/coin_deposit_view.dart';
 import 'package:rocketbot/widgets/coin_withdrawal_view.dart';
@@ -34,16 +36,14 @@ class CoinScreen extends StatefulWidget {
       required this.goBack,
       required this.setActiveCoin,
       required this.blockTouch,
-        required this.free
-     })
+      required this.free})
       : super(key: key);
 
   @override
   _CoinScreenState createState() => _CoinScreenState();
 }
 
-class _CoinScreenState extends State<CoinScreen>
-    with SingleTickerProviderStateMixin {
+class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateMixin {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
   final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
@@ -63,18 +63,19 @@ class _CoinScreenState extends State<CoinScreen>
 
   bool portCalc = false;
 
+  PriceData? _priceData;
+
   @override
   void initState() {
     super.initState();
     _free = widget.free!;
     _coinActive = widget.activeCoin;
     _listCoins = widget.allCoins!;
-    _balanceData = _listCoins
-        .singleWhere((element) => element.coin!.id! == _coinActive.id!);
+    _balanceData = _listCoins.singleWhere((element) => element.coin!.id! == _coinActive.id!);
     _calculatePortfolio();
-    _priceBlock =
-        CoinPriceBloc(widget.activeCoin.cryptoId!, widget.activeCoin.id!);
+    _priceBlock = CoinPriceBloc(widget.activeCoin.cryptoId!, widget.activeCoin.id!);
     _txBloc = TransactionBloc(widget.activeCoin);
+    _getGraphData();
   }
 
   @override
@@ -134,24 +135,16 @@ class _CoinScreenState extends State<CoinScreen>
                               setState(() {
                                 widget.setActiveCoin(coin);
                                 _coinActive = coin!;
-                                _balanceData = _listCoins.singleWhere(
-                                    (element) =>
-                                        element.coin!.id! == _coinActive.id!);
-                                _graphKey.currentState!.updatePrices(
-                                    _balanceData!.priceData?.historyPrices);
-                                _priceBlock!
-                                    .changeCoin(coin.cryptoId!, coin.id!);
+                                _balanceData = _listCoins.singleWhere((element) => element.coin!.id! == _coinActive.id!);
+                                _graphKey.currentState!.updatePrices(_balanceData!.priceData?.historyPrices);
+                                _priceBlock!.changeCoin(coin.cryptoId!, coin.id!);
                                 _coinNameOpacity = 0.0;
                                 _txBloc!.changeCoin(coin);
                               });
                               _calculatePortfolio();
                             },
                             items: _listCoins
-                                .map((e) => DropdownMenuItem(
-                                    value: e.coin!,
-                                    child: SizedBox(
-                                        width: 50,
-                                        child: Text(e.coin!.cryptoId!))))
+                                .map((e) => DropdownMenuItem(value: e.coin!, child: SizedBox(width: 50, child: Text(e.coin!.cryptoId!))))
                                 .toList(),
                           ),
                         ),
@@ -195,10 +188,10 @@ class _CoinScreenState extends State<CoinScreen>
               SizedBox(
                   width: double.infinity,
                   height: 250,
-                  child: _coinNameOpacity != 0.0
+                  child: _priceData != null
                       ? CoinPriceGraph(
                           key: _graphKey,
-                          prices: _balanceData!.priceData?.historyPrices,
+                          prices: _priceData?.historyPrices,
                           time: 24,
                           blockTouch: _blockSwipe,
                         )
@@ -252,9 +245,7 @@ class _CoinScreenState extends State<CoinScreen>
                           SizedBox(
                             width: 320,
                             child: AutoSizeText(
-                              _formatPrice(totalCoins) +
-                                  ' ' +
-                                  _coinActive.cryptoId!,
+                              _formatPrice(totalCoins) + ' ' + _coinActive.cryptoId!,
                               style: Theme.of(context).textTheme.headline1,
                               maxLines: 1,
                               minFontSize: 8,
@@ -279,15 +270,14 @@ class _CoinScreenState extends State<CoinScreen>
           ),
           Container(
             decoration: const BoxDecoration(
-              border:
-                  Border(top: BorderSide(color: Colors.white30, width: 0.5)),
+              border: Border(top: BorderSide(color: Colors.white30, width: 0.5)),
             ),
           ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () {
                 _changeFree();
-               return _txBloc!.fetchTransactionData(widget.activeCoin, force: true);
+                return _txBloc!.fetchTransactionData(widget.activeCoin, force: true);
               },
               child: StreamBuilder<ApiResponse<List<TransactionData>>>(
                 stream: _txBloc!.coinsListStream,
@@ -311,26 +301,20 @@ class _CoinScreenState extends State<CoinScreen>
                           return Center(
                               child: Text(
                             AppLocalizations.of(context)!.no_tx,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline2!
-                                .copyWith(color: Colors.white12),
+                            style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),
                           ));
                         } else {
                           return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (ctx, index) {
                                 // print(snapshot.data!.data![index].transactionId);
-                                if (snapshot.data!.data![index].toAddress ==
-                                    null) {
+                                if (snapshot.data!.data![index].toAddress == null) {
                                   return CoinDepositView(
                                     price: _balanceData?.priceData,
                                     data: snapshot.data!.data![index],
                                   );
                                 } else {
-                                  return CoinWithdrawalView(
-                                      price: _balanceData?.priceData,
-                                      data: snapshot.data!.data![index]);
+                                  return CoinWithdrawalView(price: _balanceData?.priceData, data: snapshot.data!.data![index]);
                                 }
                               });
                         }
@@ -338,12 +322,9 @@ class _CoinScreenState extends State<CoinScreen>
                       case Status.ERROR:
                         return Center(
                             child: Text(
-                              AppLocalizations.of(context)!.tx_problem,
+                          AppLocalizations.of(context)!.tx_problem,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline2!
-                              .copyWith(color: Colors.white12),
+                          style: Theme.of(context).textTheme.headline2!.copyWith(color: Colors.white12),
                         ));
                       // print(snapshot.error);
                       // break;
@@ -421,12 +402,21 @@ class _CoinScreenState extends State<CoinScreen>
     _calculatePortfolio();
   }
 
+  _getGraphData() async {
+    var p = await PriceGraphCache.getAllRecords(_coinActive.id!);
+    setState(() {
+      _priceData = p;
+    });
+    _graphKey.currentState!.changeCoin(_priceData!.historyPrices!);
+    // print(p.toJson());
+  }
+
   _calculatePortfolio() async {
+    _getGraphData();
     setState(() {
       portCalc = false;
     });
     Decimal? _freeCoins = Decimal.parse(_free.toString());
-
     try {
       for (var element in _listCoins) {
         if (element.coin == _coinActive) {

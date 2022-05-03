@@ -65,7 +65,7 @@ class PriceData {
   }
 
   PriceData.fromJson(dynamic json) {
-    _updatedAt = json['updatedAt'] ??= '';
+    _updatedAt = json['updatedAt'] ??= 0;
     _prices = json['prices'] != null ? Prices.fromJson(json['prices']) : null;
     _priceChange24HPercent = json['priceChange24HPercent'] != null
         ? PriceChange24HPercent.fromJson(json['priceChange24HPercent'])

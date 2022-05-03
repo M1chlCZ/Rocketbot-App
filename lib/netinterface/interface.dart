@@ -41,6 +41,7 @@ class NetInterface {
       // print(response.statusCode);
       // print(response.body.toString());
       if (response.statusCode >= 400) {
+        print("SHIT");
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
             .read(key: pos ? posToken : token);
@@ -82,6 +83,7 @@ class NetInterface {
       // print(response.body);
       // print(response.statusCode);
       if (response.statusCode >= 400) {
+        print("SHIT");
         await refreshToken(pos: pos);
         var _token = await const FlutterSecureStorage()
             .read(key: pos ? posToken : token);
@@ -439,7 +441,6 @@ class NetInterface {
             "accept": "application/json",
             "content-type": "application/json",
           });
-
       TokenRefresh? res = TokenRefresh.fromJson(json.decode(resp.body));
       if (res.data!.token != null) {
         if (pos) {
