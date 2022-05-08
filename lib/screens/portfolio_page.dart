@@ -28,6 +28,7 @@ import 'package:rocketbot/screens/socials_screen.dart';
 import 'package:rocketbot/storage/app_database.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/life_cycle_watcher.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 import 'package:rocketbot/widgets/button_flat.dart';
 import '../models/user.dart';
 import '../support/notification_helper.dart';
@@ -48,7 +49,6 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
-  final _storage = const FlutterSecureStorage();
   final NetInterface _interface = NetInterface();
   final ScrollController _scrollController = ScrollController();
   BalancesBloc? _bloc;
@@ -103,7 +103,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
         AppLocalizations.of(context)!.by_amount,
         AppLocalizations.of(context)!.by_value
       ];
-      var i = await _storage.read(key: globals.SORT_TYPE);
+      var i = await SecureStorage.readStorage(key: globals.SORT_TYPE);
       if (i == null) {
         _dropValue = _dropValues[0];
       } else {
@@ -416,7 +416,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
                                         await Future.delayed(const Duration(milliseconds: 100), () {});
                                         int sort = _dropValues.indexWhere(
                                             (element) => element == _dropValue);
-                                        await _storage.write(
+                                        await SecureStorage.writeStorage(
                                             key: globals.SORT_TYPE,
                                             value: sort.toString());
                                         await _bloc!
@@ -919,7 +919,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   Future _getPinFuture() async {
-    var s = _storage.read(key: "PIN");
+    var s = SecureStorage.readStorage(key: "PIN");
     return s;
   }
 
@@ -953,7 +953,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   void onPaused() async {
     if (!_paused) {
       var _endTime = DateTime.now().millisecondsSinceEpoch + (1000 * 60);
-      await _storage.write(key: globals.COUNTDOWN, value: _endTime.toString());
+      await SecureStorage.writeStorage(key: globals.COUNTDOWN, value: _endTime.toString());
       _paused = true;
     }
   }
@@ -971,7 +971,7 @@ class PortfolioScreenState extends LifecycleWatcherState<PortfolioScreen> {
   }
 
   Future<bool> _checkCountdown() async {
-    var _countDown = await _storage.read(key: globals.COUNTDOWN);
+    var _countDown = await SecureStorage.readStorage(key: globals.COUNTDOWN);
     if (_countDown != null) {
       int nowDate = DateTime.now().millisecondsSinceEpoch;
       int countTime = int.parse(_countDown);

@@ -5,10 +5,10 @@ import 'package:rocketbot/endpoints/get_all_balances.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/netinterface/api_response.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
+import 'package:rocketbot/support/secure_storage.dart';
 
 class BalancesBloc {
   final CoinBalances _balanceList = CoinBalances();
-  final _storage = const FlutterSecureStorage();
   List<CoinBalance>? _coins;
   List<CoinBalance>? _sortedCoins;
   int _sort = 0;
@@ -35,7 +35,7 @@ class BalancesBloc {
     coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
       if (sort == null) {
-        var i = await _storage.read(key: globals.SORT_TYPE);
+        var i = await SecureStorage.readStorage(key: globals.SORT_TYPE);
         if (i != null) {
           _sort = int.parse(i);
         } else {

@@ -31,7 +31,6 @@ class _CoinListViewState extends State<CoinListView> {
     super.initState();
     if (widget.coin.posCoin != null) {
       startTimer();
-      print(widget.coin.posCoin!.amount!);
     }
   }
 

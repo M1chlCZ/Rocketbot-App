@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/screens/security_screen.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 import 'package:rocketbot/widgets/screen_lock.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -19,8 +20,6 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _storage = const FlutterSecureStorage();
-
   List<int> _tempPIN = [];
   List<int> _tempPIN2 = [];
 
@@ -38,14 +37,14 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _getPIN() async {
-    String? nums = await _storage.read(key: "PIN");
+    String? nums = await SecureStorage.readStorage(key: "PIN");
     if (nums == null) return;
     _myPass = nums.split('').map(int.parse).toList();
   }
 
   void _getAuthType() async {
     if (widget.setupPIN != true) {
-      var i = await _storage.read(key: "AUTH_TYPE");
+      var i = await SecureStorage.readStorage(key: "AUTH_TYPE");
       if (int.parse(i!) == 0) {
         setState(() {
           _showFinger = false;
@@ -242,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: InkWell(
                           splashColor: Colors.white.withOpacity(0.8), // splash color
                           onTap: () {
-                            _storage.delete(key: "PIN");
+                            SecureStorage.deleteStorage(key: "PIN");
                             Navigator.pop(context);
                           }, // button pressed
                           child: Column(
@@ -282,9 +281,9 @@ class _AuthScreenState extends State<AuthScreen> {
     var _succ = false;
     if (_first == _second) {
       _succ = true;
-      await _storage.write(key: "PIN", value: _first.toString());
+      await SecureStorage.writeStorage(key: "PIN", value: _first.toString());
     }else{
-      await _storage.delete(key: "PIN");
+      await SecureStorage.deleteStorage(key: "PIN");
     }
     Navigator.of(context).pop(_succ);
   }

@@ -21,6 +21,7 @@ import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/qr_code_scanner.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 import 'package:rocketbot/widgets/picture_cache.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
@@ -42,7 +43,6 @@ class _SendPageState extends State<SendPage> {
   final TextEditingController _amountController = TextEditingController();
   final GlobalKey<SlideActionState> _keyStake = GlobalKey();
   final NetInterface _interface = NetInterface();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Coin? _coinActive;
   bool _curtain = true;
@@ -71,10 +71,6 @@ class _SendPageState extends State<SendPage> {
       }
     });
     _curtain = false;
-
-    if (kDebugMode) {
-      _addressController.text = 'MC25qS3WywpeUQRxmLxM6Kgg4WtFcjnqc4';
-    }
   }
 
   _getFees() async {
@@ -98,7 +94,7 @@ class _SendPageState extends State<SendPage> {
 
   void _handlePIN() async {
     var bl = false;
-    String? p = await _storage.read(key: "PIN");
+    String? p = await SecureStorage.readStorage(key: "PIN");
     if (p == null) {
       _authCallback(true);
       return;

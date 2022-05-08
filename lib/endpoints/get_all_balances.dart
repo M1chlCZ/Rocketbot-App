@@ -4,15 +4,17 @@ import 'package:rocketbot/cache/balances_cache.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/pos_coins_list.dart';
 import 'package:rocketbot/netInterface/interface.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 
 class CoinBalances {
-  final _storage = const FlutterSecureStorage();
   final NetInterface _interface = NetInterface();
   PosCoinsList? pl;
 
   Future<List<CoinBalance>?> fetchAllBalances(bool force) async {
     // print("|FIRST STAKING BEGIN| " + DateTime.now().toString());
     pl = await _getPosCoins();
+    String? _posToken = await SecureStorage.readStorage(key: NetInterface.posToken);
+    print(_posToken!);
     if (pl == null) {
       await _registerPos();
       pl = await _getPosCoins();
@@ -38,9 +40,9 @@ class CoinBalances {
   }
 
   _registerPos() async {
-    String? _posToken = await _storage.read(key: NetInterface.posToken);
+    String? _posToken = await SecureStorage.readStorage(key: NetInterface.posToken);
     if (_posToken == null) {
-      String? _token = await _storage.read(key: NetInterface.token);
+      String? _token = await SecureStorage.readStorage(key: NetInterface.token);
       await NetInterface.registerPos(_token!);
     } else {
       debugPrint(_posToken);

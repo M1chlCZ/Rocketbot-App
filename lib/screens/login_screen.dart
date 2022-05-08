@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -16,6 +15,7 @@ import 'package:rocketbot/screens/portfolio_page.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/firebase_service.dart';
 import 'package:rocketbot/support/gradient_text.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 import 'package:rocketbot/widgets/button_apple.dart';
 import 'package:rocketbot/widgets/login_register.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -33,7 +33,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   PackageInfo? _packageInfo;
-  final _storage = const FlutterSecureStorage();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -56,10 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleStuff() async {
-    String? s = await _storage.read(key: "nextgen");
+    String? s = await SecureStorage.readStorage(key: "next");
     if (s == null) {
-      await _storage.deleteAll();
-      await _storage.write(key: "nextgen", value: "1");
+      await const FlutterSecureStorage().deleteAll();
+      await SecureStorage.writeStorage(key: "next", value: "1");
     }
     _initPackageInfo();
     Future.delayed(const Duration(milliseconds: 50), () async {
@@ -89,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loggedIN() async {
-    String? lg = await _storage.read(key: NetInterface.token);
+    String? lg = await SecureStorage.readStorage(key: NetInterface.token);
     if (lg != null && lg.isNotEmpty) {
       return true;
     } else {
@@ -173,8 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _getToken(String key, String code) async {
     String? res = await NetInterface.getToken(key, code);
     if (res != null) {
-      await _storage.write(key: NetInterface.token, value: res);
-      String? wer = await _storage.read(key: NetInterface.token);
+      await SecureStorage.writeStorage(key: NetInterface.token, value: res);
+      String? wer = await SecureStorage.readStorage(key: NetInterface.token);
       if (wer != null) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const PortfolioScreen()));
@@ -198,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _nextPage() async {
-    String? res = await _storage.read(key: "PIN");
+    String? res = await SecureStorage.readStorage(key: "PIN");
     // String? res;
     if (res == null) {
       Navigator.of(context).pushReplacement(PageRouteBuilder(

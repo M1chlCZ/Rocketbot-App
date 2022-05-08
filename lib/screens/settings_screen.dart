@@ -9,6 +9,7 @@ import 'package:rocketbot/screens/login_screen.dart';
 import 'package:rocketbot/screens/security_screen.dart';
 import 'package:rocketbot/support/dialogs.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
+import 'package:rocketbot/support/secure_storage.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -18,7 +19,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _storage = const FlutterSecureStorage();
   var dropLanguageValue = globals.LANGUAGES[0];
   var firstValue = false;
   var secondValue = true;
@@ -207,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             l = Locale.fromSubtags(countryCode: ls[2], scriptCode: ls[1], languageCode: ls[0]);
                                           }
                                           MyApp.of(context)?.setLocale(l);
-                                          _storage.write(key: globals.LOCALE_APP, value: globals.LANGUAGES_CODES[index]);
+                                          SecureStorage.writeStorage(key: globals.LOCALE_APP, value: globals.LANGUAGES_CODES[index]);
                                         });
                                       },
                                       items: globals.LANGUAGES
@@ -321,7 +321,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               highlightColor: Colors.black54,
                               onTap: () async {
                                 Dialogs.openLogOutBox(context, () async {
-                                  await _storage.deleteAll();
+                                  await const FlutterSecureStorage().deleteAll();
                                   Navigator.of(context)
                                       .pushReplacement(
                                       PageRouteBuilder(
@@ -367,7 +367,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         width: 20,
                                         onTap: () async {
                                           Dialogs.openLogOutBox(context, () async {
-                                            await _storage.deleteAll();
+                                            await const FlutterSecureStorage().deleteAll();
                                             Navigator.of(context)
                                                 .pushReplacement(
                                                     PageRouteBuilder(
@@ -411,7 +411,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _handlePIN() async {
     var bl = false;
-    String? p = await _storage.read(key: "PIN");
+    String? p = await SecureStorage.readStorage(key: "PIN");
     if (p == null) {
       bl = true;
     }

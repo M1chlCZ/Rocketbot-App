@@ -407,7 +407,9 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
     setState(() {
       _priceData = p;
     });
-    _graphKey.currentState!.changeCoin(_priceData!.historyPrices!);
+    if(_graphKey.currentState != null) {
+      _graphKey.currentState!.changeCoin(_priceData!.historyPrices!);
+    }
     // print(p.toJson());
   }
 

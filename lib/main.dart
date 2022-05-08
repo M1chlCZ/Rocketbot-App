@@ -7,6 +7,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/login_screen.dart';
+import 'package:rocketbot/support/secure_storage.dart';
 import 'Support/material_color_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/support/globals.dart' as globals;
@@ -41,7 +42,6 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp> {
-  final _storage = const FlutterSecureStorage();
   @override
   void initState() {
     super.initState();
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _getSetLang() async {
-    String? ll = await _storage.read(key: globals.LOCALE_APP);
+    String? ll = await SecureStorage.readStorage(key: globals.LOCALE_APP);
     if(ll != null) {
       Locale l;
       List<String> ls = ll.split('_');
