@@ -14,7 +14,7 @@ class CoinBalances {
     // print("|FIRST STAKING BEGIN| " + DateTime.now().toString());
     pl = await _getPosCoins();
     String? _posToken = await SecureStorage.readStorage(key: NetInterface.posToken);
-    print(_posToken!);
+    print(_posToken ?? "NULL TOKEN");
     if (pl == null) {
       await _registerPos();
       pl = await _getPosCoins();

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
@@ -71,6 +73,9 @@ class _SendPageState extends State<SendPage> {
       }
     });
     _curtain = false;
+    if(kDebugMode) {
+      _addressController.text = 'MD3XCpVDvt1hRkMm5EMVjgGDcEgJiAp2Wr';
+    }
   }
 
   _getFees() async {

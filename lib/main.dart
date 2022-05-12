@@ -141,6 +141,7 @@ class _MyAppState extends State<MyApp> {
       ],
       theme: ThemeData(
         fontFamily: "Montserrat",
+        useMaterial3: true,
         canvasColor: const Color(0xFF1B1B1B),
         textTheme: TextTheme(
           headline1: const TextStyle(

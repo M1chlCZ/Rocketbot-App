@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/bloc/stake_graph_bloc.dart';
-import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/pgwid.dart';
 import 'package:rocketbot/models/stake_data.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
@@ -77,9 +75,6 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
   Animation<double>? _animation;
   StakeGraphBloc? _stakeBloc;
   late Coin _coinActive;
-
-  final List<String> _menuOptions = ["Staking", "Masternodes"];
-  bool _stakingUI = true;
 
   bool _staking = false;
   bool _loadingReward = false;
@@ -233,7 +228,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
               children: [
                 IgnorePointer(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 40.0, left: 5.0),
+                    padding: const EdgeInsets.only(top: 13.0, left: 5.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -251,7 +246,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  height: 240,
+                  height: 250,
                   child: RefreshIndicator(
                     onRefresh: () => _stakeBloc!.fetchStakeData(_coinActive.id!, 0),
                     child: StreamBuilder<ApiResponse<StakingData>>(
@@ -311,7 +306,7 @@ class _StakingPageState extends LifecycleWatcherState<StakingPage> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 0.0),
                 child: GradientText(
                   _coinActive.cryptoId!,
                   gradient: const LinearGradient(colors: [

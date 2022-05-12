@@ -515,7 +515,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
     }
     return Padding(
       padding:
-      const EdgeInsets.only(right: 0.0, left: 0.0, top: 15, bottom: 10),
+      const EdgeInsets.only(right: 0.0, left: 0.0, top: 15, bottom: 0),
        child:  _values.isEmpty
           ? Container( color: Colors.transparent, child: Center(child: Padding(
         padding: const EdgeInsets.only(top: 200.0),

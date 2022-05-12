@@ -57,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleStuff() async {
     String? s = await SecureStorage.readStorage(key: "next");
     if (s == null) {
+      print("NULL");
       await const FlutterSecureStorage().deleteAll();
       await SecureStorage.writeStorage(key: "next", value: "1");
     }
