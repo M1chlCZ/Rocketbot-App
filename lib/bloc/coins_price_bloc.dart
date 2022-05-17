@@ -29,9 +29,9 @@ class CoinPriceBloc {
       coinsListSink.add(ApiResponse.loading('Fetching Coin balances'));
     }
     try {
-      PriceData? _coins = await _balanceList.fetchCoinPrice(coin, coinID);
+      PriceData? coins = await _balanceList.fetchCoinPrice(coin, coinID);
       if (!_coinListController!.isClosed) {
-        coinsListSink.add(ApiResponse.completed(_coins));
+        coinsListSink.add(ApiResponse.completed(coins));
       }
     } catch (e) {
       if (!_coinListController!.isClosed) {

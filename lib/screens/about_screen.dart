@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -9,10 +10,10 @@ class AboutScreen extends StatefulWidget {
   const AboutScreen({Key? key}) : super(key: key);
 
   @override
-  _AboutScreenState createState() => _AboutScreenState();
+  AboutScreenState createState() => AboutScreenState();
 }
 
-class _AboutScreenState extends State<AboutScreen> {
+class AboutScreenState extends State<AboutScreen> {
   PackageInfo? _packageInfo;
 
   @override
@@ -61,7 +62,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GradientText(
-                        AppLocalizations.of(context)!.about.toUpperCase() + " ROCKETBOT",
+                        "${AppLocalizations.of(context)!.about.toUpperCase()} ROCKETBOT",
                         gradient: const LinearGradient(colors: [
                           Color(0xFFF05523),
                           Color(0xFF812D88),
@@ -769,12 +770,12 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   void _launchURL(String url) async {
-    var _url = url;
-    print(_url);
     try {
-      await launch(_url);
+      await launchUrl(Uri.parse(url));
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 }

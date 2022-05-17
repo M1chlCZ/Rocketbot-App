@@ -8,20 +8,20 @@ class TimeRangeSwitcher extends StatefulWidget {
   const TimeRangeSwitcher({Key? key, required this.changeTime}) : super(key: key);
 
   @override
-  _TimeRangeSwitcherState createState() => _TimeRangeSwitcherState();
+  TimeRangeSwitcherState createState() => TimeRangeSwitcherState();
 }
 
-class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
+class TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
   var _active = 2;
   final _duration = const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
-    var _width = MediaQuery.of(context).size.width * 0.12;
+    var width = MediaQuery.of(context).size.width * 0.12;
     return NeuContainer(
         child: Row(children: [
       SizedBox(
-        width: _width,
+        width: width,
         child: AnimatedOpacity(
           opacity: _active == 4 ? 1.0 : 0.4,
           duration: _duration,
@@ -39,7 +39,7 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
             )),),
       ),
       SizedBox(
-        width: _width,
+        width: width,
         child: AnimatedOpacity(
           opacity: _active == 3 ? 1.0 : 0.4,
           duration: _duration,
@@ -48,8 +48,8 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
               setState(() {
                 _active = 3;
               });
-              var _time = 24 * 7;
-              widget.changeTime(_time);
+              var time = 24 * 7;
+              widget.changeTime(time);
             },
             child: AutoSizeText(
                 AppLocalizations.of(context)!.onew,
@@ -59,7 +59,7 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
             )),),
       ),
       SizedBox(
-        width: _width,
+        width: width,
         child: AnimatedOpacity(
           opacity: _active == 2 ? 1.0 : 0.4,
           duration: _duration,
@@ -68,8 +68,8 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
                 setState(() {
                   _active = 2;
                 });
-                var _time = 24;
-                widget.changeTime(_time);
+                var time = 24;
+                widget.changeTime(time);
               },
               child: AutoSizeText(AppLocalizations.of(context)!.oned,
                   minFontSize: 6,
@@ -78,7 +78,7 @@ class _TimeRangeSwitcherState extends State<TimeRangeSwitcher> {
         ),
       ),
       SizedBox(
-        width: _width,
+        width: width,
         child: AnimatedOpacity(
           opacity: _active == 1 ? 1.0 : 0.4,
           duration: _duration,

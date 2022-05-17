@@ -15,10 +15,10 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  _SettingsScreenState createState() => _SettingsScreenState();
+  SettingsScreenState createState() => SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsScreenState extends State<SettingsScreen> {
   var dropLanguageValue = globals.LANGUAGES[0];
   var firstValue = false;
   var secondValue = true;
@@ -322,7 +322,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onTap: () async {
                                 Dialogs.openLogOutBox(context, () async {
                                   await const FlutterSecureStorage().deleteAll();
-                                  Navigator.of(context)
+                                  if (mounted) {
+                                    Navigator.of(context)
                                       .pushReplacement(
                                       PageRouteBuilder(
                                           pageBuilder:
@@ -340,6 +341,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             opacity: animation,
                                             child: child);
                                       }));
+                                  }
                                 });
                               },
                               // widget.coinSwitch(widget.coin);
@@ -368,7 +370,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         onTap: () async {
                                           Dialogs.openLogOutBox(context, () async {
                                             await const FlutterSecureStorage().deleteAll();
-                                            Navigator.of(context)
+                                            if (mounted) {
+                                              Navigator.of(context)
                                                 .pushReplacement(
                                                     PageRouteBuilder(
                                                         pageBuilder:
@@ -386,6 +389,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                   opacity: animation,
                                                   child: child);
                                             }));
+                                            }
                                           });
                                         },
                                         child: const Icon(
@@ -415,7 +419,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (p == null) {
       bl = true;
     }
-    Navigator.of(context)
+    if (mounted) {
+      Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
           return AuthScreen(
             setupPIN: bl,
@@ -426,6 +431,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return FadeTransition(opacity: animation, child: child);
         }))
         .then((value) => _authCallback(value));
+    }
   }
 
   void _authCallback(bool? b) async {

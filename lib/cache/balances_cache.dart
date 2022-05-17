@@ -12,14 +12,14 @@ class BalanceCache extends BalanceList {
   BalanceCache() : super();
 
   static Future<void> _refreshAllRecords() async {
-    final NetInterface _helper = NetInterface();
-    final response = await _helper.get("User/GetBalances");
-    final priceData = await _helper.get(
+    final NetInterface helper = NetInterface();
+    final response = await helper.get("User/GetBalances");
+    final priceData = await helper.get(
         "Coin/GetPriceData?IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
     Map<String, dynamic> m = {"response": response, "priceData": priceData};
-    List<CoinBalance> _finalList = await compute(doJob, m);
+    List<CoinBalance> finalList = await compute(doJob, m);
 
-    _allRecords = _finalList;
+    _allRecords = finalList;
     _lastFetchTime = DateTime.now();
   }
 
@@ -42,7 +42,7 @@ class BalanceCache extends BalanceList {
     dynamic priceData = m['priceData'];
 
     List<CoinBalance>? r = BalanceList.fromJson(response).data;
-    List<CoinBalance> _finalList = [];
+    List<CoinBalance> finalList = [];
 
     for (var item in r!) {
       try {
@@ -52,17 +52,17 @@ class BalanceCache extends BalanceList {
         final price = priceData['data'][coinID!.toString()];
         if (price == null) {
 // print("null");
-          _finalList.add(coinBal);
+          finalList.add(coinBal);
         } else {
           PriceData? p = PriceData.fromJson(price);
           coinBal.setPriceData(p);
-          _finalList.add(coinBal);
+          finalList.add(coinBal);
         }
       } catch (e) {
         var coinBal = item;
-        _finalList.add(coinBal);
+        finalList.add(coinBal);
       }
     }
-    return _finalList;
+    return finalList;
   }
 }

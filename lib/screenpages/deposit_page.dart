@@ -21,10 +21,10 @@ class DepositPage extends StatefulWidget {
   const DepositPage({Key? key, this.coin, this.free, this.depositAddr}) : super(key: key);
 
   @override
-  _DepositPageState createState() => _DepositPageState();
+  DepositPageState createState() => DepositPageState();
 }
 
-class _DepositPageState extends State<DepositPage> {
+class DepositPageState extends State<DepositPage> {
   final TextEditingController _addressController = TextEditingController();
   var popMenu = false;
 

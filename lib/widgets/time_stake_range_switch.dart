@@ -1,27 +1,26 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StakeTimeRangeSwitcher extends StatefulWidget {
   final Function(int time) changeTime;
   const StakeTimeRangeSwitcher({Key? key, required this.changeTime}) : super(key: key);
 
   @override
-  _StakeTimeRangeSwitcherState createState() => _StakeTimeRangeSwitcherState();
+  StakeTimeRangeSwitcherState createState() => StakeTimeRangeSwitcherState();
 }
 
-class _StakeTimeRangeSwitcherState extends State<StakeTimeRangeSwitcher> {
+class StakeTimeRangeSwitcherState extends State<StakeTimeRangeSwitcher> {
   var _active = 1;
   final _duration = const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
-    var _width = MediaQuery.of(context).size.width * 0.12;
+    var width = MediaQuery.of(context).size.width * 0.12;
     return NeuContainer(
         child: Row(children: [
           SizedBox(
-            width: _width,
+            width: width,
             child: AnimatedOpacity(
               opacity: _active == 4 ? 1.0 : 0.4,
               duration: _duration,
@@ -39,7 +38,7 @@ class _StakeTimeRangeSwitcherState extends State<StakeTimeRangeSwitcher> {
                   )),),
           ),
           SizedBox(
-            width: _width,
+            width: width,
             child: AnimatedOpacity(
               opacity: _active == 3 ? 1.0 : 0.4,
               duration: _duration,
@@ -58,7 +57,7 @@ class _StakeTimeRangeSwitcherState extends State<StakeTimeRangeSwitcher> {
                   )),),
           ),
           SizedBox(
-            width: _width,
+            width: width,
             child: AnimatedOpacity(
               opacity: _active == 2 ? 1.0 : 0.4,
               duration: _duration,
@@ -76,7 +75,7 @@ class _StakeTimeRangeSwitcherState extends State<StakeTimeRangeSwitcher> {
             ),
           ),
           SizedBox(
-            width: _width,
+            width: width,
             child: AnimatedOpacity(
               opacity: _active == 1 ? 1.0 : 0.4,
               duration: _duration,

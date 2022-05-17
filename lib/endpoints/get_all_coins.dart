@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/coin_list.dart';
@@ -23,7 +24,9 @@ class CoinsList {
 
       return finalList;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return Future.error(e);
     }
   }

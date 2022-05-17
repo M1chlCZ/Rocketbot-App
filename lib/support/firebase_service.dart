@@ -1,5 +1,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseService {
@@ -26,7 +27,9 @@ class FirebaseService {
       await _auth.signInWithCredential(credential);
       return ggAuth.idToken!;
     } on FirebaseAuthException catch (e) {
-      print("/////" + e.message.toString());
+      if (kDebugMode) {
+        print("/////" + e.message.toString());
+      }
       // throw e;
     }
     return null;

@@ -1,11 +1,10 @@
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:rocketbot/netinterface/interface.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'package:rocketbot/support/secure_storage.dart';
 import 'Support/material_color_generator.dart';
@@ -35,13 +34,13 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-  static _MyAppState? of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>();
+  State<MyApp> createState() => MyAppState();
+  static MyAppState? of(BuildContext context) => context.findAncestorStateOfType<MyAppState>();
 }
 
 
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
@@ -61,16 +60,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _precachedImg() async {
-    await precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
-    await precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
-    await precacheImage(const AssetImage('images/send_nav_icon.png'), context);
-    await precacheImage(const AssetImage('images/price_frame.png'), context);
-    await precacheImage(const AssetImage('images/rocket_pin.png'), context);
-    await precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
-    await precacheImage(const AssetImage('images/wave.png'), context);
-    await precacheImage(const AssetImage('images/logo_big.png'), context);
-    await precacheImage(const AssetImage('images/apple.png'), context);
-
+      await precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
+      await precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
+      await precacheImage(const AssetImage('images/send_nav_icon.png'), context);
+      await precacheImage(const AssetImage('images/price_frame.png'), context);
+      await precacheImage(const AssetImage('images/rocket_pin.png'), context);
+      await precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
+      await precacheImage(const AssetImage('images/wave.png'), context);
+      await precacheImage(const AssetImage('images/logo_big.png'), context);
+      await precacheImage(const AssetImage('images/apple.png'), context);
   }
 
   void _getSetLang() async {
@@ -124,11 +122,15 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeListResolutionCallback: (locales, supportedLocales) {
 
-        print('device locales=$locales supported locales=$supportedLocales');
+        if (kDebugMode) {
+          print('device locales=$locales supported locales=$supportedLocales');
+        }
 
         for (Locale locale in locales!) {
           if (supportedLocales.contains(locale)) {
-            print('supported');
+            if (kDebugMode) {
+              print('supported');
+            }
             return locale;
           }
         }

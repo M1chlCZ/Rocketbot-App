@@ -22,8 +22,8 @@ class StakeGraphBloc {
   fetchStakeData(int coinID, int type) async {
     coinsListSink.add(ApiResponse.loading('Fetching All Stakes'));
     try {
-      StakingData? _coins = await _coinsList.getStakingData(coinID, type);
-      coinsListSink.add(ApiResponse.completed(_coins));
+      StakingData? coins = await _coinsList.getStakingData(coinID, type);
+      coinsListSink.add(ApiResponse.completed(coins));
     } catch (e) {
       coinsListSink.add(ApiResponse.error(e.toString()));
       // print(e);

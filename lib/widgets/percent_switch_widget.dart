@@ -21,13 +21,13 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var _width = MediaQuery.of(context).size.width * 0.23;
+    var width = MediaQuery.of(context).size.width * 0.23;
     return SizedBox(
-        width: _width * 4,
+        width: width * 4,
         child: Row(
             children: [
               SizedBox(
-                width: _width,
+                width: width,
                 child: AnimatedOpacity(
                   opacity: _active == 4 ? 1.0 : 0.4,
                   duration: _duration,
@@ -48,7 +48,7 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                       )),),
               ),
               SizedBox(
-                width: _width,
+                width: width,
                 child: AnimatedOpacity(
                   opacity: _active == 3 ? 1.0 : 0.4,
                   duration: _duration,
@@ -69,7 +69,7 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                       )),),
               ),
               SizedBox(
-                width: _width,
+                width: width,
                 child: AnimatedOpacity(
                   opacity: _active == 2 ? 1.0 : 0.4,
                   duration: _duration,
@@ -89,7 +89,7 @@ class PercentSwitchWidgetState extends State<PercentSwitchWidget> {
                 ),
               ),
               SizedBox(
-                width: _width,
+                width: width,
                 child: AnimatedOpacity(
                   opacity: _active == 1 ? 1.0 : 0.4,
                   duration: _duration,

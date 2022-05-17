@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:rocketbot/screens/portfolio_page.dart';
@@ -16,10 +16,10 @@ class AuthScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  AuthScreenState createState() => AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class AuthScreenState extends State<AuthScreen> {
   List<int> _tempPIN = [];
   List<int> _tempPIN2 = [];
 
@@ -76,7 +76,9 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         _showFinger = false;
       });
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     if (!mounted) return;
     if (authenticated) {
@@ -107,12 +109,12 @@ class _AuthScreenState extends State<AuthScreen> {
                           Color(0xFF812D88),
                         ]).createShader(bounds);
                       },
+                      blendMode: BlendMode.srcATop,
                       child: Image.asset(
                         "images/fingerprint.png",
                         height: 50.0,
                         fit: BoxFit.fitHeight,
                       ),
-                      blendMode: BlendMode.srcATop,
                     ),
                     showFingerPass: _showFinger,
                     fingerFunction: biometrics,
@@ -276,15 +278,15 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _checkSetupPIN() async {
-    int _first = int.parse(_tempPIN.map((i) => i.toString()).join(""));
-    int _second = int.parse(_tempPIN2.map((i) => i.toString()).join(""));
-    var _succ = false;
-    if (_first == _second) {
-      _succ = true;
-      await SecureStorage.writeStorage(key: "PIN", value: _first.toString());
+    int first = int.parse(_tempPIN.map((i) => i.toString()).join(""));
+    int second = int.parse(_tempPIN2.map((i) => i.toString()).join(""));
+    var succ = false;
+    if (first == second) {
+      succ = true;
+      await SecureStorage.writeStorage(key: "PIN", value: first.toString());
     }else{
       await SecureStorage.deleteStorage(key: "PIN");
     }
-    Navigator.of(context).pop(_succ);
+    if (mounted) Navigator.of(context).pop(succ);
   }
 }

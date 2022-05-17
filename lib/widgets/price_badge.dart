@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class PriceBadge extends StatefulWidget {
   final Decimal? percentage;
@@ -25,7 +24,7 @@ class _PriceBadgeState extends State<PriceBadge> {
   
   String _getNum(double num) {
     if(num > 0) {
-      return "+" + num.toStringAsFixed(2);
+      return "+${num.toStringAsFixed(2)}";
     }else{
       return (num).toStringAsFixed(2);
     }
@@ -53,7 +52,7 @@ class _PriceBadgeState extends State<PriceBadge> {
       width: _getWidth(_perc),
       child: Container(
           decoration: BoxDecoration(
-            color: _perc > 0 ? const Color(0x1A1AD37A) : const Color(0xEB3912).withOpacity(0.1),
+            color: _perc > 0 ? const Color(0x1A1AD37A) : const Color(0x00eb3912).withOpacity(0.1),
             borderRadius: const BorderRadius.all(
               Radius.circular(20.0),
             ),
@@ -70,7 +69,7 @@ class _PriceBadgeState extends State<PriceBadge> {
                   //   height: 15,
                   //     child: SvgPicture.string( _perc > 0 ? arrowUP : arrowDown)),
                   // const SizedBox(width: 3.0,),
-                  AutoSizeText(_getNum(_perc) + "%",
+                  AutoSizeText("${_getNum(_perc)}%",
                       minFontSize: 8.0,
                       maxLines: 1,
                       style: TextStyle (

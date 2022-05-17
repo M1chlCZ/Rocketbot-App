@@ -1,7 +1,6 @@
-import 'dart:io' show Platform;
 import "dart:io" as io;
 
-import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rocketbot/models/coin.dart';
@@ -97,14 +96,14 @@ class AppDatabase {
       globals.TS_FINISHED: 1,
     };
     var res = dbClient.update(globals.TABLE_STAKE, contact,
-        where: globals.TS_PWG + " = ?", whereArgs: [txid]);
+        where: "${globals.TS_PWG} = ?", whereArgs: [txid]);
     return res;
   }
 
   Future<List<PGWIdentifier>> getUnfinishedTX() async {
     final dbClient = await db;
     var res = await dbClient.query(globals.TABLE_STAKE,
-        where: globals.TS_FINISHED + " = ?", whereArgs: [0]);
+        where: "${globals.TS_FINISHED} = ?", whereArgs: [0]);
     return List.generate(res.length, (i) {
       return PGWIdentifier(
         id: res[i][globals.TS_ID] as int,
@@ -147,7 +146,7 @@ class AppDatabase {
 
   Future<List<Coin>> getCoin(int coinID) async {
     final dbClient = await db;
-    var res = await dbClient.query(globals.TABLE_COIN, where: globals.TC_ID + "= ? ", whereArgs: [coinID]);
+    var res = await dbClient.query(globals.TABLE_COIN, where: "${globals.TC_ID}= ? ", whereArgs: [coinID]);
     return List.generate(res.length, (i) {
       return Coin(
         id: res[i][globals.TC_ID] as int,
@@ -190,7 +189,9 @@ class AppDatabase {
         try {
           await db.execute(coinTable);
         } catch (e) {
-          print(e);
+          if (kDebugMode) {
+            print(e);
+          }
         }
         break;
     }

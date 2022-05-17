@@ -4,9 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
-import 'package:rocketbot/component_widgets/container_neu.dart';
 import 'package:rocketbot/models/transaction_data.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TransactionDetailPage extends StatefulWidget {
   final TransactionData transactionData;
@@ -15,10 +13,10 @@ class TransactionDetailPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TransactionDetailPageState createState() => _TransactionDetailPageState();
+  TransactionDetailPageState createState() => TransactionDetailPageState();
 }
 
-class _TransactionDetailPageState extends State<TransactionDetailPage> {
+class TransactionDetailPageState extends State<TransactionDetailPage> {
   var _receive = true;
   var _confirmed = false;
 
@@ -243,7 +241,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 5.0),
                                       child: Text(
-                                        widget.transactionData.toAddress != null ? "Sent to: " + _formatTx(widget.transactionData.toAddress!) : "Tx id: " + _formatTx(widget.transactionData.transactionId!),
+                                        widget.transactionData.toAddress != null ? "Sent to: ${_formatTx(widget.transactionData.toAddress!)}" : "Tx id: ${_formatTx(widget.transactionData.transactionId!)}",
                                         // "Sent to: " + _formatTx(widget.data.toAddress!),
                                         style: Theme.of(context).textTheme.headline3,
                                         maxLines: 1,
@@ -281,7 +279,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.ellipsis,
                                     ) : Text(
-                                      widget.transactionData.confirmations.toString() + "confirmations",
+                                      "${widget.transactionData.confirmations}confirmations",
                                       style: Theme.of(context).textTheme.headline4,
                                       maxLines: 1,
                                       textAlign: TextAlign.start,
@@ -311,7 +309,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                       alignment: Alignment.centerRight,
                                       child: AutoSizeText(
                                         // widget.free!.toString(),
-                                        "-" + (widget.transactionData.usdPrice! * widget.transactionData.amount!).toStringAsFixed(3) + "  USD",
+                                        "-${(widget.transactionData.usdPrice! * widget.transactionData.amount!).toStringAsFixed(3)}  USD",
                                         style: Theme.of(context).textTheme.headline4!.copyWith(color: _receive ? const Color(0xff1AD37A) : const Color(0xffEA3913)),
                                         minFontSize: 8,
                                         maxLines: 1,
@@ -364,7 +362,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
   String _formatTx(String s) {
     var firstPart = s.substring(0,3);
     var lastPart = s.substring(s.length - 3);
-    return firstPart + "..." + lastPart;
+    return "$firstPart...$lastPart";
   }
   String _getMeDate(String? d) {
     if (d == null) return "";

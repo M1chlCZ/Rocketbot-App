@@ -1,11 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:rocketbot/models/coin_graph.dart';
 import 'package:rocketbot/models/get_deposits.dart';
 import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 
 import '../NetInterface/interface.dart';
-import '../models/balance_list.dart';
 
 class TransactionCache extends TransactionData {
   static Duration? _cacheValidDuration;
@@ -15,15 +13,15 @@ class TransactionCache extends TransactionData {
   TransactionCache() : super();
 
   static Future<void> _refreshAllRecords(int coinID) async {
-    final NetInterface _helper = NetInterface();
-    final _deposits = await _helper.get("Transfers/GetDeposits?page=1&pageSize=50&coinId=$coinID");
-    final _withdrawals = await _helper.get("Transfers/GetWithdraws?page=1&pageSize=50&coinId=$coinID");
+    final NetInterface helper = NetInterface();
+    final deposits = await helper.get("Transfers/GetDeposits?page=1&pageSize=50&coinId=$coinID");
+    final withdrawals = await helper.get("Transfers/GetWithdraws?page=1&pageSize=50&coinId=$coinID");
     // final price = await _helper.get("Coin/GetPriceData?coinId=$coinID&IncludeHistoryPrices=false&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
 
-    List<DataWithdrawals>? _with = WithdrawalsModels.fromJson(_withdrawals).data;
-    List<DataDeposits>? _dep = DepositsModel.fromJson(_deposits).data;
-    List<TransactionData> _finalList = [];
-    await Future.forEach(_dep!, (item) async {
+    List<DataWithdrawals>? withRld = WithdrawalsModels.fromJson(withdrawals).data;
+    List<DataDeposits>? dep = DepositsModel.fromJson(deposits).data;
+    List<TransactionData> finalList = [];
+    await Future.forEach(dep!, (item) async {
       try {
         var it = (item as DataDeposits);
         // if(priceValue == null) {
@@ -38,14 +36,16 @@ class TransactionCache extends TransactionData {
             chainConfirmed: it.isConfirmed,
             confirmations: it.confirmations,
             usdPrice: 0.0);
-        _finalList.add(d);
+        finalList.add(d);
 
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
     });
 
-    await Future.forEach(_with!, (item) {
+    await Future.forEach(withRld!, (item) {
       try {
         var it = (item as DataWithdrawals);
         // if(priceValue == null) {
@@ -61,18 +61,20 @@ class TransactionCache extends TransactionData {
           chainConfirmed: it.chainConfirmed,
           usdPrice: 0.0,
         );
-        _finalList.add(d);
+        finalList.add(d);
       }catch(e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       }
     });
-    _finalList.sort((a,b) {
+    finalList.sort((a,b) {
       var A = DateTime.parse(a.receivedAt!);
       var B = DateTime.parse(b.receivedAt!);
       return B.compareTo(A);
     });
 
-    _allRecords['$coinID'] = _finalList;
+    _allRecords['$coinID'] = finalList;
     _lastFetchTime = DateTime.now();
   }
 

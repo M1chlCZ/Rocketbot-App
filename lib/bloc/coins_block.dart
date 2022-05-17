@@ -23,8 +23,8 @@ class CoinsBloc {
   fetchCoinsList() async {
     coinsListSink.add(ApiResponse.loading('Fetching All Coins'));
     try {
-      List<Coin>? _coins = await _coinsList.fetchAllCoins();
-      coinsListSink.add(ApiResponse.completed(_coins));
+      List<Coin>? coins = await _coinsList.fetchAllCoins();
+      coinsListSink.add(ApiResponse.completed(coins));
     } catch (e) {
       coinsListSink.add(ApiResponse.error(e.toString()));
       // print(e);

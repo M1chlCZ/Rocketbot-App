@@ -23,10 +23,10 @@ class DialogBody extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DialogBodyState createState() => _DialogBodyState();
+  DialogBodyState createState() => DialogBodyState();
 }
 
-class _DialogBodyState extends State<DialogBody> {
+class DialogBodyState extends State<DialogBody> {
 
   @override
   void initState() {

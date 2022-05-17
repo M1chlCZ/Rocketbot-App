@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
@@ -13,10 +12,10 @@ class SecurityScreen extends StatefulWidget {
   const SecurityScreen({Key? key}) : super(key: key);
 
   @override
-  _SecurityScreenState createState() => _SecurityScreenState();
+  SecurityScreenState createState() => SecurityScreenState();
 }
 
-class _SecurityScreenState extends State<SecurityScreen> {
+class SecurityScreenState extends State<SecurityScreen> {
   String? _biometrics;
   var firstValue = false;
   var secondValue = true;
@@ -43,7 +42,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         if (_biometrics != null && _biometrics != "nothing") {
           _dropValues.add('PIN');
           _dropValues.add(_biometrics!);
-          _dropValues.add("PIN + " + _biometrics!);
+          _dropValues.add("PIN + ${_biometrics!}");
         } else {
           _dropValues.add('PIN');
         }
@@ -404,24 +403,24 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   void _changeSucc(bool? b) async {
-    bool _state = false;
+    bool state = false;
     if (b != null || b != false) {
-      _state = true;
+      state = true;
     }
     Future.delayed(const Duration(milliseconds: 200), () {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: SizedBox(
             height: 40.0,
             child: Center(
-                child: Text(_state
+                child: Text(state
                     ? AppLocalizations.of(context)!.sc_change_succ
                     : AppLocalizations.of(context)!.sc_change_fuck))),
-        backgroundColor: _state ? Colors.green : Colors.red,
+        backgroundColor: state ? Colors.green : Colors.red,
       ));
     });
   }
 
-  void _authCallback(bool b) {
-    debugPrint(b.toString());
-  }
+  // void _authCallback(bool b) {
+  //   debugPrint(b.toString());
+  // }
 }

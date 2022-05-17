@@ -23,19 +23,19 @@ class NetInterface {
   static bool _refreshingToken = false;
 
   Future<dynamic> get(String url, {bool pos = false}) async {
-    String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-    var _token = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
+    String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+    var tk = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
     // print(_token);
 // // print(_baseUrl + url);
     dynamic responseJson;
     try {
-      var _curl = "";
-      pos ? _curl = _posUrl + url : _curl = _baseUrl + url;
+      var curl = "";
+      pos ? curl = _posUrl + url : curl = _baseUrl + url;
       // print(_curl);
       // print(_token);
-      final response = await http.get(Uri.parse(_curl), headers: {
-        'User-Agent': _userAgent.toLowerCase(),
-        "Authorization": " Bearer $_token",
+      final response = await http.get(Uri.parse(curl), headers: {
+        'User-Agent': userAgent.toLowerCase(),
+        "Authorization": " Bearer $tk",
       }).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
@@ -46,12 +46,11 @@ class NetInterface {
       // print(response.statusCode);
       // print(response.body.toString());
       if (response.statusCode >= 400) {
-        print("SHIT");
         await refreshToken(pos: pos);
-        var _token = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
-        final res = await http.get(Uri.parse(_curl), headers: {
-          'User-Agent': _userAgent.toLowerCase(),
-          "Authorization": " Bearer $_token",
+        var tk = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
+        final res = await http.get(Uri.parse(curl), headers: {
+          'User-Agent': userAgent.toLowerCase(),
+          "Authorization": " Bearer $tk",
         });
         responseJson = await compute(_returnResponse, res);
       } else {
@@ -66,23 +65,23 @@ class NetInterface {
   }
 
   Future<dynamic> post(String url, Map<String, dynamic> request, {bool pos = false}) async {
-    String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-    var _token = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
+    String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+    var tk = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
     dynamic responseJson;
-    var _query = json.encoder.convert(request);
+    var query = json.encoder.convert(request);
     // print(_query);
     try {
-      var _curl = "";
-      pos ? _curl = _posUrl + url : _curl = _baseUrl + url;
+      var curl = "";
+      pos ? curl = _posUrl + url : curl = _baseUrl + url;
       // print(_curl);
       final response = await http
-          .post(Uri.parse(_curl),
+          .post(Uri.parse(curl),
               headers: {
                 "content-type": "application/json",
-                'User-Agent': _userAgent.toLowerCase(),
-                "Authorization": " Bearer $_token",
+                'User-Agent': userAgent.toLowerCase(),
+                "Authorization": " Bearer $tk",
               },
-              body: _query)
+              body: query)
           .timeout(
         const Duration(seconds: 15),
         onTimeout: () {
@@ -92,16 +91,15 @@ class NetInterface {
       // print(response.body);
       // print(response.statusCode);
       if (response.statusCode >= 400) {
-        print("SHIT");
-        await refreshToken(pos: pos); 
-        var _token = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
-        final res = await http.post(Uri.parse(_curl),
+        await refreshToken(pos: pos);
+        var tk = await SecureStorage.readStorage(key: pos ? posToken : token); //TODO
+        final res = await http.post(Uri.parse(curl),
             headers: {
               "content-type": "application/json",
-              'User-Agent': _userAgent.toLowerCase(),
-              "Authorization": " Bearer $_token",
+              'User-Agent': userAgent.toLowerCase(),
+              "Authorization": " Bearer $tk",
             },
-            body: _query);
+            body: query);
         responseJson = await compute(_returnResponse, res);
       } else {
         responseJson = await compute(_returnResponse, response);
@@ -136,11 +134,11 @@ class NetInterface {
 
   static Future<String?> getKey(String login, String pass) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {"email": login, "password": pass};
-      var _query = json.encoder.convert(_request);
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {"email": login, "password": pass};
+      var query = json.encoder.convert(request);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signin"),
-          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+          body: query, headers: {'User-Agent': userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -162,11 +160,11 @@ class NetInterface {
 
   static Future<bool> getEmailCode(String key) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {"key": key};
-      var _query = json.encoder.convert(_request);
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {"key": key};
+      var query = json.encoder.convert(request);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SendEmailCodeForSignin"),
-          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+          body: query, headers: {'User-Agent': userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -188,14 +186,14 @@ class NetInterface {
 
   static Future<String?> getToken(String key, String code) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {
         "key": key,
         "emailCode": code,
       };
-      var _query = json.encoder.convert(_request);
+      var query = json.encoder.convert(request);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ConfirmSignin"),
-          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+          body: query, headers: {"accept": "application/json", 'User-Agent': userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -219,13 +217,13 @@ class NetInterface {
 
   static Future<String?> getTokenGoogle(String tokenID) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {
         "token": tokenID,
       };
-      var _query = json.encoder.convert(_request);
+      var query = json.encoder.convert(request);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithGoogle"),
-          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+          body: query, headers: {"accept": "application/json", 'User-Agent': userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -252,13 +250,13 @@ class NetInterface {
 
   static Future<String?> getTokenApple(String authorizationCode) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {
         "authorizationCode": authorizationCode,
       };
-      var _query = json.encoder.convert(_request);
+      var query = json.encoder.convert(request);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/SignWithApple"),
-          body: _query, headers: {"accept": "application/json", 'User-Agent': _userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
+          body: query, headers: {"accept": "application/json", 'User-Agent': userAgent.toLowerCase(), "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -291,12 +289,12 @@ class NetInterface {
       required String surname,
       required bool agreed}) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {"email": email, "password": pass, "confirmPassword": passConf, "name": name, "surname": surname, "agreeToConditions": agreed};
-      var _query = json.encoder.convert(_request);
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {"email": email, "password": pass, "confirmPassword": passConf, "name": name, "surname": surname, "agreeToConditions": agreed};
+      var query = json.encoder.convert(request);
       // // print(_query);
       final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/Signup"),
-          body: _query, headers: {'User-Agent': _userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
+          body: query, headers: {'User-Agent': userAgent.toLowerCase(), "accept": "application/json", "content-type": "application/json"}).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           return http.Response('ErrorTimeOut', 500); // Request Timeout response status code
@@ -323,14 +321,14 @@ class NetInterface {
 
   static Future<int> forgotPass(String email) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {
         "email": email,
       };
-      var _query = json.encoder.convert(_request);
-      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ForgotPassword"), body: _query, headers: {
+      var query = json.encoder.convert(request);
+      final response = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/ForgotPassword"), body: query, headers: {
         "accept": "application/json",
-        'User-Agent': _userAgent.toLowerCase(),
+        'User-Agent': userAgent.toLowerCase(),
       }).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
@@ -352,10 +350,10 @@ class NetInterface {
   static Future<int> checkToken() async {
     try {
       // print("check token////");
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       String? encoded = await SecureStorage.readStorage(key: NetInterface.token);
       final response = await http.get(Uri.parse("https://app.rocketbot.pro/api/mobile/User/GetBalance?coinId=2"), headers: {
-        'User-Agent': _userAgent.toLowerCase(),
+        'User-Agent': userAgent.toLowerCase(),
         "Authorization": " Bearer $encoded",
       }).timeout(
         const Duration(seconds: 15),
@@ -371,11 +369,11 @@ class NetInterface {
       } else {
         await const FlutterSecureStorage().delete(key: NetInterface.token);
         String? enc = await SecureStorage.readStorage(key: NetInterface.tokenRefresh);
-        Map _request = {
+        Map request = {
           "token": enc,
         };
-        final resp = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"), body: json.encode(_request), headers: {
-          'User-Agent': _userAgent.toLowerCase(),
+        final resp = await http.post(Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"), body: json.encode(request), headers: {
+          'User-Agent': userAgent.toLowerCase(),
           "accept": "application/json",
           "content-type": "application/json",
         });
@@ -403,17 +401,17 @@ class NetInterface {
       }
       _refreshingToken = true;
 
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
       await const FlutterSecureStorage().delete(key: pos ? NetInterface.posToken : NetInterface.token);
       String? enc = await SecureStorage.readStorage(key: pos ? NetInterface.posTokenRefresh : NetInterface.tokenRefresh);
-      Map _request = {
+      Map request = {
         "token": enc,
       };
       final resp = await http.post(
           pos ? Uri.parse("http://51.195.168.17:7465/auth/refreshToken") : Uri.parse("https://app.rocketbot.pro/api/mobile/Auth/RefreshToken"),
-          body: json.encode(_request),
+          body: json.encode(request),
           headers: {
-            'User-Agent': _userAgent.toLowerCase(),
+            'User-Agent': userAgent.toLowerCase(),
             "accept": "application/json",
             "content-type": "application/json",
           }).timeout(
@@ -446,15 +444,15 @@ class NetInterface {
 
   static Future<void> registerPos(String token) async {
     try {
-      String _userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
-      Map _request = {
+      String userAgent = await FlutterUserAgent.getPropertyAsync('userAgent');
+      Map request = {
         "token": token,
       };
-      var _query = json.encoder.convert(_request);
-      final response = await http.post(Uri.parse("http://51.195.168.17:7465/auth"), body: _query, headers: {
+      var query = json.encoder.convert(request);
+      final response = await http.post(Uri.parse("http://51.195.168.17:7465/auth"), body: query, headers: {
         "Content-Type": "application/json",
         "accept": "application/json",
-        'User-Agent': _userAgent.toLowerCase(),
+        'User-Agent': userAgent.toLowerCase(),
       }).timeout(
         const Duration(seconds: 15),
         onTimeout: () {

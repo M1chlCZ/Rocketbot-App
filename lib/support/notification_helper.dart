@@ -66,10 +66,10 @@ class FCM {
   }
 
   void _tokenUpload(String? token) {
-    Map <String, dynamic> _req = {
+    Map <String, dynamic> req = {
       "token" : token,
     };
-    _interface.post('Security/UpdateFirebaseToken', _req);
+    _interface.post('Security/UpdateFirebaseToken', req);
   }
 
   dispose() {

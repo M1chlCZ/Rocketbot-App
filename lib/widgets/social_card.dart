@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,10 +23,10 @@ class SocialMediaCard extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SocialMediaCardState createState() => _SocialMediaCardState();
+  SocialMediaCardState createState() => SocialMediaCardState();
 }
 
-class _SocialMediaCardState extends State<SocialMediaCard>with TickerProviderStateMixin {
+class SocialMediaCardState extends State<SocialMediaCard>with TickerProviderStateMixin {
   AnimationController? _animationController;
   Animation<double>? _animation;
   bool _extended = false;
@@ -71,7 +72,9 @@ class _SocialMediaCardState extends State<SocialMediaCard>with TickerProviderSta
                   //   }
                   // },
                   onTap: () {
-                    widget.socials != null ? print("yep") : print("nope");
+                    if(kDebugMode) {
+                      widget.socials != null ? print("yep") : print("nope");
+                    }
                     if (widget.socials != null) {
                       if(_extended) {
                         _extended = false;

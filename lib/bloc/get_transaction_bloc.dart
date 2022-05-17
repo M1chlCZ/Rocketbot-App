@@ -4,7 +4,6 @@ import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/netInterface/api_response.dart';
 import 'package:rocketbot/endpoints/get_transactions.dart';
 import 'package:rocketbot/models/coin.dart';
-import 'package:rocketbot/models/get_withdraws.dart';
 
 class TransactionBloc {
   final TransactionList _coinBalances = TransactionList();
@@ -31,15 +30,15 @@ class TransactionBloc {
       coinsListSink.add(ApiResponse.loading('Fetching Transactions'));
     }
     try {
-      List<TransactionData>? _coins;
+      List<TransactionData>? coins;
       if(list == null ) {
-        _coins = await _coinBalances.fetchTransactions(
+        coins = await _coinBalances.fetchTransactions(
             coin.id!, force);
       }else{
-        _coins = list;
+        coins = list;
       }
       if (!_coinListController!.isClosed) {
-        coinsListSink.add(ApiResponse.completed(_coins));
+        coinsListSink.add(ApiResponse.completed(coins));
       }
     } catch (e) {
       if (!_coinListController!.isClosed) {

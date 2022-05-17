@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rocketbot/endpoints/get_all_balances.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/netinterface/api_response.dart';
@@ -56,7 +56,9 @@ class BalancesBloc {
         coinsListSink.add(ApiResponse.completed(_sortedCoins));
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       if (!_coinListController!.isClosed) {
         coinsListSink.add(ApiResponse.error(e.toString()));
       }
@@ -67,18 +69,17 @@ class BalancesBloc {
   filterCoinsList({bool zero = true, sort = 0}) async {
     try {
       coinsListSink.add(ApiResponse.loading('Filtering All Coins'));
-      List<CoinBalance>? _filterList = [];
-      List<CoinBalance>? _filteredCoins;
+      List<CoinBalance>? filterList = [];
 
         for (var market in _sortedCoins!) {
           if (market.free! != 0.0) {
-            _filterList.add(market);
+            filterList.add(market);
           }
         }
 
       if (!_coinListController!.isClosed) {
 
-        coinsListSink.add(ApiResponse.completed(_filterList));
+        coinsListSink.add(ApiResponse.completed(filterList));
       }
     } catch (e) {
       coinsListSink.add(ApiResponse.error(e.toString()));
@@ -86,33 +87,33 @@ class BalancesBloc {
     }
   }
 
-  Future<List<CoinBalance>> _sortList(List<CoinBalance>? _finalList, {int sort = 0}) async {
+  Future<List<CoinBalance>> _sortList(List<CoinBalance>? finalList, {int sort = 0}) async {
     if (sort == 0) {
-      _finalList!.sort((a, b) {
+      finalList!.sort((a, b) {
         int A = a.coin!.rank!;
         int B = b.coin!.rank!;
         return A.compareTo(B);
       });
     } else if (sort == 1) {
-      _finalList!.sort((a, b) {
+      finalList!.sort((a, b) {
         var A = a.coin!.cryptoId;
         var B = b.coin!.cryptoId;
         return A.toString().toLowerCase().compareTo(B.toString().toLowerCase());
       });
     } else if (sort == 2) {
-      _finalList!.sort((a, b) {
+      finalList!.sort((a, b) {
         double A = a.free!;
         double B = b.free!;
         return B.compareTo(A);
       });
     } else if (sort == 3) {
-      _finalList!.sort((a, b) {
+      finalList!.sort((a, b) {
         double A = a.free! * a.priceData!.prices!.usd!.toDouble();
         double B = b.free! * b.priceData!.prices!.usd!.toDouble();
         return B.compareTo(A);
       });
     }
-    return _finalList!;
+    return finalList!;
   }
 
   dispose() {

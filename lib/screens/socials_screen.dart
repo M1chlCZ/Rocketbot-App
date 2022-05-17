@@ -17,14 +17,13 @@ class SocialScreen extends StatefulWidget {
   final List<int> socials;
   final User me;
 
-  const SocialScreen({Key? key, required this.socials, required this.me})
-      : super(key: key);
+  const SocialScreen({Key? key, required this.socials, required this.me}) : super(key: key);
 
   @override
-  _SocialScreenState createState() => _SocialScreenState();
+  SocialScreenState createState() => SocialScreenState();
 }
 
-class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
+class SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   final NetInterface _interface = NetInterface();
   final TextEditingController _discordTextController = TextEditingController();
   List<int> _socials = [];
@@ -81,36 +80,32 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
 
   _getAccounts() async {
     try {
-      _twitterAccount = _me!.data!.socialMediaAccounts
-          ?.firstWhere((element) => element.socialMedia == 3);
+      _twitterAccount = _me!.data!.socialMediaAccounts?.firstWhere((element) => element.socialMedia == 3);
     } catch (e) {
       debugPrint(e.toString());
     }
     try {
-      _telegramAccount = _me!.data!.socialMediaAccounts
-          ?.firstWhere((element) => element.socialMedia == 2);
+      _telegramAccount = _me!.data!.socialMediaAccounts?.firstWhere((element) => element.socialMedia == 2);
     } catch (e) {
       debugPrint(e.toString());
     }
     try {
-      _discordAccount = _me!.data!.socialMediaAccounts
-          ?.firstWhere((element) => element.socialMedia == 1);
+      _discordAccount = _me!.data!.socialMediaAccounts?.firstWhere((element) => element.socialMedia == 1);
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
   _loadDiscordDirective() async {
-    Map<String, dynamic> _request = {
+    Map<String, dynamic> request = {
       "socialMedia": 1,
     };
     try {
-      final response =
-          await _interface.post("Auth/CreateAccountConnectingKey", _request);
+      final response = await _interface.post("Auth/CreateAccountConnectingKey", request);
       var d = Socials.fromJson(response);
       if (d.hasError == false) {
         _discord = d;
-        _discordTextController.text = 'connect ' + _discord!.data!.key!;
+        _discordTextController.text = 'connect ${_discord!.data!.key!}';
         setState(() {});
       } else {
         debugPrint(d.error);
@@ -121,12 +116,11 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   }
 
   _loadTwitterDirective() async {
-    Map<String, dynamic> _request = {
+    Map<String, dynamic> request = {
       "socialMedia": 3,
     };
     try {
-      final response =
-          await _interface.post("Auth/CreateAccountConnectingKey", _request);
+      final response = await _interface.post("Auth/CreateAccountConnectingKey", request);
       var d = Socials.fromJson(response);
       if (d.hasError == false) {
         _twitter = d;
@@ -140,12 +134,11 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   }
 
   _loadTelegramDirective() async {
-    Map<String, dynamic> _request = {
+    Map<String, dynamic> request = {
       "socialMedia": 2,
     };
     try {
-      final response =
-          await _interface.post("Auth/CreateAccountConnectingKey", _request);
+      final response = await _interface.post("Auth/CreateAccountConnectingKey", request);
       var d = Socials.fromJson(response);
       if (d.hasError == false) {
         _telegram = d;
@@ -159,12 +152,11 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   }
 
   void _socialsDisconnect(int socSite) async {
-    Map<String, dynamic> _request = {
+    Map<String, dynamic> request = {
       "socialMedia": socSite,
     };
     try {
-      final response =
-          await _interface.post("Auth/DisconnectSocialMediaAccount", _request);
+      final response = await _interface.post("Auth/DisconnectSocialMediaAccount", request);
       var d = Socials.fromJson(response);
       if (d.hasError == false) {
         Future.delayed(const Duration(seconds: 2), () async {
@@ -176,8 +168,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
       } else {
         await _loadDirectives();
         setState(() {});
-        Dialogs.openAlertBox(
-            context, AppLocalizations.of(context)!.error, d.error);
+        if (mounted) Dialogs.openAlertBox(context, AppLocalizations.of(context)!.error, d.error);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -212,12 +203,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
               const SizedBox(
                 width: 20.0,
               ),
-              Text(
-                  AppLocalizations.of(context)!
-                      .socials_popup
-                      .toLowerCase()
-                      .capitalize(),
-                  style: Theme.of(context).textTheme.headline4),
+              Text(AppLocalizations.of(context)!.socials_popup.toLowerCase().capitalize(), style: Theme.of(context).textTheme.headline4),
             ],
           ),
         ),
@@ -226,33 +212,26 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
         ),
         Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.social_accounts,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle1!
-                        .copyWith(fontSize: 14.0, color: Colors.white24),
-                  ),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  Container(
-                    height: 0.5,
-                    color: Colors.white12,
-                  )
-                ])),
+            child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                AppLocalizations.of(context)!.social_accounts,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).textTheme.subtitle1!.copyWith(fontSize: 14.0, color: Colors.white24),
+              ),
+              const SizedBox(
+                height: 5.0,
+              ),
+              Container(
+                height: 0.5,
+                color: Colors.white12,
+              )
+            ])),
         const SizedBox(
           height: 20.0,
         ),
         Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Text(AppLocalizations.of(context)!.socials_info,
-              style: const TextStyle(color: Colors.white70)),
+          child: Text(AppLocalizations.of(context)!.socials_info, style: const TextStyle(color: Colors.white70)),
         ),
         const SizedBox(
           height: 30.0,
@@ -265,7 +244,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
             if (!_socials.contains(3)) {
               await _loadTwitterDirective();
               _launchURL(_twitter!.data!.url!);
-              }
+            }
           },
           unlink: _socialsDisconnect,
           socials: _twitterAccount,
@@ -297,9 +276,7 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
             if (!_socials.contains(1)) {
               await _loadDiscordDirective();
               setState(() {
-                _discordDetails
-                    ? _discordDetails = false
-                    : _discordDetails = true;
+                _discordDetails ? _discordDetails = false : _discordDetails = true;
               });
             }
           },
@@ -329,11 +306,8 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                         child: Row(
                           children: [
                             Text(
-                              '- ' + AppLocalizations.of(context)!.join_discord,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(fontSize: 14.0),
+                              '- ${AppLocalizations.of(context)!.join_discord}',
+                              style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 14.0),
                             ),
                             const SizedBox(
                               width: 5.0,
@@ -355,11 +329,8 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                       child: Row(
                         children: [
                           Text(
-                            '- ' + AppLocalizations.of(context)!.send_discord,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(fontSize: 14.0),
+                            '- ${AppLocalizations.of(context)!.send_discord}',
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 14.0),
                           ),
                         ],
                       ),
@@ -384,33 +355,21 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                               child: AutoSizeTextField(
                                 maxLines: 1,
                                 minFontSize: 8.0,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(
-                                        color: Colors.white, fontSize: 14.0),
+                                style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white, fontSize: 14.0),
                                 autocorrect: false,
                                 readOnly: true,
                                 controller: _discordTextController,
                                 textAlign: TextAlign.left,
                                 decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.only(
-                                      left: 4.0, right: 4.0),
+                                  contentPadding: const EdgeInsets.only(left: 4.0, right: 4.0),
                                   isDense: true,
-                                  hintStyle: Theme.of(context)
-                                      .textTheme
-                                      .subtitle2!
-                                      .copyWith(
-                                          color: Colors.white54,
-                                          fontSize: 14.0),
+                                  hintStyle: Theme.of(context).textTheme.subtitle2!.copyWith(color: Colors.white54, fontSize: 14.0),
                                   hintText: '',
                                   enabledBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
+                                    borderSide: BorderSide(color: Colors.transparent),
                                   ),
                                   focusedBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
+                                    borderSide: BorderSide(color: Colors.transparent),
                                   ),
                                 ),
                               ),
@@ -419,16 +378,13 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 0.0, right: 3.0),
+                              padding: const EdgeInsets.only(top: 0.0, right: 3.0),
                               child: SizedBox(
                                 width: 30.0,
                                 height: 25.0,
                                 child: FlatCustomButton(
                                     onTap: () {
-                                      Clipboard.setData(ClipboardData(
-                                          text: 'connect ' +
-                                              _discord!.data!.key!));
+                                      Clipboard.setData(ClipboardData(text: 'connect ${_discord!.data!.key!}'));
                                     },
                                     color: const Color(0xFF7289DA),
                                     splashColor: Colors.black38,
@@ -452,10 +408,9 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
   }
 
   void _launchURL(String url) async {
-    var _url = url.replaceAll(" ", "+");
-    // print(_url);
+    var kUrl = url.replaceAll(" ", "+");
     try {
-      await launch(_url);
+      await launchUrl(Uri.parse(kUrl));
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -483,12 +438,10 @@ class _SocialScreenState extends LifecycleWatcherState<SocialScreen> {
       _paused = false;
     }
   }
-
-
 }
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }

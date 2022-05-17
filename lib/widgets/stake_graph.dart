@@ -29,6 +29,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
   StakingData? _stakes;
   int _dropdownValue = 0;
   String? _date;
+  String? _locale;
 
   final List<FlSpot> _values = [];
 
@@ -36,15 +37,20 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
   double _maxX = 0;
   double _minY = 0;
   double _maxY = 0;
+
   // double _leftTitlesInterval = 0;
 
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () {
+      _locale = Localizations.localeOf(context).languageCode;
+    });
     _dropdownValue = widget.type;
     _stakes = widget.stake;
     _getDate();
     _prepareStakeData();
+
   }
 
   void _getDate() {
@@ -59,65 +65,68 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
     super.dispose();
   }
 
-   DateTime _dateParse(String? day, int hour, int type) {
+  DateTime _dateParse(String? day, int hour, int type) {
     if (type == 1 || type == 2) {
       return DateTime.parse(day!);
     }
     if (type == 3) {
-     List<String> dt = day!.split("-");
-      return DateTime(int.parse(dt[0]),int.parse(dt[1]));
+      List<String> dt = day!.split("-");
+      return DateTime(int.parse(dt[0]), int.parse(dt[1]));
     }
-    var _timeDifference = DateTime.now().timeZoneOffset.inHours;
-    var _datetime = DateTime.parse(day!);
+    var timeDifference = DateTime
+        .now()
+        .timeZoneOffset
+        .inHours;
+    var datetime = DateTime.parse(day!);
     DateTime newTime = DateTime.now();
-    if(_timeDifference >= 0) {
-      newTime = _datetime.add(Duration(hours: hour));
-    }else{
-      newTime =  _datetime.add(Duration(hours: hour));
+    if (timeDifference >= 0) {
+      newTime = datetime.add(Duration(hours: hour));
+    } else {
+      newTime = datetime.add(Duration(hours: hour));
     }
     return newTime.toLocal();
   }
 
   void _prepareStakeData() async {
     try {
-      List<StakeData>? _data;
+      List<StakeData>? data;
       if (_stakes != null) {
-        var _amount = 0.0;
-        List<StakeData>? _dataPrep = List.generate(_stakes!.stakes!.length, (i) {
+        var amount = 0.0;
+        List<StakeData>? dataPrep = List.generate(_stakes!.stakes!.length, (i) {
           return StakeData(
             date: _dateParse(_stakes!.stakes![i].day!, _stakes!.stakes![i].hour!, _dropdownValue),
             amount: _stakes!.stakes![i].amount!,
           );
         });
-        _dataPrep.sort((a, b) => a.date.compareTo(b.date));
-        _data = List.generate(_dataPrep.length, (i) {
-          _amount = _amount + _dataPrep[i].amount;
+        dataPrep.sort((a, b) => a.date.compareTo(b.date));
+        data = List.generate(dataPrep.length, (i) {
+          amount = amount + dataPrep[i].amount;
           return StakeData(
-            date: _dataPrep[i].date,
-            amount: _amount,
+            date: dataPrep[i].date,
+            amount: amount,
           );
         });
-        if(_dropdownValue == 0) {
+        if (_dropdownValue == 0) {
           _maxX = const Duration(minutes: 00, hours: 24).inMinutes.toDouble();
           _minX = 0.0;
-        } else if(_dropdownValue == 1) {
+        } else if (_dropdownValue == 1) {
           _maxX = const Duration(days: 7).inDays.toDouble();
           _minX = 1.0;
-        }else if(_dropdownValue == 2) {
+        } else if (_dropdownValue == 2) {
           _maxX = Duration(days: Jiffy().daysInMonth).inDays.toDouble();
           _minX = 0.0;
-        }else if(_dropdownValue == 3) {
+        } else if (_dropdownValue == 3) {
           _maxX = 12.0;
           _minX = 0.0;
         }
-        _maxY = _getMaxY(_data);
+        _maxY = _getMaxY(data);
         _minY = 0.0;
       }
 
-      if (_data!.isNotEmpty) {
-        List<FlSpot>? _valuesData;
-        if(_dropdownValue == 0) {
-          _valuesData = _data
+      if (data!.isNotEmpty) {
+        List<FlSpot>? valuesData;
+        if (_dropdownValue == 0) {
+          valuesData = data
               .map((stakeData) {
             var d = Duration(minutes: 0, hours: stakeData.date.hour);
             return FlSpot(
@@ -126,33 +135,33 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
             );
           }).cast<FlSpot>()
               .toList();
-          _values.addAll(_valuesData);
-        }else if(_dropdownValue == 1) {
-          List<StakeData> _dt = [];
+          _values.addAll(valuesData);
+        } else if (_dropdownValue == 1) {
+          List<StakeData> dt = [];
           var add = false;
           var subst = 0.0;
-          var firstMon = _data.first.date.weekday == 1 ? true : false;
-          if(!firstMon) {
-            for (var element in _data) {
+          var firstMon = data.first.date.weekday == 1 ? true : false;
+          if (!firstMon) {
+            for (var element in data) {
               if (element.date.weekday == 1) {
                 add = true;
               }
               if (add) {
                 var k = element.amount - subst;
-                _dt.add(
+                dt.add(
                     StakeData(date: element.date, amount: k)
                 );
               } else {
                 subst = element.amount;
               }
             }
-          }else{
-            _dt.add(
-                StakeData(date: _data.last.date, amount: _data.last.amount)
+          } else {
+            dt.add(
+                StakeData(date: data.last.date, amount: data.last.amount)
             );
           }
           var i = 1;
-          List<FlSpot> _valuesData = _dt
+          List<FlSpot> valuesData = dt
               .map((stakeData) {
             var d = Duration(days: i);
             i++;
@@ -160,12 +169,11 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
               d.inDays.toDouble(),
               stakeData.amount,
             );
-
           }).cast<FlSpot>()
               .toList();
-          _values.addAll(_valuesData);
+          _values.addAll(valuesData);
         } else if (_dropdownValue == 2) {
-          _valuesData = _data
+          valuesData = data
               .map((stakeData) {
             var d = Duration(days: stakeData.date.day);
             return FlSpot(
@@ -174,9 +182,9 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
             );
           }).cast<FlSpot>()
               .toList();
-          _values.addAll(_valuesData);
+          _values.addAll(valuesData);
         } else if (_dropdownValue == 3) {
-          _valuesData = _data
+          valuesData = data
               .map((stakeData) {
             // var d = Duration(days: stakeData.date.month);
             return FlSpot(
@@ -185,7 +193,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
             );
           }).cast<FlSpot>()
               .toList();
-          _values.addAll(_valuesData);
+          _values.addAll(valuesData);
         }
       }
       setState(() {});
@@ -238,17 +246,17 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
       var subs = split[1];
       var count = 0;
       loop:
-      for(var i = 0; i< subs.length; i++) {
-        if(subs[i] == "0") {
+      for (var i = 0; i < subs.length; i++) {
+        if (subs[i] == "0") {
           count++;
-        }else{
+        } else {
           break loop;
         }
       }
-      if(count < 4) {
+      if (count < 4) {
         return d.toStringAsFixed(2);
       }
-      if(count > 8) {
+      if (count > 8) {
         return d.toStringAsFixed(4);
       }
       return d.toString();
@@ -319,7 +327,9 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
 
   String _getMeTime(String? d, String format) {
     if (d == null) return "";
-    String languageCode = Localizations.localeOf(context).languageCode;
+    String languageCode = Localizations
+        .localeOf(context)
+        .languageCode;
     var date = DateTime.parse(d);
     String dateTime = DateFormat(format, languageCode).format(date);
     return dateTime;
@@ -360,27 +370,25 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
 
   String _getToolTip(int time) {
     if (_dropdownValue == 0) {
-      return _getMeTime("0000-00-00 " +
-          Duration(minutes: time).toHoursMinutes().toString(), "HH:mm") +
-          '\n';
+      return '${_getMeTime("0000-00-00 ${Duration(minutes: time).toHoursMinutes()}", "HH:mm")}\n';
     } else if (_dropdownValue == 1) {
       DateTime date = DateTime.parse("1970-00-00");
       DateTime d = Jiffy(date)
           .add(duration: Duration(days: time))
           .dateTime;
-      return DateFormat('EEEE').format(d) + '\n';
-    }else if (_dropdownValue == 2) {
+      return '${DateFormat.EEEE(_locale).format(d)}\n';
+    } else if (_dropdownValue == 2) {
       List<String> dateParts = _date.toString().split("-");
-      String _tm = time < 10 ? "0" + time.toString() : time.toString();
-      String _dt = dateParts[0] + "-" + dateParts[1] + "-" + _tm;
-      return _getMeDate(_dt) + '\n';
-    }else if (_dropdownValue == 3) {
+      String tm = time < 10 ? "0$time" : time.toString();
+      String dt = "${dateParts[0]}-${dateParts[1]}-$tm";
+      return '${_getMeDate(dt)}\n';
+    } else if (_dropdownValue == 3) {
       List<String> dateParts = _date.toString().split("-");
-      String _tm = time < 10 ? "0" + time.toString() : time.toString();
-      String _dt = dateParts[0] + "-" + dateParts[1] + "-" + _tm;
-      var date = DateTime.parse(_dt);
+      String tm = time < 10 ? "0$time" : time.toString();
+      String dt = "${dateParts[0]}-${dateParts[1]}-$tm";
+      var date = DateTime.parse(dt);
       var format = DateFormat.yM(Platform.localeName);
-      return format.format(date) + '\n';
+      return '${format.format(date)}\n';
     } else {
       return '${Duration(days: time * 31).inDays.toString()} \n';
     }
@@ -390,7 +398,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
   @override
   Widget build(BuildContext context) {
     final List<int> showIndexes = [_values.length - 1];
-    final _lineBarData = [
+    final lineBarData = [
       LineChartBarData(
         spots: _values,
         showingIndicators: showIndexes,
@@ -408,7 +416,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
           show: true,
           gradient: LinearGradient(
               colors: _gradientColors,
-              stops:  const [0.0, 0.8, 1.0],
+              stops: const [0.0, 0.8, 1.0],
               begin: const Alignment(0.0, 0),
               end: const Alignment(0.0, 1)
           ),
@@ -422,9 +430,9 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
 
         titlesData: FlTitlesData(
             bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: AxisTitles(sideTitles:SideTitles(showTitles: false)),
-            topTitles: AxisTitles(sideTitles:SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles:SideTitles(showTitles: false))),
+            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false))),
         borderData: FlBorderData(
           show: false,
           border: const Border(
@@ -437,7 +445,7 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
         maxY: _maxY,
         showingTooltipIndicators: showIndexes.map((index) {
           return ShowingTooltipIndicators([
-            LineBarSpot(_lineBarData[0], 0, _values[index]),
+            LineBarSpot(lineBarData[0], 0, _values[index]),
           ]);
         }).toList(),
         lineTouchData: LineTouchData(
@@ -496,10 +504,13 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
                     final flSpot = barSpot;
                     return LineTooltipItem(
                       _getToolTip(flSpot.x.toInt()),
-                      Theme.of(context).textTheme.subtitle1!,
+                      Theme
+                          .of(context)
+                          .textTheme
+                          .subtitle1!,
                       children: [
                         TextSpan(
-                          text: _formatTooltip(flSpot.y) + " " + widget.activeCoin!.cryptoId!,
+                          text: "${_formatTooltip(flSpot.y)} ${widget.activeCoin!.cryptoId!}",
                           style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -510,16 +521,20 @@ class CoinStakeGraphState extends State<CoinStakeGraph> {
                   }).toList();
                 }),
             enabled: _touch),
-        lineBarsData: _lineBarData,
+        lineBarsData: lineBarData,
       );
     }
     return Padding(
       padding:
       const EdgeInsets.only(right: 0.0, left: 0.0, top: 15, bottom: 0),
-       child:  _values.isEmpty
-          ? Container( color: Colors.transparent, child: Center(child: Padding(
+      child: _values.isEmpty
+          ? Container(color: Colors.transparent, child: Center(child: Padding(
         padding: const EdgeInsets.only(top: 200.0),
-        child: Text(AppLocalizations.of(context)!.graph_no_data, style: Theme.of(context).textTheme.subtitle2!.copyWith(color: Colors.white24), ),
+        child: Text(AppLocalizations.of(context)!.graph_no_data, style: Theme
+            .of(context)
+            .textTheme
+            .subtitle2!
+            .copyWith(color: Colors.white24),),
       )),)
           : LineChart(
         _mainData(),

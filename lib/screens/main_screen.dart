@@ -1,16 +1,14 @@
-import 'package:animations/animations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rocketbot/models/balance_list.dart';
 import 'package:rocketbot/models/coin.dart';
 import 'package:rocketbot/models/deposit_address.dart';
 import 'package:rocketbot/models/pos_coins_list.dart';
-import 'package:rocketbot/models/transaction_data.dart';
 import 'package:rocketbot/netInterface/interface.dart';
 import 'package:rocketbot/screenPages/coin_page.dart';
 import 'package:rocketbot/screenpages/deposit_page.dart';
 import 'package:rocketbot/screenpages/send_page.dart';
 import 'package:rocketbot/screenpages/staking_page.dart';
-import 'package:rocketbot/support/notification_helper.dart';
 
 import '../component_widgets/button_neu.dart';
 import '../screens/portfolio_page.dart';
@@ -30,10 +28,10 @@ class MainScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   final NetInterface _interface = NetInterface();
   final _portfolioKey = GlobalKey<PortfolioScreenState>();
   final _pageController = PageController(initialPage: 1);
@@ -41,10 +39,8 @@ class _MainScreenState extends State<MainScreen> {
   String? _posDepositAddr;
   int _selectedPageIndex = 1;
   List<CoinBalance>? _lc;
-  int _mainPageIndex = 0;
   late Coin _coinActive;
   double _free = 0.0;
-  bool _swipeBlock = false;
   bool _posCoin = false;
 
   @override
@@ -69,7 +65,6 @@ class _MainScreenState extends State<MainScreen> {
 
   void goBack() {
     setState(() {
-      _mainPageIndex = 0;
     });
   }
 
@@ -111,25 +106,26 @@ class _MainScreenState extends State<MainScreen> {
   void changeCoinName(Coin? s) {
     _lc = _portfolioKey.currentState!.getList();
     setState(() {
-      _mainPageIndex = 1;
       _coinActive = s!;
     });
   }
 
   _getDepositAddr() async {
-    Map<String, dynamic> _request = {
+    Map<String, dynamic> request = {
       "coinId": _coinActive.id!,
     };
     try {
       final response =
-          await _interface.post("Transfers/CreateDepositAddress", _request);
+          await _interface.post("Transfers/CreateDepositAddress", request);
       var d = DepositAddress.fromJson(response);
       setState(() {
         _depositAddr = d.data!.address!;
       });
     } catch (e) {
       _depositAddr = "";
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -153,6 +149,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               CoinScreen(
                   setActiveCoin: _setActiveCoin,
+                  changeFree: _changeFree,
                   activeCoin: _coinActive,
                   allCoins: _lc,
                   goBack: goBack,
@@ -235,7 +232,6 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
                   child: Padding(
@@ -253,7 +249,6 @@ class _MainScreenState extends State<MainScreen> {
                   width: 45,
                   height: 45,
                   onTap: () {
-                    _mainPageIndex = 0;
                     _onTappedBar(1);
                   },
                   child: Padding(
@@ -349,7 +344,6 @@ class _MainScreenState extends State<MainScreen> {
 
   void _blockTouch(bool b) {
     setState(() {
-      _swipeBlock = !b;
     });
   }
 

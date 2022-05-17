@@ -1,13 +1,10 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/component_widgets/button_neu.dart';
 import 'package:rocketbot/component_widgets/container_neu.dart';
@@ -37,10 +34,10 @@ class SendPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SendPageState createState() => _SendPageState();
+  SendPageState createState() => SendPageState();
 }
 
-class _SendPageState extends State<SendPage> {
+class SendPageState extends State<SendPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final GlobalKey<SlideActionState> _keyStake = GlobalKey();
@@ -93,18 +90,20 @@ class _SendPageState extends State<SendPage> {
       setState(() {
         _error = true;
       });
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
   void _handlePIN() async {
-    var bl = false;
     String? p = await SecureStorage.readStorage(key: "PIN");
     if (p == null) {
       _authCallback(true);
       return;
     }
-    Navigator.of(context)
+    if (mounted) {
+      Navigator.of(context)
         .push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
           return const AuthScreen(
             setupPIN: false,
@@ -115,6 +114,7 @@ class _SendPageState extends State<SendPage> {
           return FadeTransition(opacity: animation, child: child);
         }))
         .then((value) => _authCallback(value));
+    }
   }
 
   void _authCallback(bool? b) async {
@@ -136,7 +136,7 @@ class _SendPageState extends State<SendPage> {
       return;
     }
     try {
-      Map<String, dynamic> _query = {
+      Map<String, dynamic> query = {
         "coinId": widget.coinActive!.id!,
         "fee": _fee,
         "amount": double.parse(_amountController.text),
@@ -144,14 +144,15 @@ class _SendPageState extends State<SendPage> {
       };
 
       final response =
-          await _interface.post("Transfers/CreateWithdraw", _query);
+          await _interface.post("Transfers/CreateWithdraw", query);
       var pwid = WithdrawID.fromJson(response);
-      print(response);
-      Map<String, dynamic> _queryID = {
+      if (kDebugMode) {
+        print(response);
+      }
+      Map<String, dynamic> queryID = {
         "id": pwid.data!.pgwIdentifier!,
       };
-      var resWith =
-          await _interface.post("Transfers/ConfirmWithdraw", _queryID);
+      await _interface.post("Transfers/ConfirmWithdraw", queryID);
       // var rw = WithdrawConfirm.fromJson(resWith);
 
       _addressController.clear();
@@ -164,7 +165,8 @@ class _SendPageState extends State<SendPage> {
       preFree = rs.data!.free!;
       widget.changeFree(preFree);
       _keyStake.currentState!.reset();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: SizedBox(
             height: 50,
             child: Center(
@@ -177,7 +179,8 @@ class _SendPageState extends State<SendPage> {
         behavior: SnackBarBehavior.fixed,
         elevation: 5.0,
       ));
-    } on BadRequestException catch (r, e) {
+      }
+    } on BadRequestException catch (r) {
       _keyStake.currentState!.reset();
       int messageStart = r.toString().indexOf("{");
       int messageEnd = r.toString().indexOf("}");
@@ -197,7 +200,7 @@ class _SendPageState extends State<SendPage> {
   _getClipBoardData() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     setState(() {
-      if (data!.text! != null) _addressController.text = data.text!;
+      if (data!.text != null) _addressController.text = data.text!;
       _addressController.selection =
           TextSelection.collapsed(offset: _addressController.text.length);
     });
@@ -461,8 +464,7 @@ class _SendPageState extends State<SendPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                                AppLocalizations.of(context)!.min_withdraw +
-                                    ':',
+                                '${AppLocalizations.of(context)!.min_withdraw}:',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -471,9 +473,7 @@ class _SendPageState extends State<SendPage> {
                               width: 5.0,
                             ),
                             Text(
-                                _min.toString() +
-                                    ' ' +
-                                    widget.coinActive!.ticker!.toUpperCase(),
+                                '$_min ${widget.coinActive!.ticker!.toUpperCase()}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -489,7 +489,7 @@ class _SendPageState extends State<SendPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(AppLocalizations.of(context)!.fees + ':',
+                            Text('${AppLocalizations.of(context)!.fees}:',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -497,7 +497,7 @@ class _SendPageState extends State<SendPage> {
                             const SizedBox(
                               width: 5.0,
                             ),
-                            Text(_fee.toString() + ' ' + _feeCrypto,
+                            Text('$_fee $_feeCrypto',
                                 style: Theme.of(context)
                                     .textTheme
                                     .subtitle1!
@@ -614,7 +614,8 @@ class _SendPageState extends State<SendPage> {
       } else if (status.isDenied) {
         var r = await Permission.camera.request();
         if (r.isGranted) {
-          Navigator.of(context).push(PageRouteBuilder(
+          if (mounted) {
+            Navigator.of(context).push(PageRouteBuilder(
               pageBuilder: (BuildContext context, _, __) {
             return QScanWidget(
               scanResult: (String s) {
@@ -625,9 +626,11 @@ class _SendPageState extends State<SendPage> {
                   (_, Animation<double> animation, __, Widget child) {
             return FadeTransition(opacity: animation, child: child);
           }));
+          }
         }
       } else {
-        Navigator.of(context).push(PageRouteBuilder(
+        if (mounted) {
+          Navigator.of(context).push(PageRouteBuilder(
             pageBuilder: (BuildContext context, _, __) {
           return QScanWidget(
             scanResult: (String s) {
@@ -638,6 +641,7 @@ class _SendPageState extends State<SendPage> {
                 (_, Animation<double> animation, __, Widget child) {
           return FadeTransition(opacity: animation, child: child);
         }));
+        }
       }
     });
   }

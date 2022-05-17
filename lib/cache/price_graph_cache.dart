@@ -1,11 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:rocketbot/models/coin_graph.dart';
-import 'package:rocketbot/models/get_deposits.dart';
-import 'package:rocketbot/models/get_withdraws.dart';
 import 'package:rocketbot/models/transaction_data.dart';
 
 import '../NetInterface/interface.dart';
-import '../models/balance_list.dart';
 
 class PriceGraphCache extends TransactionData {
   static Duration? _cacheValidDuration;
@@ -16,8 +12,8 @@ class PriceGraphCache extends TransactionData {
 
   static Future<void> refreshAllRecords({bool force = false}) async {
     if(_allRecords.isEmpty || force) {
-      final NetInterface _helper = NetInterface();
-      var f = await _helper.get("Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
+      final NetInterface helper = NetInterface();
+      var f = await helper.get("Coin/GetPriceData?IncludeHistoryPrices=true&IncludeVolume=false&IncludeMarketcap=false&IncludeChange=true");
       _allRecords.addAll(f);
       _lastFetchTime = DateTime.now();
     }

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:decimal/decimal.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rocketbot/NetInterface/interface.dart';
@@ -25,6 +26,7 @@ class CoinScreen extends StatefulWidget {
   final Coin activeCoin;
   final VoidCallback goBack;
   final List<CoinBalance>? allCoins;
+  final Function(double free) changeFree;
   final Function(Coin? c) setActiveCoin;
   final Function(bool touch) blockTouch;
   final double? free;
@@ -32,6 +34,7 @@ class CoinScreen extends StatefulWidget {
   const CoinScreen(
       {Key? key,
       required this.activeCoin,
+      required this.changeFree,
       this.allCoins,
       required this.goBack,
       required this.setActiveCoin,
@@ -40,10 +43,10 @@ class CoinScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _CoinScreenState createState() => _CoinScreenState();
+  CoinScreenState createState() => CoinScreenState();
 }
 
-class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateMixin {
+class CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateMixin {
   final _graphKey = GlobalKey<CoinPriceGraphState>();
   final NetInterface _interface = NetInterface();
   late List<CoinBalance> _listCoins;
@@ -225,7 +228,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 1.5),
                                 child: Text(
-                                  "\$" + _formatDecimal(usdCost),
+                                  "\$${_formatDecimal(usdCost)}",
                                   style: Theme.of(context).textTheme.headline2,
                                   textAlign: TextAlign.center,
                                 ),
@@ -245,7 +248,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                           SizedBox(
                             width: 320,
                             child: AutoSizeText(
-                              _formatPrice(totalCoins) + ' ' + _coinActive.cryptoId!,
+                              '${_formatPrice(totalCoins)} ${_coinActive.cryptoId!}',
                               style: Theme.of(context).textTheme.headline1,
                               maxLines: 1,
                               minFontSize: 8,
@@ -256,7 +259,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "\$" + _formatPrice(totalUSD),
+                                "\$${_formatPrice(totalUSD)}",
                                 style: Theme.of(context).textTheme.headline2,
                               ),
                               const SizedBox(width: 5.0),
@@ -284,7 +287,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     switch (snapshot.data!.status) {
-                      case Status.LOADING:
+                      case Status.loading:
                         return Padding(
                           padding: const EdgeInsets.only(top: 30.0),
                           child: SizedBox(
@@ -296,7 +299,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                                   )),
                           ),
                         );
-                      case Status.COMPLETED:
+                      case Status.completed:
                         if (snapshot.data!.data!.isEmpty) {
                           return Center(
                               child: Text(
@@ -319,7 +322,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
                               });
                         }
                       // break;
-                      case Status.ERROR:
+                      case Status.error:
                         return Center(
                             child: Text(
                           AppLocalizations.of(context)!.tx_problem,
@@ -378,11 +381,11 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
   String _formatPrice(Decimal d) {
     try {
       if (d == Decimal.zero) return "0.0";
-      var _split = d.toString().split('.');
-      var _decimal = _split[1];
-      if (_decimal.length >= 8) {
-        var _sub = _decimal.substring(0, 8);
-        return _split[0] + "." + _sub;
+      var split = d.toString().split('.');
+      var decimal = split[1];
+      if (decimal.length >= 8) {
+        var sub = decimal.substring(0, 8);
+        return "${split[0]}.$sub";
       } else {
         return d.toString();
       }
@@ -393,12 +396,13 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
 
   _changeFree() async {
     var preFree = 0.0;
-    var resB = await _interface.get("User/GetBalance?coinId=" + _coinActive.id!.toString());
+    var resB = await _interface.get("User/GetBalance?coinId=${_coinActive.id!}");
     var rs = BalancePortfolio.fromJson(resB);
     preFree = rs.data!.free!;
     setState(() {
       _free = preFree;
     });
+    widget.changeFree(_free);
     _calculatePortfolio();
   }
 
@@ -407,7 +411,7 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
     setState(() {
       _priceData = p;
     });
-    if(_graphKey.currentState != null) {
+    if (_graphKey.currentState != null) {
       _graphKey.currentState!.changeCoin(_priceData!.historyPrices!);
     }
     // print(p.toJson());
@@ -418,21 +422,23 @@ class _CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateM
     setState(() {
       portCalc = false;
     });
-    Decimal? _freeCoins = Decimal.parse(_free.toString());
+    Decimal? freeCoins = Decimal.parse(_free.toString());
     try {
       for (var element in _listCoins) {
         if (element.coin == _coinActive) {
-          Decimal? _priceUSD = element.priceData!.prices!.usd!;
-          Decimal? _priceBTC = element.priceData!.prices!.btc!;
+          Decimal? priceUSD = element.priceData!.prices!.usd!;
+          Decimal? priceBTC = element.priceData!.prices!.btc!;
           _percentage = element.priceData!.priceChange24HPercent!.usd!;
           usdCost = element.priceData!.prices!.usd!;
 
-          totalCoins = _freeCoins;
-          totalUSD = _freeCoins * _priceUSD;
+          totalCoins = freeCoins;
+          totalUSD = freeCoins * priceUSD;
         }
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     Future.delayed(const Duration(milliseconds: 400), () {
       setState(() {

@@ -88,8 +88,8 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
             if (data![0] >= Decimal.fromInt(hourAgo)) {
               if (Decimal.parse(minY.toString())> data[1]) minY = data[1].toDouble();
               if (Decimal.parse(maxY.toString()) < data[1]) maxY = data[1].toDouble();
-              var _spot = FlSpot(data[0].toDouble(), data[1].toDouble());
-              _values.add(_spot);
+              var spot = FlSpot(data[0].toDouble(), data[1].toDouble());
+              _values.add(spot);
             }
           }
 
@@ -175,7 +175,7 @@ class CoinPriceGraphState extends State<CoinPriceGraph> {
                     Theme.of(context).textTheme.subtitle1!,
                     children: [
                       TextSpan(
-                        text: _formatTooltip(flSpot.y) + " USD",
+                        text: "${_formatTooltip(flSpot.y)} USD",
                         style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

@@ -202,9 +202,7 @@ class _CoinListViewState extends State<CoinListView> {
                                           ),
                                           crossFadeState: _crossfade ? CrossFadeState.showFirst : CrossFadeState.showSecond,
                                           secondChild: AutoSizeText(
-                                            AppLocalizations.of(context)!.stake_label +
-                                                ": " +
-                                                _formatFree(Decimal.parse(widget.coin.posCoin!.amount!.toStringAsFixed(4))),
+                                            "${AppLocalizations.of(context)!.stake_label}: ${_formatFree(Decimal.parse(widget.coin.posCoin!.amount!.toStringAsFixed(4)))}",
                                             style: Theme.of(context).textTheme.headline3,
                                             minFontSize: 8,
                                             maxLines: 1,
@@ -262,7 +260,7 @@ class _CoinListViewState extends State<CoinListView> {
                                             Align(
                                               alignment: Alignment.centerRight,
                                               child: AutoSizeText(
-                                                "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                                "\$${_formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble())}",
                                                 style: Theme.of(context).textTheme.headline3,
                                                 minFontSize: 8,
                                                 maxLines: 1,
@@ -292,7 +290,7 @@ class _CoinListViewState extends State<CoinListView> {
                                             Align(
                                               alignment: Alignment.centerRight,
                                               child: AutoSizeText(
-                                                "\$" + _formatPrice(widget.coin.posCoin!.amount! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                                "\$${_formatPrice(widget.coin.posCoin!.amount! * widget.coin.priceData!.prices!.usd!.toDouble())}",
                                                 style: Theme.of(context).textTheme.headline3,
                                                 minFontSize: 8,
                                                 maxLines: 1,
@@ -322,7 +320,7 @@ class _CoinListViewState extends State<CoinListView> {
                                           Align(
                                             alignment: Alignment.centerRight,
                                             child: AutoSizeText(
-                                              "\$" + _formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble()),
+                                              "\$${_formatPrice(widget.coin.free! * widget.coin.priceData!.prices!.usd!.toDouble())}",
                                               style: Theme.of(context).textTheme.headline3,
                                               minFontSize: 8,
                                               maxLines: 1,
@@ -355,11 +353,11 @@ class _CoinListViewState extends State<CoinListView> {
   }
 
   String _formatPrice(double d) {
-    var _split = d.toString().split('.');
-    var _decimal = _split[1];
-    if (_decimal.length >= 2) {
-      var _sub = _decimal.substring(0, 2);
-      return _split[0] + "." + _sub;
+    var split = d.toString().split('.');
+    var decimal = split[1];
+    if (decimal.length >= 2) {
+      var sub = decimal.substring(0, 2);
+      return "${split[0]}.$sub";
     } else {
       return d.toString();
     }
@@ -369,7 +367,7 @@ class _CoinListViewState extends State<CoinListView> {
     if (decimal < Decimal.parse("0.01")) {
       return "Less than 1¢";
     } else {
-      return "\$" + decimal.toStringAsFixed(2);
+      return "\$${decimal.toStringAsFixed(2)}";
     }
   }
 
@@ -382,11 +380,11 @@ class _CoinListViewState extends State<CoinListView> {
   }
 
   String _formatFreeValue(double d) {
-    var _split = d.toString().split('.');
-    var _decimal = _split[1];
-    if (_decimal.length >= 8) {
-      var _sub = _decimal.substring(0, 8);
-      return _split[0] + "." + _sub;
+    var split = d.toString().split('.');
+    var decimal = split[1];
+    if (decimal.length >= 8) {
+      var sub = decimal.substring(0, 8);
+      return "${split[0]}.$sub";
     } else {
       return d.toString();
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:decimal/decimal.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +79,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                 child: widget.data.chainConfirmed! ? SizedBox(
                                   width: 130,
                                   child: AutoSizeText(
-                                    AppLocalizations.of(context)!.txid +" " + _formatTx(widget.data.transactionId!),
+                                    "${AppLocalizations.of(context)!.txid} ${_formatTx(widget.data.transactionId!)}",
                                     style: Theme.of(context).textTheme.headline3,
                                     maxLines: 1,
                                     minFontSize: 8,
@@ -88,7 +89,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                 ) : SizedBox(
                                   width: 130,
                                   child: AutoSizeText(
-                                    widget.data.confirmations!.toString() + ' ' + AppLocalizations.of(context)!.confirmations,
+                                    '${widget.data.confirmations!} ${AppLocalizations.of(context)!.confirmations}',
                                     style: Theme.of(context).textTheme.headline4,
                                     maxLines: 1,
                                     minFontSize: 8,
@@ -151,7 +152,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                     alignment: Alignment.centerRight,
                                     child: AutoSizeText(
                                         widget.price != null ?
-                                      "+" + (widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3) + " USD" : "No Price Data",
+                                      "+${(widget.price!.prices!.usd! * Decimal.parse(widget.data.amount!.toString())).toStringAsFixed(3)} USD" : "No Price Data",
                                       style: Theme.of(context).textTheme.headline4!.copyWith(color: const Color(0xff1AD37A)),
                                       minFontSize: 8,
                                       maxLines: 1,
@@ -171,7 +172,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                   child: SizedBox(
                                     width: 150,
                                     child: AutoSizeText(
-                                      widget.data.amount.toString() + " " + widget.data.coin!.name!,
+                                      "${widget.data.amount} ${widget.data.coin!.name!}",
                                       style: Theme.of(context).textTheme.headline3,
                                       maxLines: 1,
                                       minFontSize: 8,
@@ -220,7 +221,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
   String _formatTx(String s) {
     var firstPart = s.substring(0,3);
     var lastPart = s.substring(s.length - 3);
-    return firstPart + "..." + lastPart;
+    return "$firstPart...$lastPart";
   }
   String _getMeDate(String? d) {
     if (d == null) return "";
@@ -230,12 +231,13 @@ class _CoinDepositViewState extends State<CoinDepositView> {
   }
 
   void _launchURL(String url) async {
-    var _url = url.replaceAll("{0}", "");
-    print(_url);
+    var kUrl = url.replaceAll("{0}", "");
     try {
-      await launch(_url);
+      await launchUrl(Uri.parse(kUrl));
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -247,7 +249,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
             Animation<double> secondaryAnimation) {
           return SafeArea(
             child: Builder(builder: (context) {
-              var _copied = false;
+              var copied = false;
               return Center(
                 child: SizedBox(
                     width: 300,
@@ -306,7 +308,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                           onTap: () {
                                             Clipboard.setData(ClipboardData(text: td.transactionId.toString()));
                                             setState(() {
-                                              _copied = true;
+                                              copied = true;
                                             });
                                           },
                                           child: ClipRRect(
@@ -324,7 +326,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                       IgnorePointer(
                                         child: AnimatedOpacity(
                                           duration:const Duration(milliseconds: 300) ,
-                                          opacity: _copied ? 1.0 : 0.0,
+                                          opacity: copied ? 1.0 : 0.0,
                                           child: SizedBox(
                                             width: double.infinity,
                                             child:
@@ -333,7 +335,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                               child: Container(
                                                 color: Colors.green,
                                                 padding: const EdgeInsets.all(5.0),
-                                                child: Text(AppLocalizations.of(context)!.txcopy + "\n",
+                                                child: Text("${AppLocalizations.of(context)!.txcopy}\n",
                                                   textAlign: TextAlign.center,
                                                   style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 12.0),
                                                 ),
@@ -353,7 +355,7 @@ class _CoinDepositViewState extends State<CoinDepositView> {
                                           onTap: () {
                                             Clipboard.setData(ClipboardData(text: td.transactionId.toString()));
                                             setState(() {
-                                              _copied = true;
+                                              copied = true;
                                             });
                                           },
                                           child: SizedBox(

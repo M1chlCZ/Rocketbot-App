@@ -9,10 +9,10 @@ class LoginRegisterSwitcher extends StatefulWidget {
   const LoginRegisterSwitcher({Key? key, this.changeType}) : super(key: key);
 
   @override
-  _LoginRegisterSwitcherState createState() => _LoginRegisterSwitcherState();
+  LoginRegisterSwitcherState createState() => LoginRegisterSwitcherState();
 }
 
-class _LoginRegisterSwitcherState extends State<LoginRegisterSwitcher> {
+class LoginRegisterSwitcherState extends State<LoginRegisterSwitcher> {
   var _active = 0;
   final _duration = const Duration(milliseconds: 300);
 

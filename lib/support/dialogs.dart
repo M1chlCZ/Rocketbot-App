@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -53,12 +52,12 @@ class Dialogs {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          final TextEditingController _codeControl = TextEditingController();
+          final TextEditingController codeControl = TextEditingController();
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter sState) {
-            _codeControl.addListener(() {
-              if (_codeControl.text.length == 6) {
-                getToken(key, _codeControl.text);
+            codeControl.addListener(() {
+              if (codeControl.text.length == 6) {
+                getToken(key, codeControl.text);
               }
             });
             return DialogBody(
@@ -78,7 +77,7 @@ class Dialogs {
                       padding: const EdgeInsets.all(15.0),
                       child: TextField(
                         autofocus: true,
-                        controller: _codeControl,
+                        controller: codeControl,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         decoration: InputDecoration(
@@ -207,8 +206,8 @@ class Dialogs {
           return WillPopScope(
             onWillPop: () async => false,
             child: DialogBody(
-              header: AppLocalizations.of(context)!
-                  .dl_pls_wait + "...",
+              header: "${AppLocalizations.of(context)!
+                  .dl_pls_wait}...",
               buttonLabel: '',
               noButtons: true,
               onTap: () {},

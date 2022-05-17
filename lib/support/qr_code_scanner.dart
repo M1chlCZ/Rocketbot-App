@@ -12,10 +12,10 @@ class QScanWidget extends StatefulWidget {
   const QScanWidget({Key? key, required this.scanResult}) : super(key: key);
 
   @override
-  _QScanWidgetState createState() => _QScanWidgetState();
+  QScanWidgetState createState() => QScanWidgetState();
 }
 
-class _QScanWidgetState extends State<QScanWidget> {
+class QScanWidgetState extends State<QScanWidget> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -54,7 +54,7 @@ class _QScanWidgetState extends State<QScanWidget> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                margin: EdgeInsets.all(8),
+                                margin: const EdgeInsets.all(8),
                                 child: NeuButton(
                                   height: 50,
                                     width: 100,
@@ -65,10 +65,12 @@ class _QScanWidgetState extends State<QScanWidget> {
                                     child: FutureBuilder(
                                       future: controller?.getFlashStatus(),
                                       builder: (context, snapshot) {
-                                        print(snapshot.data.toString());
+                                        if (kDebugMode) {
+                                          print(snapshot.data.toString());
+                                        }
                                         return SizedBox(
                                           width: 100,
-                                            child: AutoSizeText(AppLocalizations.of(context)!.qr_scan_flash + ' ${snapshot.data == true ? AppLocalizations.of(context)!.qr_scan_off.toUpperCase() : AppLocalizations.of(context)!.qr_scan_on.toUpperCase()}',
+                                            child: AutoSizeText('${AppLocalizations.of(context)!.qr_scan_flash} ${snapshot.data == true ? AppLocalizations.of(context)!.qr_scan_off.toUpperCase() : AppLocalizations.of(context)!.qr_scan_on.toUpperCase()}',
                                               maxLines: 1,
                                               minFontSize: 8,
                                               textAlign: TextAlign.center,
@@ -77,7 +79,7 @@ class _QScanWidgetState extends State<QScanWidget> {
                                     )),
                               ),
                               Container(
-                                margin: EdgeInsets.all(8),
+                                margin: const EdgeInsets.all(8),
                                 child: NeuButton(
                                     height: 50,
                                     width: 100,
@@ -92,7 +94,7 @@ class _QScanWidgetState extends State<QScanWidget> {
                                           return SizedBox(
                                             width: 100,
                                             child: AutoSizeText(
-                                              '${describeEnum(snapshot.data!) == 'front' ? AppLocalizations.of(context)!.qr_scan_back : AppLocalizations.of(context)!.qr_scan_front}',
+                                              describeEnum(snapshot.data!) == 'front' ? AppLocalizations.of(context)!.qr_scan_back : AppLocalizations.of(context)!.qr_scan_front,
                                                 maxLines: 1,
                                                 minFontSize: 8,
                                                 textAlign: TextAlign.center,
@@ -191,10 +193,12 @@ class _QScanWidgetState extends State<QScanWidget> {
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
-    print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
+    if (kDebugMode) {
+      print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
+    }
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('no Permission')),
+        const SnackBar(content: Text('no Permission')),
       );
     }
   }
