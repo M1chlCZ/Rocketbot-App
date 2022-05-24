@@ -160,6 +160,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            const SizedBox(height: 50.0,),
             Padding(
               padding: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 5.0),
               child: Row(
@@ -858,6 +859,7 @@ class StakingPageState extends LifecycleWatcherState<StakingPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 50.0,),
           ],
         ),
       ),

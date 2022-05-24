@@ -44,6 +44,7 @@
   "copy" : "Copy",
   "explorer" : "Explorer",
   "txdet" : "Transaction Detail",
+  "tx" : "Transactions",
   "txcopy" : "TX id copied to clipboard",
   "confirmations" : "confirmations",
   "history_popup" : "HISTORY",

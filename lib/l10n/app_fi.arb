@@ -43,6 +43,7 @@
   "copy": "Kopioi",
   "explorer": "Etsijä",
   "txdet": "Tapahtuman Tiedot",
+  "tx" : "Tapahtuman",
   "txcopy": "Tapahtuman ID kopioitu leikepöydälle.",
   "confirmations": "vahvistukset",
   "history_popup": "HISTORIA",

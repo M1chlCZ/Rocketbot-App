@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:rocketbot/firebase_options.dart';
 import 'package:rocketbot/screens/login_screen.dart';
 import 'package:rocketbot/support/secure_storage.dart';
 import 'Support/material_color_generator.dart';
@@ -15,7 +16,9 @@ import 'package:rocketbot/support/globals.dart' as globals;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
@@ -44,7 +47,6 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _precachedImg();
     _getSetLang();
     _setOptimalDisplayMode();
   }
@@ -59,16 +61,18 @@ class MyAppState extends State<MyApp> {
     });
   }
 
-  void _precachedImg() async {
-      await precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
-      await precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
-      await precacheImage(const AssetImage('images/send_nav_icon.png'), context);
-      await precacheImage(const AssetImage('images/price_frame.png'), context);
-      await precacheImage(const AssetImage('images/rocket_pin.png'), context);
-      await precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
-      await precacheImage(const AssetImage('images/wave.png'), context);
-      await precacheImage(const AssetImage('images/logo_big.png'), context);
-      await precacheImage(const AssetImage('images/apple.png'), context);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('images/receive_nav_icon.png'), context);
+    precacheImage(const AssetImage('images/coin_nav_icon.png'), context);
+    precacheImage(const AssetImage('images/send_nav_icon.png'), context);
+    precacheImage(const AssetImage('images/price_frame.png'), context);
+    precacheImage(const AssetImage('images/rocket_pin.png'), context);
+    precacheImage(const AssetImage('images/rocketbot_logo.png'), context);
+    precacheImage(const AssetImage('images/wave.png'), context);
+    precacheImage(const AssetImage('images/logo_big.png'), context);
+    precacheImage(const AssetImage('images/apple.png'), context);
   }
 
   void _getSetLang() async {

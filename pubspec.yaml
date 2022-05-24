@@ -3,7 +3,7 @@ description: Rocketbot
 
 publish_to: 'none'
 
-version: 1.1.4+104
+version: 1.1.6+106
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -20,7 +20,7 @@ dependencies:
   http: ^0.13.4
   auto_size_text: 3.0.0
   intl: ^0.17.0
-  fl_chart: ^0.50.5
+  fl_chart: ^0.50.6
   animations: ^2.0.2
   progress_indicators: ^1.0.0
   url_launcher: ^6.1.2
@@ -30,15 +30,15 @@ dependencies:
   vibration: ^1.7.4-nullsafety.0
   flutter_switch: ^0.3.2
   permission_handler: ^9.2.0
-  local_auth: ^2.0.2
+  local_auth: ^2.1.0
   flutter_phoenix: ^1.0.0
   package_info: any
   path_provider: any
   flutter_lock_screen: ^2.0.1
   google_sign_in: ^5.3.1
-  sign_in_with_apple: ^3.3.0
+  sign_in_with_apple: ^4.0.0
   flutter_displaymode: ^0.4.0
-  flutter_local_notifications: ^9.5.2
+  flutter_local_notifications: ^9.5.3+1
   sqflite: ^2.0.2+1
   jiffy: ^5.0.0
   sprintf: any
@@ -55,10 +55,12 @@ dependencies:
     git:
       url: https://github.com/M1chlCZ/flutter_biometrics.git
       ref: main
-
-
-
   cupertino_icons: ^1.0.4
+
+linter:
+  rules:
+    -use_super_parameters
+
 
 dev_dependencies:
   flutter_lints: ^2.0.1

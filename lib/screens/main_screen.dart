@@ -34,6 +34,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   final NetInterface _interface = NetInterface();
   final _portfolioKey = GlobalKey<PortfolioScreenState>();
+  final _coinKey = GlobalKey<CoinScreenState>();
   final _pageController = PageController(initialPage: 1);
   String? _depositAddr;
   String? _posDepositAddr;
@@ -51,6 +52,7 @@ class MainScreenState extends State<MainScreen> {
     _lc = widget.listCoins!;
     _checkPosCoin(_coinActive);
     _getDepositAddr();
+
     // _bloc = BalancesBloc();
     // _priceBlock = CoinPriceBloc("merge");
   }
@@ -64,14 +66,12 @@ class MainScreenState extends State<MainScreen> {
   }
 
   void goBack() {
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _checkPosCoin(Coin? c) {
     try {
-      final indexPos = widget.posCoinsList!.coins!
-          .indexWhere((element) => element.idCoin! == c?.id!);
+      final indexPos = widget.posCoinsList!.coins!.indexWhere((element) => element.idCoin! == c?.id!);
       indexPos != -1 ? _posCoin = true : _posCoin = false;
       if (indexPos != -1) {
         _posDepositAddr = widget.posCoinsList!.coins![indexPos].depositAddr!;
@@ -91,6 +91,7 @@ class MainScreenState extends State<MainScreen> {
     _coinActive = c!;
     _checkPosCoin(_coinActive);
     _getDepositAddr();
+    _coinKey.currentState!.setAddr(_posDepositAddr);
     setState(() {});
   }
 
@@ -115,8 +116,7 @@ class MainScreenState extends State<MainScreen> {
       "coinId": _coinActive.id!,
     };
     try {
-      final response =
-          await _interface.post("Transfers/CreateDepositAddress", request);
+      final response = await _interface.post("Transfers/CreateDepositAddress", request);
       var d = DepositAddress.fromJson(response);
       setState(() {
         _depositAddr = d.data!.address!;
@@ -127,6 +127,25 @@ class MainScreenState extends State<MainScreen> {
         print(e);
       }
     }
+  }
+
+  _gotoStaking() {
+    Navigator.of(context).push(PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+      return StakingPage(
+        setActiveCoin: _setActiveCoin,
+        changeFree: _changeFree,
+        depositAddress: _depositAddr,
+        depositPosAddress: _posDepositAddr,
+        activeCoin: _coinActive,
+        coinBalance: _lc!.singleWhere((element) => element.coin!.id! == _coinActive.id!),
+        allCoins: _lc,
+        free: _free,
+        goBack: goBack,
+        blockTouch: _blockTouch,
+      );
+    }, transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+      return FadeTransition(opacity: animation, child: child);
+    }));
   }
 
   @override
@@ -148,28 +167,16 @@ class MainScreenState extends State<MainScreen> {
                 depositAddr: _depositAddr,
               ),
               CoinScreen(
+                  key: _coinKey,
                   setActiveCoin: _setActiveCoin,
                   changeFree: _changeFree,
                   activeCoin: _coinActive,
                   allCoins: _lc,
                   goBack: goBack,
+                  goToStaking: _gotoStaking,
+                  posDepositAddr: _posDepositAddr,
                   blockTouch: _blockTouch,
                   free: _free),
-              _posDepositAddr == null
-                  ? Container()
-                  : StakingPage(
-                      setActiveCoin: _setActiveCoin,
-                      changeFree: _changeFree,
-                      depositAddress: _depositAddr,
-                      depositPosAddress: _posDepositAddr,
-                      activeCoin: _coinActive,
-                      coinBalance: _lc!.singleWhere(
-                          (element) => element.coin!.id! == _coinActive.id!),
-                      allCoins: _lc,
-                      free: _free,
-                      goBack: goBack,
-                      blockTouch: _blockTouch,
-                    ),
               SendPage(
                 changeFree: _changeFree,
                 coinActive: _coinActive,
@@ -262,45 +269,45 @@ class MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-              BottomNavigationBarItem(
-                icon: NeuButton(
-                  width: 45,
-                  height: 45,
-                  onTap: () {
-                    if (_posCoin) {
-                      _onTappedBar(2);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 0.0),
-                    child: Image.asset(
-                      "images/staking_icon.png",
-                      width: 38,
-                      fit: BoxFit.fitWidth,
-                      color: _posCoin ? Colors.white : Colors.white30,
-                    ),
-                  ),
-                ),
-                label: '',
-                activeIcon: NeuButton(
-                  width: 45,
-                  height: 45,
-                  onTap: () {
-                    if (_posCoin) {
-                      _onTappedBar(2);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 0.0),
-                    child: Image.asset(
-                      "images/staking_icon.png",
-                      color: const Color(0xFFFDCB29),
-                      width: 38,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                ),
-              ),
+              // BottomNavigationBarItem(
+              //   icon: NeuButton(
+              //     width: 45,
+              //     height: 45,
+              //     onTap: () {
+              //       if (_posCoin) {
+              //         _onTappedBar(2);
+              //       }
+              //     },
+              //     child: Padding(
+              //       padding: const EdgeInsets.only(bottom: 0.0),
+              //       child: Image.asset(
+              //         "images/staking_icon.png",
+              //         width: 38,
+              //         fit: BoxFit.fitWidth,
+              //         color: _posCoin ? Colors.white : Colors.white30,
+              //       ),
+              //     ),
+              //   ),
+              //   label: '',
+              //   activeIcon: NeuButton(
+              //     width: 45,
+              //     height: 45,
+              //     onTap: () {
+              //       if (_posCoin) {
+              //         _onTappedBar(2);
+              //       }
+              //     },
+              //     child: Padding(
+              //       padding: const EdgeInsets.only(bottom: 0.0),
+              //       child: Image.asset(
+              //         "images/staking_icon.png",
+              //         color: const Color(0xFFFDCB29),
+              //         width: 38,
+              //         fit: BoxFit.fitWidth,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               BottomNavigationBarItem(
                 icon: NeuButton(
                   width: 45,
@@ -343,8 +350,7 @@ class MainScreenState extends State<MainScreen> {
   }
 
   void _blockTouch(bool b) {
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _onTappedBar(int value) {
@@ -354,9 +360,7 @@ class MainScreenState extends State<MainScreen> {
     setState(() {
       _selectedPageIndex = value;
     });
-    _pageController.animateToPage(value,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOutCirc);
+    _pageController.animateToPage(value, duration: const Duration(milliseconds: 300), curve: Curves.easeInOutCirc);
     // _pageController.jumpToPage(value);
   }
 }

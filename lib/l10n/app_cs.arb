@@ -44,6 +44,7 @@
   "copy" : "Kopírovat",
   "explorer" : "Prohlížeč",
   "txdet" : "Detaily transakce",
+  "tx" : "Transakce",
   "txcopy" : "TX id zkopírována do schránky",
   "confirmations" : "potvrzení",
   "history_popup" : "HISTORIE",
