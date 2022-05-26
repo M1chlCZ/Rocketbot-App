@@ -507,6 +507,12 @@ class CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateMi
     // print(p.toJson());
   }
 
+  changeFree(double free) {
+    setState(() {
+      _free = free;
+    });
+  }
+
   _calculatePortfolio() async {
     _getGraphData();
     setState(() {
@@ -516,6 +522,7 @@ class CoinScreenState extends State<CoinScreen> with SingleTickerProviderStateMi
     try {
       for (var element in _listCoins) {
         if (element.coin == _coinActive) {
+
           Decimal? priceUSD = element.priceData!.prices!.usd!;
           Decimal? priceBTC = element.priceData!.prices!.btc!;
           _percentage = element.priceData!.priceChange24HPercent!.usd!;

@@ -27,12 +27,14 @@ class DepositPage extends StatefulWidget {
 class DepositPageState extends State<DepositPage> {
   final TextEditingController _addressController = TextEditingController();
   var popMenu = false;
+  Coin? activeCoin;
 
 
   @override
   void initState() {
     super.initState();
-    _addressController.text = widget.depositAddr!;
+    activeCoin = widget.coin;
+    _addressController.text = widget.depositAddr ?? "";
   }
 
   _getClipBoardData() async {
@@ -40,6 +42,13 @@ class DepositPageState extends State<DepositPage> {
     // print(data!.text!);
     setState(() {
         _addressController.text = data!.text!;
+    });
+  }
+  
+  void changeStuff (Coin? c, String? depositAddr) {
+    setState(() {
+      activeCoin = c;
+      _addressController.text = depositAddr ?? "";
     });
   }
 
@@ -124,7 +133,7 @@ class DepositPageState extends State<DepositPage> {
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      widget.coin == null
+                      activeCoin == null
                           ? const Icon(
                               Icons.monetization_on,
                               size: 50.0,
@@ -133,7 +142,7 @@ class DepositPageState extends State<DepositPage> {
                           : SizedBox(
                               width: 50.0,
                               height: 50.0,
-                              child: PictureCacheWidget(coin: widget.coin!)
+                              child: PictureCacheWidget(coin: activeCoin!)
                             ),
                       const SizedBox(
                         width: 10.0,
@@ -149,10 +158,10 @@ class DepositPageState extends State<DepositPage> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 10.0),
                                   child: Text(
-                                    widget.coin == null
+                                    activeCoin == null
                                         ? AppLocalizations.of(context)!
                                             .choose_coin
-                                        : widget.coin!.ticker!,
+                                        : activeCoin!.ticker!,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline3!
@@ -170,9 +179,9 @@ class DepositPageState extends State<DepositPage> {
                                   child: SizedBox(
                                     width: 70,
                                     child: AutoSizeText(
-                                      widget.coin == null
+                                      activeCoin == null
                                           ? 'Token'
-                                          : widget.coin!.name!,
+                                          : activeCoin!.name!,
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle2!
@@ -317,7 +326,7 @@ class DepositPageState extends State<DepositPage> {
                 ),
                 NeuButton(
                   onTap: () {
-                    _openQR(context, widget.coin!.fullName!);
+                    _openQR(context, activeCoin!.fullName!);
                   },
                   color: Colors.white,
                   width: 200,

@@ -65,18 +65,18 @@ class PriceData {
   }
 
   PriceData.fromJson(dynamic json) {
-    _updatedAt = json['updatedAt'] ??= 0;
-    _prices = json['prices'] != null ? Prices.fromJson(json['prices']) : null;
-    _priceChange24HPercent = json['priceChange24HPercent'] != null
+    _updatedAt = json?['updatedAt'] ??= 0;
+    _prices = json?['prices'] != null ? Prices.fromJson(json['prices']) : null;
+    _priceChange24HPercent = json?['priceChange24HPercent'] != null
         ? PriceChange24HPercent.fromJson(json['priceChange24HPercent'])
         : null;
-    _priceChange7DPercent = json['priceChange7DPercent'] != null
+    _priceChange7DPercent = json?['priceChange7DPercent'] != null
         ? PriceChange7DPercent.fromJson(json['priceChange7DPercent'])
         : null;
-    _priceChange30DPercent = json['priceChange30DPercent'] != null
+    _priceChange30DPercent = json?['priceChange30DPercent'] != null
         ? PriceChange30DPercent.fromJson(json['priceChange30DPercent'])
         : null;
-    _historyPrices = json['historyPrices'] != null
+    _historyPrices = json?['historyPrices'] != null
         ? HistoryPrices.fromJson(json['historyPrices'])
         : null;
   }

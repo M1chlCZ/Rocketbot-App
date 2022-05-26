@@ -23,12 +23,12 @@ class NeuButton extends StatelessWidget {
           BoxShadow(
             offset: Offset(-1,-1),
             blurRadius: 4.0,
-            color: Color.fromRGBO(134, 134, 134, 0.15),
+            color: Color.fromRGBO(134, 134, 134, 0.05),
           ),
           BoxShadow(
             offset: Offset(1,1),
             blurRadius: 4.0,
-            color: Color.fromRGBO(2, 2, 2, 0.85),
+            color: Color.fromRGBO(2, 2, 2, 0.25),
           ),
         ],
       ),
